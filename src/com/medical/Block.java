@@ -8,9 +8,10 @@ import java.sql.Time;
 
 // specifying the order in which JSON will be generated.
 @JsonPropertyOrder(value = {
-        "patientId","date","time","hospitalName","doctorName","specialistType","prescription","prevBlockHashValue"
+        "patientId","date","time","hospitalName","doctorName","specialistType","prescription",
+        "previousBlockHash","currentBlockHash"
 })
-public class BlockStructure implements Serializable {
+public class Block implements Serializable {
     private int patientId;
     private Date date;
     private Time time;
@@ -18,10 +19,9 @@ public class BlockStructure implements Serializable {
     private String doctorName;
     private String specialistType;
     private String prescription;
-    private String prevBlockHashValue;
+    private String previousBlockHash;
     @JsonIgnore         // ignoring property from converting into JSON
-    private String currentBlockHashValue;
-
+    private String currentBlockHash;
 
     public int getPatientId() {
         return patientId;
@@ -80,17 +80,17 @@ public class BlockStructure implements Serializable {
     }
 
     @JsonIgnore
-    public String getCurrentBlockHashValue() {
-        return currentBlockHashValue;
+    public String getCurrentBlockHash() {
+        return currentBlockHash;
     }
     @JsonIgnore
-    public void setCurrentBlockHashValue(String currentBlockHashValue) {
-        this.currentBlockHashValue = currentBlockHashValue;
+    public void setCurrentBlockHash(String currentBlockHash) {
+        this.currentBlockHash = currentBlockHash;
     }
-    public String getPrevBlockHashValue() {
-        return prevBlockHashValue;
+    public String getPrevBlockHash() {
+        return previousBlockHash;
     }
-    public void setPrevBlockHashValue(String prevBlockHashValue) {
-        this.prevBlockHashValue = prevBlockHashValue;
+    public void setPrevBlockHash(String previousBlockHash) {
+        this.previousBlockHash = previousBlockHash;
     }
 }

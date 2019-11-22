@@ -1,5 +1,7 @@
 package com.medical.block;
 
+import org.bson.types.Binary;
+
 import javax.crypto.Cipher;
 import java.math.BigInteger;
 import java.security.*;
@@ -11,7 +13,7 @@ public class RSAEncryptDecrypt {
     public static void generateKey(){
         try {
             KeyPairGenerator keyPair = KeyPairGenerator.getInstance("RSA");
-            keyPair.initialize(2048);//3072
+            keyPair.initialize(3072);//3072
             KeyPair pair = keyPair.generateKeyPair();
             PrivateKey privateKey = pair.getPrivate();
             PublicKey publicKey = pair.getPublic();
@@ -22,11 +24,6 @@ public class RSAEncryptDecrypt {
             //Setting public keys
             SetKeys.setPublicKeyExpo(rsaPublicKeySpec.getPublicExponent());
             SetKeys.setPublicKeyModules(rsaPublicKeySpec.getModulus());
-            /*System.out.println("pub expo\n"+rsaPublicKeySpec.getPublicExponent());
-            System.out.println("pri expo\n"+rsaPrivateKeySpec.getPrivateExponent());
-            System.out.println("\n\n");
-            System.out.println("pub module\n"+rsaPublicKeySpec.getModulus());
-            System.out.println("pri module\n"+rsaPrivateKeySpec.getModulus());*/
             //Setting private keys
             SetKeys.setPrivateKeyExpo(rsaPrivateKeySpec.getPrivateExponent());
             SetKeys.setPrivateKeyModules(rsaPrivateKeySpec.getModulus());
@@ -46,15 +43,15 @@ public class RSAEncryptDecrypt {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE,publicKey);
             encryptedData = cipher.doFinal(dataToEncrypt);
-            System.out.println("Encrypted text:"+encryptedData);
         }catch (Exception e){
             System.out.println(e);
         }
         return encryptedData;
     }
 
-    public static void decryptData(byte[] data, BigInteger modulus,BigInteger expo){
+    public static String decryptData(byte[] data, BigInteger modulus,BigInteger expo){
         byte[] decryptedData = null;
+        String value = null;
         try{
             RSAPrivateKeySpec rsaPrivateKeySpec = new RSAPrivateKeySpec(modulus,expo);
             KeyFactory factory = KeyFactory.getInstance("RSA");
@@ -62,10 +59,10 @@ public class RSAEncryptDecrypt {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE,privateKey);
             decryptedData = cipher.doFinal(data);
-            String val = new String(decryptedData);
-            //System.out.println("decrypted text:"+val);
+            value = new String(decryptedData);
         }catch (Exception e){
             System.out.println(e);
         }
+        return value;
     }
 }

@@ -1,11 +1,14 @@
 package com.medical.block;
 
 import com.medical.util.JSONUtil;
+import org.bson.types.Binary;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class BlockFunction {
@@ -22,7 +25,7 @@ public class BlockFunction {
 
     public GenesisBlock createFirstBlock() {
         genesisBlock = new GenesisBlock();
-        System.out.println("Creating first block");
+        //System.out.println("Creating first block");
         try {
             genesisBlock.setId(12345);
             genesisBlock.setCreationDate(Date.valueOf("2019-11-13"));
@@ -30,18 +33,18 @@ public class BlockFunction {
             genesisBlock.setCompanyName("medics");
             genesisBlock.setPreviousBlockHash("shivamB48vishankC12divyaC14mehulC15");
             String value = JSONUtil.convertJavaToJson(genesisBlock);
-            System.out.println("Calculating hash of 1st block.....");
+            //System.out.println("Calculating hash of 1st block.....");
             String hashValue = calculateHash(value);
             genesisBlock.setCurrentBlockHash(hashValue);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
         return genesisBlock;
     }
 
-    public BlockStructure createNewBlock(){
+    public BlockStructure createNewBlock() {
         BlockStructure newBlock = new BlockStructure();
-        System.out.println("creating new block");
+        //System.out.println("creating new block");
         try {
             newBlock.setPatientId(123);
             newBlock.setDate(Date.valueOf("2019-11-13"));     //Use LocalDate.now() to save in mongodb
@@ -50,7 +53,7 @@ public class BlockFunction {
             newBlock.setDoctorName("Hash");
             newBlock.setSpecialistType("Eye");
             newBlock.setPrescription("Number of characters words and sentences in a piece of text" +
-                    "Top keywords used"+
+                    "Top keywords used" +
                     "Readability score - how difficult is it to comprehend the passage." +
                     "Number of characters words and sentences in a piece of text" +
                     "Top keywords used" +
@@ -58,7 +61,7 @@ public class BlockFunction {
                     "Top keywords");
             newBlock.setPrevBlockHash(lastBlockHash());
             String jsonString = JSONUtil.convertJavaToJson(newBlock);
-            System.out.println("Calculating hash.......");
+            //System.out.println("Calculating hash.......");
             String hashValueOfBlock = calculateHash(jsonString);
             newBlock.setCurrentBlockHash(hashValueOfBlock);
         } catch (Exception e) {
@@ -67,101 +70,109 @@ public class BlockFunction {
         return newBlock;
     }
 
-    private String lastBlockHash(){
+    private String lastBlockHash() {
         String prevHashVal;
-        if(chain.size()==1){
+        if (chain.size() == 1) {
             genesisBlock = (GenesisBlock) chain.get(0);
             prevHashVal = genesisBlock.getCurrentBlockHash();
-        }else{
-            BlockStructure block = (BlockStructure) chain.get(chain.size()-1);
+        } else {
+            BlockStructure block = (BlockStructure) chain.get(chain.size() - 1);
             prevHashVal = block.getCurrentBlockHash();
         }
         return prevHashVal;
     }
 
-    public static void createChain(Object object){
+    public static void createChain(Object object) {
         chain.add(object);
     }
 
     private String calculateHash(String value) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] encodedHashValue = digest.digest(value.getBytes(StandardCharsets.UTF_8));
-        StringBuilder hashValue = new StringBuilder(2*encodedHashValue.length);
-        for(byte b: encodedHashValue){
+        StringBuilder hashValue = new StringBuilder(2 * encodedHashValue.length);
+        for (byte b : encodedHashValue) {
             hashValue.append(b);
         }
         return hashValue.toString();
     }
 
-    public void printBlock(){
-        System.out.println("list:"+chain);
-        for (int i=0;i<chain.size();i++){
-            if(i==0){
+    public void printBlock() {
+        System.out.println("list:" + chain);
+        for (int i = 0; i < chain.size(); i++) {
+            if (i == 0) {
                 genesisBlock = (GenesisBlock) chain.get(0);
                 StringBuilder builder = new StringBuilder(JSONUtil.convertJavaToJson(genesisBlock));
-                builder.deleteCharAt(builder.length()-1);
-                builder.append(",\"currentBlockHash\":\""+genesisBlock.getCurrentBlockHash()+"\"}");
+                builder.deleteCharAt(builder.length() - 1);
+                builder.append(",\"currentBlockHash\":\"" + genesisBlock.getCurrentBlockHash() + "\"}");
                 System.out.println(builder.toString());
-            }
-            else{
+            } else {
                 BlockStructure getBlock = (BlockStructure) chain.get(i);
                 StringBuilder builder = new StringBuilder(JSONUtil.convertJavaToJson(getBlock));
-                builder.deleteCharAt(builder.length()-1);
-                builder.append(",\"currentBlockHash\":\""+getBlock.getCurrentBlockHash()+"\"}");
+                builder.deleteCharAt(builder.length() - 1);
+                builder.append(",\"currentBlockHash\":\"" + getBlock.getCurrentBlockHash() + "\"}");
                 System.out.println(builder.toString());
             }
         }
     }
 
-    public void encryptBlock(Object object){
+    public ArrayList<byte[]> encryptBlock(Object object) {
         StringBuilder builder;
-        if(object.getClass().getSimpleName().equals("GenesisBlock")) {
+        int count = 0;
+        int start = 0, end = 0;
+        String substring;
+        ArrayList<String> storeSubString = new ArrayList<>();
+        ArrayList<byte[]> storeEncryptedValue = new ArrayList<>();
+
+        if (object.getClass().getSimpleName().equals("GenesisBlock")) {
             genesisBlock = (GenesisBlock) object;
             builder = new StringBuilder(JSONUtil.convertJavaToJson(genesisBlock));
-            builder.deleteCharAt(builder.length()-1);
-            builder.append(",\"currentBlockHash\":\""+genesisBlock.getCurrentBlockHash()+"\"}");
-        }
-        else {
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append(",\"currentBlockHash\":\"" + genesisBlock.getCurrentBlockHash() + "\"}");
+        } else {
             BlockStructure getBlock = (BlockStructure) object;
             builder = new StringBuilder(JSONUtil.convertJavaToJson(getBlock));
-            builder.deleteCharAt(builder.length()-1);
-            builder.append(",\"currentBlockHash\":\""+getBlock.getCurrentBlockHash()+"\"}");
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append(",\"currentBlockHash\":\"" + getBlock.getCurrentBlockHash() + "\"}");
         }
-        //String value = JSONUtil.convertJavaToJson(object);
+
         String value = builder.toString();
-        byte[] arr2 = value.getBytes();
-        int v = arr2[200];
-        System.out.println("bytes:"+arr2.length+","+ ((char) v)+","+v+"str len:"+value.length()+
-                ","+value.charAt(200));
-        System.out.println("Original value"+value);
+        System.out.println("Original value" + value);
         RSAEncryptDecrypt.generateKey();
-        int count=0;
-        int start=0, end = 0;
-        String substring;
-        while(count<=value.length()){
-            System.out.println("while");
-            if(value.length()-end>250) {
-                end=start+251;
+
+        while (count <= value.length()) {
+            if (value.length() - end > 250) {
+                end = start + 251;
                 substring = value.substring(start, end);
-                //System.out.println("if sub:"+substring.getBytes().length+"\n"+substring);
-                //System.out.println("start:"+start+" end:"+end);
-                start = start+251;
-            }
-            else{
+                storeSubString.add(substring);
+                start = start + 251;
+            } else {
                 start = end;
                 end = value.length();
-                //System.out.println("else start:"+start+" end:"+end);
-                substring = value.substring(start,end);
-                //System.out.println("else sub:"+substring.getBytes().length+"\n"+substring);
+                substring = value.substring(start, end);
+                storeSubString.add(substring);
             }
-            count=count+250;
+            count = count + 250;
         }
-        /*byte[] encryptedData = RSAEncryptDecrypt.encryptData(value,SetKeys.getPublicKeyModules(),
-                SetKeys.getPublicKeyExpo());
-        //System.out.println("e:"+encryptedData);
-
-        RSAEncryptDecrypt.decryptData(encryptedData,SetKeys.getPrivateKeyModules(),
-                SetKeys.getPrivateKeyExpo());*/
-
+        count = 0;
+        while (count != storeSubString.size()) {
+            byte[] encryptedData = RSAEncryptDecrypt.encryptData(storeSubString.get(count),
+                    SetKeys.getPublicKeyModules(), SetKeys.getPublicKeyExpo());
+            storeEncryptedValue.add(encryptedData);
+            count++;
+        }
+        /*count = 0;
+        StringBuilder build = new StringBuilder();
+        while (count != storeEncryptedValue.size()) {
+            substring = RSAEncryptDecrypt.decryptData(storeEncryptedValue.get(count),
+                    SetKeys.getPrivateKeyModules(), SetKeys.getPrivateKeyExpo());
+            build.append(substring);
+            count++;
+        }
+        System.out.println(build.toString());
+        if (value.equals(build.toString()))
+            System.out.println("equal");
+        else
+            System.out.println("not equal");*/
+        return storeEncryptedValue;
     }
 }

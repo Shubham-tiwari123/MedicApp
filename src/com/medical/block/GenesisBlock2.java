@@ -3,17 +3,17 @@ package com.medical.block;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
 @JsonPropertyOrder(value = {
-        "id","creationDate","creationTime","companyName","doctorName","previousBlockHash"
+        "id","creationDate","creationTime","companyName","doctorName","previousBlockHash",
+        "currentBlockHash"
 })
-public class GenesisBlock implements Serializable{
+public class GenesisBlock2 {
     private  int id;
-    private  Date creationDate;
-    private  Time creationTime;
+    private Date creationDate;
+    private Time creationTime;
     private  String companyName;
     private  String previousBlockHash;
     @JsonIgnore
@@ -58,11 +58,9 @@ public class GenesisBlock implements Serializable{
     public  void setPreviousBlockHash(String previousBlockHash) {
         this.previousBlockHash = previousBlockHash;
     }
-    @JsonIgnore
     public  String getCurrentBlockHash() {
         return currentBlockHash;
     }
-    @JsonIgnore
     public  void setCurrentBlockHash(String currentBlockHash) {
         this.currentBlockHash = currentBlockHash;
     }

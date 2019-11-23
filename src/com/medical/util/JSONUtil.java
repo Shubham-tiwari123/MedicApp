@@ -1,6 +1,7 @@
 package com.medical.util;
 
 import org.codehaus.jackson.map.ObjectMapper;
+
 import java.io.IOException;
 
 public class JSONUtil {

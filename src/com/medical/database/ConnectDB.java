@@ -1,20 +1,10 @@
 package com.medical.database;
 
-import com.medical.block.BlockStructure;
-import com.medical.block.GenesisBlock;
-import com.medical.util.JSONUtil;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
+import com.mongodb.*;
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
-import com.mongodb.client.MongoCollection;
+import com.mongodb.client.*;
 import org.bson.Document;
-import org.bson.types.Binary;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.Date;
 import java.util.*;
 
 public class ConnectDB {
@@ -23,51 +13,43 @@ public class ConnectDB {
     private static MongoIterable<String> collection;
     private static Set<String> colName;
 
-    public void insertData(int id, String creationDate, ArrayList<byte[]> encryptedValues,
-                           String collectionName,Object object){
+    public void insertData(int id,String collectionName,String data,String creationDate){
         //String json = JSONUtil.convertJavaToJson(object);
-        StringBuilder builder;
-        if (object.getClass().getSimpleName().equals("GenesisBlock")) {
-            GenesisBlock genesisBlock = (GenesisBlock) object;
-            builder = new StringBuilder(JSONUtil.convertJavaToJson(genesisBlock));
-            builder.deleteCharAt(builder.length() - 1);
-            builder.append(",\"currentBlockHash\":\"" + genesisBlock.getCurrentBlockHash() + "\"}");
-        } else {
-            BlockStructure getBlock = (BlockStructure) object;
-            builder = new StringBuilder(JSONUtil.convertJavaToJson(getBlock));
-            builder.deleteCharAt(builder.length() - 1);
-            builder.append(",\"currentBlockHash\":\"" + getBlock.getCurrentBlockHash() + "\"}");
-        }
-        String json = builder.toString();
         Document document = new Document("patientId",id)
                 .append("record", Arrays.asList(
                         new Document("Date",creationDate)
-                                .append("data",json)));
+                                .append("data",data)));
         database.getCollection(collectionName).insertOne(document);
         System.out.println("inserted");
     }
 
-    public void getData(ArrayList<byte[]> storeEncryptedValue){
-
-        MongoCollection<Document> collections = database
-                .getCollection("storeData");
-        List<Document> employees = (List<Document>) collections.find().into(
-                new ArrayList<Document>());
-
-        List<String> encrypted;
-        String v;
-        for (Document employee : employees) {
-            List<Document> courses = (List<Document>) employee.get("record");
-            for (Document course : courses) {
-                String json = course.getString("data");
-                System.out.println(json);
-                /*for(int i=0;i<encrypted.size();i++){//[B@86be70a  [B@480bdb19
-                    v = encrypted.get(i);//en:[B@37afeb11 //en:[B@515aebb0
-                    System.out.println("en:"+ v.getBytes());
-                }*/
+    public List<String> getDataOfID(int patientId,String collectionName){
+        MongoCollection<Document> collection1 = database.getCollection(collectionName);
+        BasicDBObject query= new BasicDBObject();
+        query.append("patientId",patientId);
+        List<Document> list = (List<Document>) collection1.find(query).into( new ArrayList<>());
+        List<String> result = new LinkedList();
+        String jsonString = null;
+        int size = 0;
+        for(Document value:list){
+            List<Document> store = (List<Document>) value.get("record");
+            size = store.size();
+            for(Document val:store){
+                jsonString = val.get("data").toString();
+                result.add(jsonString);
             }
-
         }
+        return result;
+    }
+    
+    public boolean checkId(int patientId,String collectionName){
+        MongoCollection<Document> collection1 = database.getCollection(collectionName);
+        BasicDBObject query= new BasicDBObject();
+        query.append("patientId",patientId);
+        MongoCursor<Document> d = collection1.find(query).iterator();
+        if(d.hasNext())
+            return true;
+        return false;
     }
 
     public void createCollection(String collectionName) {

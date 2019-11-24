@@ -1,4 +1,4 @@
-package com.medical;
+package com.medical.client;
 
 import java.math.BigInteger;
 

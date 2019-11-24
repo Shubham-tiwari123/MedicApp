@@ -23,6 +23,12 @@ public class ConnectDB {
         System.out.println("inserted");
     }
 
+    public void appendRecord(int patientId,String collectionName,String data){
+        database.getCollection(collectionName).updateOne(new Document("patientId",patientId),
+                new Document("$push",new Document("record", new Document("Date","2019-11-13").append("data",data))));
+        System.out.println("appended");
+    }
+
     public List<String> getDataOfID(int patientId,String collectionName){
         MongoCollection<Document> collection1 = database.getCollection(collectionName);
         BasicDBObject query= new BasicDBObject();
@@ -41,7 +47,27 @@ public class ConnectDB {
         }
         return result;
     }
-    
+
+    public List getLastDataOfID(int patientId,String collectionName){
+        MongoCollection<Document> collection1 = database.getCollection(collectionName);
+        BasicDBObject query= new BasicDBObject();
+        query.append("patientId",patientId);
+        List<Document> list = (List<Document>) collection1.find(query).into( new ArrayList<>());
+        String jsonString = null;
+        int size = 0;
+        for(Document value:list){
+            List<Document> store = (List<Document>) value.get("record");
+            size = store.size();
+            for(Document val:store){
+                jsonString = val.get("data").toString();
+            }
+        }
+        List list1 = new LinkedList();
+        list1.add(jsonString);
+        list1.add(size);
+        return list1;
+    }
+
     public boolean checkId(int patientId,String collectionName){
         MongoCollection<Document> collection1 = database.getCollection(collectionName);
         BasicDBObject query= new BasicDBObject();

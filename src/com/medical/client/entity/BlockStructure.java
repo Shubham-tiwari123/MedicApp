@@ -1,7 +1,7 @@
-package com.medical.block;
+package com.medical.client.entity;
 
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
@@ -11,7 +11,7 @@ import java.sql.Time;
         "patientId","date","time","hospitalName","doctorName","specialistType","prescription",
         "previousBlockHash","currentBlockHash"
 })
-public class BlockStructure2 implements Serializable {
+public class BlockStructure implements Serializable {
     private int patientId;
     private Date date;
     private Time time;
@@ -20,6 +20,7 @@ public class BlockStructure2 implements Serializable {
     private String specialistType;
     private String prescription;
     private String previousBlockHash;
+    @JsonIgnore         // ignoring property from converting into JSON
     private String currentBlockHash;
 
     public int getPatientId() {
@@ -78,10 +79,12 @@ public class BlockStructure2 implements Serializable {
         this.prescription = prescription;
     }
 
+    @JsonIgnore
     public String getCurrentBlockHash() {
         return currentBlockHash;
     }
 
+    @JsonIgnore
     public void setCurrentBlockHash(String currentBlockHash) {
         this.currentBlockHash = currentBlockHash;
     }

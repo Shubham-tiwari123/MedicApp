@@ -1,4 +1,4 @@
-package com.medical.client;
+package com.medical.client.service;
 
 import javax.crypto.Cipher;
 import java.math.BigInteger;

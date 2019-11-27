@@ -1,11 +1,12 @@
-package com.medical.block;
+package com.medical.client.entity;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
+
 
 @JsonPropertyOrder(value = {
         "id","creationDate","creationTime","companyName","doctorName","previousBlockHash"

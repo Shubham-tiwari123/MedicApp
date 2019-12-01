@@ -17,7 +17,6 @@ public class ConnectToServer {
         conn= (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
-        conn.connect();
         if(conn.getResponseCode()==HttpURLConnection.HTTP_OK)
             return true;
         return false;

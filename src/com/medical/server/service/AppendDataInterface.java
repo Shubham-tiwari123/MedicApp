@@ -1,5 +1,7 @@
 package com.medical.server.service;
 
+import com.medical.server.entity.ClientBlock;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -8,8 +10,7 @@ public interface AppendDataInterface {
     String decryptData(List<byte[]> data, BigInteger modulus, BigInteger expo); //verify sender
     boolean verifyData(String data); //cal hash
     String getLastBlockHashDb(int patientID);
-    String insertLastBlockHash(String data,String lastBlockHash);
     String calCurrentBlockHash(String data);
-    String updateCurrentBlockHash(String currBlockHash);
+    String updateBlock(String lastBlockHash);
     boolean appendBlockInChain(String data);
 }

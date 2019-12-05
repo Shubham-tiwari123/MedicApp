@@ -8,7 +8,7 @@ public interface ExtraFunctionsInterface {
     String decryptData(byte[] data, BigInteger modulus,BigInteger expo);
     <T> T convertJsonToJava(String jsonString, Class<T> obj);
     String convertJavaToJson(Object object);
-    String generateKey();
+    void generateKey();
     String sendKeyClient(BigInteger modulus, BigInteger expo);
     String saveKeysDb(BigInteger modulus, BigInteger expo);
 }

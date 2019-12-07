@@ -1,7 +1,7 @@
 package com.medical.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
@@ -9,9 +9,9 @@ import java.sql.Time;
 // specifying the order in which JSON will be generated.
 @JsonPropertyOrder(value = {
         "patientId","date","time","hospitalName","doctorName","specialistType","prescription",
-        "previousBlockHash","currentBlockHash"
+        "currentBlockHash"
 })
-public class ClientBlock2 implements Serializable {
+public class ClientSideBlock implements Serializable {
     private int patientId;
     private Date date;
     private Time time;
@@ -19,6 +19,7 @@ public class ClientBlock2 implements Serializable {
     private String doctorName;
     private String specialistType;
     private String prescription;
+    private String currentBlockHash;
 
     public int getPatientId() {
         return patientId;
@@ -74,6 +75,15 @@ public class ClientBlock2 implements Serializable {
 
     public void setPrescription(String prescription) {
         this.prescription = prescription;
+    }
+
+    @JsonIgnore
+    public String getCurrentBlockHash() {
+        return currentBlockHash;
+    }
+
+    public void setCurrentBlockHash(String currentBlockHash) {
+        this.currentBlockHash = currentBlockHash;
     }
 }
 

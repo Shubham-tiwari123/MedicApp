@@ -1,27 +1,27 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
-import com.medical.server.entity.ClientBlock;
-import com.medical.server.entity.ClientBlock2;
+import com.medical.server.entity.ClientSideBlock;
+import com.medical.server.entity.ServerSideBlock;
 import com.medical.server.entity.GenesisBlock;
+import com.medical.server.entity.StoreBlock;
+
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppendData implements AppendDataInterface {
 
     private Database database = new Database();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
-    private static ClientBlock block;
+    private static ClientSideBlock block;
 
     public boolean verifyID(int patientID) {
-        if(database.createDbConn() && database.checkCollection(""))
-            return database.verifyPatientIdDB(patientID);
-        return false;
+        return database.verifyPatientIdDB(patientID,"");
     }
 
-    public String decryptData(List<byte[]> data, BigInteger modulus,BigInteger expo) {
-        List<String> storeDecryptData = new LinkedList<String>();
+    public String decryptData(ArrayList<byte[]> data, BigInteger modulus, BigInteger expo) {
+        ArrayList<String> storeDecryptData = new ArrayList<String>();
         for (byte[] datum : data) {
             String decryptedData = extraFunctions.decryptData(datum, modulus, expo);
             storeDecryptData.add(decryptedData);
@@ -34,19 +34,10 @@ public class AppendData implements AppendDataInterface {
     }
 
     public boolean verifyData(String data) {
-        block = extraFunctions.convertJsonToJava(data,ClientBlock.class);
-
-        ClientBlock2 clientBlock2 = new ClientBlock2();
-        clientBlock2.setDate(block.getDate());
-        clientBlock2.setTime(block.getTime());
-        clientBlock2.setPatientId(block.getPatientId());
-        clientBlock2.setDoctorName(block.getDoctorName());
-        clientBlock2.setHospitalName(block.getHospitalName());
-        clientBlock2.setPrescription(block.getPrescription());
-        clientBlock2.setSpecialistType(block.getSpecialistType());
-
-        String convertObj = extraFunctions.convertJavaToJson(clientBlock2);
-        String hashValue = calCurrentBlockHash(convertObj);
+        block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
+        // convert block to string
+        String convertString = extraFunctions.convertJavaToJson(block);
+        String hashValue = calCurrentBlockHash(convertString);
         return hashValue.equals(block.getCurrentBlockHash());
     }
 
@@ -55,17 +46,43 @@ public class AppendData implements AppendDataInterface {
         String lastBlockHash = null;
         if(chain.size()==1){
             GenesisBlock block = extraFunctions.convertJsonToJava(chain.get(0),GenesisBlock.class);
-            lastBlockHash = block.getPreviousBlockHash();
+            lastBlockHash = block.getCurrentBlockHash();
+        }else{
+
         }
         return lastBlockHash;
     }
 
-    public String updateBlock(String lastBlockHash) {
-        block.setPrevBlockHash(lastBlockHash);
-        String data = extraFunctions.convertJavaToJson(block);
-        String newHashOfBlock = calCurrentBlockHash(data);
-        block.setCurrentBlockHash(newHashOfBlock);
-        return extraFunctions.convertJavaToJson(block);
+    public String updateBlock(String lastBlockHash,String data) {
+        block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
+
+        //insert last block hash
+        ServerSideBlock serverSideBlock = new ServerSideBlock();
+        serverSideBlock.setDate(block.getDate());
+        serverSideBlock.setTime(block.getTime());
+        serverSideBlock.setPatientId(block.getPatientId());
+        serverSideBlock.setDoctorName(block.getDoctorName());
+        serverSideBlock.setHospitalName(block.getHospitalName());
+        serverSideBlock.setPrescription(block.getPrescription());
+        serverSideBlock.setSpecialistType(block.getSpecialistType());
+        serverSideBlock.setPreviousBlockHash(lastBlockHash);
+
+        String convertObj = extraFunctions.convertJavaToJson(serverSideBlock);
+        // re-calculate hash value
+        String newHashOfBlock = calCurrentBlockHash(convertObj);
+        // create new block and insert current hash
+        StoreBlock storeBlock = new StoreBlock();
+        storeBlock.setDate(block.getDate());
+        storeBlock.setTime(block.getTime());
+        storeBlock.setPatientId(block.getPatientId());
+        storeBlock.setDoctorName(block.getDoctorName());
+        storeBlock.setHospitalName(block.getHospitalName());
+        storeBlock.setPrescription(block.getPrescription());
+        storeBlock.setSpecialistType(block.getSpecialistType());
+        storeBlock.setPreviousBlockHash(lastBlockHash);
+        storeBlock.setCurrentBlockHash(newHashOfBlock);
+        //return the new block as string for encryption
+        return extraFunctions.convertJavaToJson(storeBlock);
     }
 
     public String calCurrentBlockHash(String data) {
@@ -73,6 +90,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     public boolean appendBlockInChain(String data) {
+        // encrypt the string
         if(database.createDbConn() && database.checkCollection("")){
             return database.updateChain(data);
         }

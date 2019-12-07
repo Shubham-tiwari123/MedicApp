@@ -46,6 +46,7 @@ public class Database implements DatabaseInterface {
 
     public boolean verifyPatientIdDB(int patientId,String collectionName) {
         if(createDbConn() && checkCollection(collectionName)){
+            //Login to verify
             return true;
         }
         return false;

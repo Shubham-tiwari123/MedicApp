@@ -8,8 +8,7 @@ import java.sql.Time;
 
 // specifying the order in which JSON will be generated.
 @JsonPropertyOrder(value = {
-        "patientId","date","time","hospitalName","doctorName","specialistType","prescription",
-        "currentBlockHash"
+        "patientId","date","time","hospitalName","doctorName","specialistType","prescription"
 })
 public class ClientSideBlock implements Serializable {
     private int patientId;

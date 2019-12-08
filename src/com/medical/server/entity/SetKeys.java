@@ -3,40 +3,40 @@ package com.medical.server.entity;
 import java.math.BigInteger;
 
 public class SetKeys {
-    static private BigInteger publicKeyModules;
-    static private BigInteger publicKeyExpo;
-    static private BigInteger privateKeyModules;
-    static private BigInteger privateKeyExpo;
+    private BigInteger publicKeyModules;
+    private BigInteger publicKeyExpo;
+    private BigInteger privateKeyModules;
+    private BigInteger privateKeyExpo;
 
-    public static BigInteger getPublicKeyModules() {
+    public BigInteger getPublicKeyModules() {
         return publicKeyModules;
     }
 
-    public static void setPublicKeyModules(BigInteger publicKeyModules) {
-        SetKeys.publicKeyModules = publicKeyModules;
+    public void setPublicKeyModules(BigInteger publicKeyModules) {
+        this.publicKeyModules = publicKeyModules;
     }
 
-    public static BigInteger getPublicKeyExpo() {
+    public BigInteger getPublicKeyExpo() {
         return publicKeyExpo;
     }
 
-    public static void setPublicKeyExpo(BigInteger publicKeyExpo) {
-        SetKeys.publicKeyExpo = publicKeyExpo;
+    public void setPublicKeyExpo(BigInteger publicKeyExpo) {
+        this.publicKeyExpo = publicKeyExpo;
     }
 
-    public static BigInteger getPrivateKeyModules() {
+    public BigInteger getPrivateKeyModules() {
         return privateKeyModules;
     }
 
-    public static void setPrivateKeyModules(BigInteger privateKeyModules) {
-        SetKeys.privateKeyModules = privateKeyModules;
+    public void setPrivateKeyModules(BigInteger privateKeyModules) {
+        this.privateKeyModules = privateKeyModules;
     }
 
-    public static BigInteger getPrivateKeyExpo() {
+    public BigInteger getPrivateKeyExpo() {
         return privateKeyExpo;
     }
 
-    public static void setPrivateKeyExpo(BigInteger privateKeyExpo) {
-        SetKeys.privateKeyExpo = privateKeyExpo;
+    public void setPrivateKeyExpo(BigInteger privateKeyExpo) {
+        this.privateKeyExpo = privateKeyExpo;
     }
 }

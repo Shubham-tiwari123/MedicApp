@@ -1,8 +1,8 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
-
-import java.lang.reflect.Array;
+import com.medical.server.entity.SetKeys;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SendData implements SendDataInterface {
@@ -11,26 +11,28 @@ public class SendData implements SendDataInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
 
     public boolean verifyID(int patientID) {
-        if(database.createDbConn() && database.checkCollection(""))
-            return database.verifyPatientIdDB(patientID);
-        return false;
+        return database.verifyPatientIdDB(patientID, "");
     }
 
     public List<String> getDataDB(int patientID) {
-        List<String> getAllData = database.getSpecificData(patientID);
-
-        return null;
+        List<byte[]> getAllData = database.getSpecificData(patientID);
+        List<String> convertToString = extraFunctions.convertEncryptedData(getAllData,
+                extraFunctions.getServerKeyFromFile());
+        return convertToString;
     }
 
-    public String getKeysOfClientDB(int hospitalID) {
-        return null;
+    public SetKeys getKeysOfClient(int hospitalID) {
+        SetKeys keys = new SetKeys();
+        // get client keys from file using hospitalID
+        return keys;
     }
 
-    public Array encryptData() {
-        return null;
-    }
-
-    public List returnEncryptedData() {
+    public List<byte[]> encryptDataAgain(SetKeys keys, List<String> data) {
+        List<byte[]> encryptData = new LinkedList<byte[]>();
+        for (String val : data) {
+            // encrypt data and store it in encrypted data;
+            // send the data to the client
+        }
         return null;
     }
 }

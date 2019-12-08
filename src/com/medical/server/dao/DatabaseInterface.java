@@ -8,7 +8,7 @@ public interface DatabaseInterface {
     boolean checkCollection(String collectionName);
     boolean verifyPatientIdDB(int patientId,String collectionName);
     boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data);
-    boolean updateChain(String data);
+    boolean updateChain(byte[] data,int patientId);
     List getAllDataDB();
-    List getSpecificData(int patientID);
+    List<byte[]> getSpecificData(int patientID);
 }

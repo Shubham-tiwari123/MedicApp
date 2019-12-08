@@ -3,7 +3,6 @@ package com.medical.server.dao;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +55,8 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
-    public boolean updateChain(String data) {
+    public boolean updateChain(byte[] data,int patientId) {
+        // make a update query and append the data in the array at respective place
         return false;
     }
 
@@ -64,7 +64,10 @@ public class Database implements DatabaseInterface {
         return null;
     }
 
-    public List<String> getSpecificData(int patientID) {
+    public List<byte[]> getSpecificData(int patientID) {
+        // get call the encrypted data from database for specific id
+        // list<byte[]> = {v1,v2,v3.....vn}
+        // return the list
         return null;
     }
 }

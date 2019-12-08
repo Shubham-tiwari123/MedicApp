@@ -1,8 +1,6 @@
 package com.medical.server.utils;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 
 public class JSONUtil {

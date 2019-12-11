@@ -8,7 +8,6 @@ public interface CreateAccountInterface {
     boolean checkIdDB(int generatedID);
     GenesisBlock createGenesisBlock(int generatedID);
     boolean storeBlock(GenesisBlock block);
-    int returnPatientID();
     String calBlockHashValue(String data);
     ArrayList<byte[]> encryptBlock(String data);
 }

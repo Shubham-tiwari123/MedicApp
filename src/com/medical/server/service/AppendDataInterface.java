@@ -12,5 +12,5 @@ public interface AppendDataInterface {
     String getLastBlockHashDb(int patientID);
     String calCurrentBlockHash(String data);
     String updateBlock(String lastBlockHash,String data);
-    boolean appendBlockInChain(int patientId,String data,BigInteger modulus,BigInteger expo);
+    boolean appendBlockInChain(int patientId,String data,SetKeys keys);
 }

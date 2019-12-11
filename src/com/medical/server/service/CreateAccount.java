@@ -46,10 +46,7 @@ public class CreateAccount implements CreateAccountInterface{
     public boolean storeBlock(GenesisBlock block) {
         String data = extraFunctions.convertJavaToJson(block);
         ArrayList<byte[]> encryptedData = encryptBlock(data);
-        if(database.createDbConn() && database.checkCollection("collectionName")){
-            return database.saveGenesisBlockDB("", encryptedData);
-        }
-        return false;
+        return database.saveGenesisBlockDB("", encryptedData);
     }
 
     public ArrayList<byte[]> encryptBlock(String data) {
@@ -73,16 +70,13 @@ public class CreateAccount implements CreateAccountInterface{
             count = count + 250;
         }
         count = 0;
+        SetKeys keys = extraFunctions.getServerKeyFromFile();
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    SetKeys.getPublicKeyModules(), SetKeys.getPublicKeyExpo());
+                    keys.getPublicKeyModules(), keys.getPublicKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }
         return storeEncryptedValue;
-    }
-
-    public int returnPatientID() {
-        return generatedID;
     }
 }

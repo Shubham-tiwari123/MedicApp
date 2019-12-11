@@ -91,9 +91,10 @@ public class AppendData implements AppendDataInterface {
         return extraFunctions.calculateHash(data);
     }
 
-    public boolean appendBlockInChain(int patientId, String data, BigInteger modulus, BigInteger expo) {
+    public boolean appendBlockInChain(int patientId, String data, SetKeys keys) {
         // encrypt the string using server private key
-        byte[] encryptedValue = extraFunctions.encryptData(data, modulus, expo);
+        byte[] encryptedValue = extraFunctions.encryptData(data, keys.getPublicKeyModules(),
+                keys.getPublicKeyExpo());
         return database.updateChain(encryptedValue, patientId);
     }
 }

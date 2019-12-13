@@ -2,18 +2,28 @@ package com.medical.server.service;
 
 import com.medical.server.entity.SetKeys;
 import com.medical.server.utils.JSONUtil;
+import com.medical.server.utils.VariableClass;
+
 import javax.crypto.Cipher;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ExtraFunctions implements ExtraFunctionsInterface {
 
-    public String calculateHash(String data) {
-        return data;
+    public String calculateHash(String value) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedHashValue = digest.digest(value.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hashValue = new StringBuilder(2 * encodedHashValue.length);
+        for (byte b : encodedHashValue) {
+            hashValue.append(b);
+        }
+        return hashValue.toString();
     }
 
     public void generateKey() {
@@ -79,12 +89,13 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return getKeys;
     }
 
-    public List<String> convertEncryptedData(List<byte[]> data, SetKeys getKeys) {
-        List<String> value = new LinkedList<String>();
-        for (byte[] val : data) {
-            // decrypt the value and store in the list
+    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) {
+        StringBuilder builder = new StringBuilder();
+        for (byte[] byteValue : data) {
+            String val = decryptData(byteValue, VariableClass.priMod,VariableClass.priExpo);
+            builder.append(val);
         }
-        return value;
+        return builder.toString();
     }
 
     public <T> T convertJsonToJava(String jsonString, Class<T> obj) {

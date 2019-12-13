@@ -2,6 +2,8 @@ package com.medical.server.service;
 
 import com.medical.server.dao.Database;
 import com.medical.server.entity.SetKeys;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,9 +17,9 @@ public class SendData implements SendDataInterface {
     }
 
     public List<String> getDataDB(int patientID) {
-        List<byte[]> getAllData = database.getSpecificData(patientID);
-        List<String> convertToString = extraFunctions.convertEncryptedData(getAllData,
-                extraFunctions.getServerKeyFromFile());
+        //List<byte[]> getAllData = database.getSpecificData(patientID);
+        List<byte[]> getAllData=null;
+        List<String> convertToString = new ArrayList<>();
         return convertToString;
     }
 

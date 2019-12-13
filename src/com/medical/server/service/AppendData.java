@@ -2,7 +2,13 @@ package com.medical.server.service;
 
 import com.medical.server.dao.Database;
 import com.medical.server.entity.*;
+import com.medical.server.utils.VariableClass;
+
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +18,16 @@ public class AppendData implements AppendDataInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
     private static ClientSideBlock block;
 
-    public boolean verifyID(int patientID) {
-        return database.verifyPatientIdDB(patientID, "");
+    public boolean verifyID(long patientID) {
+        return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
     }
 
     public String decryptData(ArrayList<byte[]> data, SetKeys getKeys) {
         ArrayList<String> storeDecryptData = new ArrayList<String>();
+
         for (byte[] datum : data) {
-            String decryptedData = extraFunctions.decryptData(datum, getKeys.getPublicKeyModules(),
-                    getKeys.getPublicKeyExpo());
+            String decryptedData = extraFunctions.decryptData(datum, VariableClass.priMod,
+                    VariableClass.priExpo);
             storeDecryptData.add(decryptedData);
         }
         StringBuilder builder = new StringBuilder();
@@ -30,32 +37,49 @@ public class AppendData implements AppendDataInterface {
         return builder.toString();
     }
 
-    public boolean verifyData(String data) {
+    public boolean verifyData(String data) throws NoSuchAlgorithmException {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
+
+        ClientSideBlockHash blockHash = new ClientSideBlockHash();
+        blockHash.setPatientId(block.getPatientId());
+        blockHash.setDate(block.getDate());
+        blockHash.setTime(block.getTime());
+        blockHash.setDoctorName(block.getDoctorName());
+        blockHash.setHospitalName(block.getHospitalName());
+        blockHash.setSpecialistType(block.getSpecialistType());
+        blockHash.setPrescription(block.getPrescription());
+
         // convert block to string
-        String convertString = extraFunctions.convertJavaToJson(block);
+        String convertString = extraFunctions.convertJavaToJson(blockHash);
+        System.out.println("verify block:\n"+convertString);
         String hashValue = calCurrentBlockHash(convertString);
+        System.out.println("hash2:"+hashValue);
+
         return hashValue.equals(block.getCurrentBlockHash());
     }
 
-    public String getLastBlockHashDb(int patientID) {
-        List<byte[]> dataFromDb = database.getSpecificData(patientID);
-        List<String> chain = extraFunctions.convertEncryptedData(dataFromDb,
+    public String getLastBlockHashDb(long patientID) {
+        ArrayList<ArrayList<byte[]>> dataFromDb = database.getSpecificData(patientID,
+                VariableClass.STORE_DATA_COLLECTION);
+        System.out.println("size of array list:"+dataFromDb.size()+"\n"+dataFromDb.get(dataFromDb.size()-1));
+
+        String chain = extraFunctions.convertEncryptedData(dataFromDb.get(dataFromDb.size()-1),
                 extraFunctions.getServerKeyFromFile());
 
+        System.out.println("chains:"+chain);
         String lastBlockHash = null;
-        if (chain.size() == 1) {
-            GenesisBlock block = extraFunctions.convertJsonToJava(chain.get(0), GenesisBlock.class);
+        if (dataFromDb.size() == 1) {
+            GenesisBlockEncrypt block = extraFunctions.convertJsonToJava(chain, GenesisBlockEncrypt.class);
             lastBlockHash = block.getCurrentBlockHash();
         } else {
-            ServerSideBlock serverBlock = extraFunctions.convertJsonToJava(chain.get(chain.size() - 1),
-                    ServerSideBlock.class);
+            ServerSideBlock serverBlock = extraFunctions.convertJsonToJava(chain,ServerSideBlock.class);
             lastBlockHash = serverBlock.getCurrentBlockHash();
         }
+        System.out.println("last:"+lastBlockHash);
         return lastBlockHash;
     }
 
-    public String updateBlock(String lastBlockHash, String data) {
+    public String updateBlock(String lastBlockHash, String data) throws NoSuchAlgorithmException {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
 
         //insert last block hash
@@ -87,14 +111,45 @@ public class AppendData implements AppendDataInterface {
         return extraFunctions.convertJavaToJson(storeBlock);
     }
 
-    public String calCurrentBlockHash(String data) {
+    public String calCurrentBlockHash(String data) throws NoSuchAlgorithmException {
         return extraFunctions.calculateHash(data);
     }
 
-    public boolean appendBlockInChain(int patientId, String data, SetKeys keys) {
+    public boolean appendBlockInChain(long patientId, String data, SetKeys keys) {
         // encrypt the string using server private key
-        byte[] encryptedValue = extraFunctions.encryptData(data, keys.getPublicKeyModules(),
-                keys.getPublicKeyExpo());
-        return database.updateChain(encryptedValue, patientId);
+        ArrayList<byte[]> encryptedValue = encryptBlock(data);
+        return database.updateChain(encryptedValue, patientId,VariableClass.STORE_DATA_COLLECTION);
+    }
+    public ArrayList<byte[]> encryptBlock(String data) {
+        System.out.println("encrypting genesis block....");
+        int count = 0;
+        int start = 0, end = 0;
+        String substring;
+        ArrayList<String> storeSubString = new ArrayList<String>();
+        ArrayList<byte[]> storeEncryptedValue = new ArrayList<byte[]>();
+        while (count <= data.length()) {
+            if (data.length() - end > 250) {
+                end = start + 251;
+                substring = data.substring(start, end);
+                storeSubString.add(substring);
+                start = start + 251;
+            } else {
+                start = end;
+                end = data.length();
+                substring = data.substring(start, end);
+                storeSubString.add(substring);
+            }
+            count = count + 250;
+        }
+        count = 0;
+        //SetKeys keys = extraFunctions.getServerKeyFromFile();
+
+        while (count != storeSubString.size()) {
+            byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
+                    VariableClass.pubMod, VariableClass.pubExpo);
+            storeEncryptedValue.add(encryptedData);
+            count++;
+        }
+        return storeEncryptedValue;
     }
 }

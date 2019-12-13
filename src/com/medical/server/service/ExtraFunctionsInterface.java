@@ -2,10 +2,12 @@ package com.medical.server.service;
 
 import com.medical.server.entity.SetKeys;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ExtraFunctionsInterface {
-    String calculateHash(String data);
+    String calculateHash(String data) throws NoSuchAlgorithmException;
 
     byte[] encryptData(String data, BigInteger modulus, BigInteger expo);
 
@@ -17,7 +19,7 @@ public interface ExtraFunctionsInterface {
 
     public SetKeys getServerKeyFromFile();
 
-    public List<String> convertEncryptedData(List<byte[]> data, SetKeys getKeys);
+    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys);
 
     void generateKey();
 

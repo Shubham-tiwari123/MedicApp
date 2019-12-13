@@ -11,19 +11,20 @@ import java.sql.Time;
 @JsonPropertyOrder(value = {
         "id","creationDate","creationTime","companyName","doctorName","previousBlockHash"
 })
-public class GenesisBlock implements Serializable{
-    private  int id;
+public class GenesisBlockHash implements Serializable{
+    private  long id;
     private  Date creationDate;
     private  Time creationTime;
     private  String companyName;
     private  String previousBlockHash;
+    @JsonIgnore
     private  String currentBlockHash;
 
-    public  int getId() {
+    public  long getId() {
         return id;
     }
 
-    public  void setId(int id) {
+    public  void setId(long id) {
         this.id = id;
     }
 
@@ -58,11 +59,11 @@ public class GenesisBlock implements Serializable{
     public  void setPreviousBlockHash(String previousBlockHash) {
         this.previousBlockHash = previousBlockHash;
     }
-
+    @JsonIgnore
     public  String getCurrentBlockHash() {
         return currentBlockHash;
     }
-
+    @JsonIgnore
     public  void setCurrentBlockHash(String currentBlockHash) {
         this.currentBlockHash = currentBlockHash;
     }

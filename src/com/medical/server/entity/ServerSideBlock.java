@@ -12,7 +12,7 @@ import java.sql.Time;
         "previousBlockHash","currentBlockHash"
 })
 public class ServerSideBlock implements Serializable {
-    private int patientId;
+    private long patientId;
     private Date date;
     private Time time;
     private String hospitalName;
@@ -22,11 +22,11 @@ public class ServerSideBlock implements Serializable {
     private String previousBlockHash;
     private String currentBlockHash;
 
-    public int getPatientId() {
+    public long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(int patientId) {
+    public void setPatientId(long patientId) {
         this.patientId = patientId;
     }
 

@@ -11,7 +11,7 @@ import java.sql.Time;
         "previousBlockHash"
 })
 public class CreateNewBlock implements Serializable {
-    private int patientId;
+    private long patientId;
     private Date date;
     private Time time;
     private String hospitalName;
@@ -20,11 +20,11 @@ public class CreateNewBlock implements Serializable {
     private String prescription;
     private String previousBlockHash;
 
-    public int getPatientId() {
+    public long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(int patientId) {
+    public void setPatientId(long patientId) {
         this.patientId = patientId;
     }
 

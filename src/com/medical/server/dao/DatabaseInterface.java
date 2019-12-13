@@ -6,9 +6,9 @@ import java.util.List;
 public interface DatabaseInterface {
     boolean createDbConn();
     boolean checkCollection(String collectionName);
-    boolean verifyPatientIdDB(int patientId,String collectionName);
-    boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data);
-    boolean updateChain(byte[] data,int patientId);
+    boolean verifyPatientIdDB(long patientId,String collectionName);
+    boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data,long patientID);
+    boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName);
     List getAllDataDB();
-    List<byte[]> getSpecificData(int patientID);
+    ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName);
 }

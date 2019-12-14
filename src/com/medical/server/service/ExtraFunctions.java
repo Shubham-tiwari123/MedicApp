@@ -11,8 +11,6 @@ import java.security.*;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class ExtraFunctions implements ExtraFunctionsInterface {
 
@@ -50,7 +48,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     }
 
     public byte[] encryptData(String data, BigInteger modulus, BigInteger expo) {
-        byte[] dataToEncrypt = data.getBytes();
+        byte[] dataToEncrypt = data.getBytes(StandardCharsets.UTF_8);
         System.out.println("data size:" + dataToEncrypt.length);
         byte[] encryptedData = null;
         try {
@@ -76,7 +74,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(data);
-            value = new String(decryptedData);
+            value = new String(decryptedData,StandardCharsets.UTF_8);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -113,4 +111,5 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     public String saveKeysDb(BigInteger modulus, BigInteger expo) {
         return null;
     }
+
 }

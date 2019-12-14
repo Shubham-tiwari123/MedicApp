@@ -4,13 +4,8 @@ import com.medical.server.dao.Database;
 import com.medical.server.entity.*;
 import com.medical.server.utils.VariableClass;
 
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AppendData implements AppendDataInterface {
 

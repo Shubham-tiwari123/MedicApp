@@ -1,24 +1,28 @@
 package com.medical.server.responseAPI;
 
-import javax.servlet.ServletException;
+import org.json.simple.JSONObject;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @WebServlet(name = "AppendBlockResAPI")
 public class AppendBlockResAPI extends HttpServlet {
 
-    static int statusCode;
+    private static int statusCode;
 
     public void setStatusCode(int statusCode,HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         AppendBlockResAPI.statusCode = statusCode;
         doPost(response);
     }
     protected void doPost(HttpServletResponse response)
-            throws ServletException, IOException {
-
+            throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("statusCode",statusCode);
+        PrintWriter writer = response.getWriter();
+        writer.print(jsonObject.toString());
     }
 }

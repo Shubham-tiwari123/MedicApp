@@ -13,10 +13,12 @@ public class AppendData implements AppendDataInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
     private static ClientSideBlock block;
 
+    @Override
     public boolean verifyID(long patientID) {
         return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
     }
 
+    @Override
     public String decryptData(ArrayList<byte[]> data, SetKeys getKeys) {
         ArrayList<String> storeDecryptData = new ArrayList<String>();
 
@@ -32,6 +34,7 @@ public class AppendData implements AppendDataInterface {
         return builder.toString();
     }
 
+    @Override
     public boolean verifyData(String data) throws NoSuchAlgorithmException {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
 
@@ -53,6 +56,7 @@ public class AppendData implements AppendDataInterface {
         return hashValue.equals(block.getCurrentBlockHash());
     }
 
+    @Override
     public String getLastBlockHashDb(long patientID) {
         ArrayList<ArrayList<byte[]>> dataFromDb = database.getSpecificData(patientID,
                 VariableClass.STORE_DATA_COLLECTION);
@@ -74,6 +78,7 @@ public class AppendData implements AppendDataInterface {
         return lastBlockHash;
     }
 
+    @Override
     public String updateBlock(String lastBlockHash, String data) throws NoSuchAlgorithmException {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
 
@@ -106,15 +111,19 @@ public class AppendData implements AppendDataInterface {
         return extraFunctions.convertJavaToJson(storeBlock);
     }
 
+    @Override
     public String calCurrentBlockHash(String data) throws NoSuchAlgorithmException {
         return extraFunctions.calculateHash(data);
     }
 
+    @Override
     public boolean appendBlockInChain(long patientId, String data, SetKeys keys) {
         // encrypt the string using server private key
         ArrayList<byte[]> encryptedValue = encryptBlock(data);
         return database.updateChain(encryptedValue, patientId,VariableClass.STORE_DATA_COLLECTION);
     }
+
+    @Override
     public ArrayList<byte[]> encryptBlock(String data) {
         System.out.println("encrypting genesis block....");
         int count = 0;

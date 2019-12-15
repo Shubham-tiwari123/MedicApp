@@ -19,6 +19,7 @@ public class CreateAccount implements CreateAccountInterface{
     private ExtraFunctions extraFunctions = new ExtraFunctions();
     private static long generatedID = 0;
 
+    @Override
     public long generateNewID() {
         do {
             Random random = new Random();
@@ -28,10 +29,12 @@ public class CreateAccount implements CreateAccountInterface{
         return generatedID;
     }
 
+    @Override
     public boolean checkIdDB(long generatedID) {
         return database.verifyPatientIdDB(generatedID, VariableClass.STORE_DATA_COLLECTION);
     }
 
+    @Override
     public GenesisBlockHash createGenesisBlock(long generatedID) throws NoSuchAlgorithmException {
         System.out.println("creating genesis block.....");
         GenesisBlockHash block = new GenesisBlockHash();
@@ -46,10 +49,12 @@ public class CreateAccount implements CreateAccountInterface{
         return block;
     }
 
+    @Override
     public String calBlockHashValue(String data) throws NoSuchAlgorithmException {
         return extraFunctions.calculateHash(data);
     }
 
+    @Override
     public boolean storeBlock(GenesisBlockHash block, long patientID) {
         GenesisBlockEncrypt blockEncrypt = new GenesisBlockEncrypt();
         blockEncrypt.setId(block.getId());
@@ -67,6 +72,7 @@ public class CreateAccount implements CreateAccountInterface{
                patientID);
     }
 
+    @Override
     public ArrayList<byte[]> encryptBlock(String data) {
         System.out.println("encrypting genesis block....");
         int count = 0;

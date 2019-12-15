@@ -12,10 +12,12 @@ public class SendData implements SendDataInterface {
     private Database database = new Database();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
 
+    @Override
     public boolean verifyID(long patientID) {
         return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
     }
 
+    @Override
     public List<String> getDataDB(long patientID) {
         ArrayList<ArrayList<byte[]>> getAllData= database.getSpecificData(patientID,VariableClass.STORE_DATA_COLLECTION);
         List<String> convertToString = new ArrayList<>();
@@ -30,12 +32,14 @@ public class SendData implements SendDataInterface {
         return convertToString;
     }
 
+    @Override
     public SetKeys getKeysOfClient(int hospitalID) {
         SetKeys keys = new SetKeys();
         // get client keys from file using hospitalID
         return keys;
     }
 
+    @Override
     public ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data) {
         ArrayList<ArrayList<byte[]>> encryptDataList = new ArrayList<>();
         for (String val : data) {
@@ -47,6 +51,7 @@ public class SendData implements SendDataInterface {
         return encryptDataList;
     }
 
+    @Override
     public ArrayList<byte[]> encryptBlock(String data,SetKeys keys) {
         System.out.println("encrypting block before sending....");
         int count = 0;

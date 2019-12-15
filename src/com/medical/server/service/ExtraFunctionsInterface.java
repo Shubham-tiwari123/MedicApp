@@ -20,10 +20,4 @@ public interface ExtraFunctionsInterface {
     public SetKeys getServerKeyFromFile();
 
     public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys);
-
-    void generateKey();
-
-    String sendKeyClient(BigInteger modulus, BigInteger expo);
-
-    String saveKeysDb(BigInteger modulus, BigInteger expo);
 }

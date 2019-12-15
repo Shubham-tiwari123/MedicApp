@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class ExtraFunctions implements ExtraFunctionsInterface {
 
+    @Override
     public String calculateHash(String value) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] encodedHashValue = digest.digest(value.getBytes(StandardCharsets.UTF_8));
@@ -24,29 +25,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return hashValue.toString();
     }
 
-    public void generateKey() {
-        try {
-            KeyPairGenerator keyPair = KeyPairGenerator.getInstance("RSA");
-            keyPair.initialize(3072);//3072
-            KeyPair pair = keyPair.generateKeyPair();
-            PrivateKey privateKey = pair.getPrivate();
-            PublicKey publicKey = pair.getPublic();
-            // Generating key-pair
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            RSAPublicKeySpec rsaPublicKeySpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
-            RSAPrivateKeySpec rsaPrivateKeySpec = keyFactory.getKeySpec(privateKey, RSAPrivateKeySpec.class);
-            //Setting public keys
-            SetKeys setKeys = new SetKeys();
-            setKeys.setPublicKeyExpo(rsaPublicKeySpec.getPublicExponent());
-            setKeys.setPublicKeyModules(rsaPublicKeySpec.getModulus());
-            //Setting private keys
-            setKeys.setPrivateKeyExpo(rsaPrivateKeySpec.getPrivateExponent());
-            setKeys.setPrivateKeyModules(rsaPrivateKeySpec.getModulus());
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
+    @Override
     public byte[] encryptData(String data, BigInteger modulus, BigInteger expo) {
         byte[] dataToEncrypt = data.getBytes(StandardCharsets.UTF_8);
         System.out.println("data size:" + dataToEncrypt.length);
@@ -64,6 +43,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return encryptedData;
     }
 
+    @Override
     public String decryptData(byte[] data, BigInteger modulus, BigInteger expo) {
         byte[] decryptedData;
         String value = null;
@@ -81,6 +61,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return value;
     }
 
+    @Override
     public SetKeys getServerKeyFromFile() {
         SetKeys getKeys = new SetKeys();
         //Read file and get the keys and store it in getKey obj and return the obj
@@ -96,20 +77,14 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return builder.toString();
     }
 
+    @Override
     public <T> T convertJsonToJava(String jsonString, Class<T> obj) {
         return JSONUtil.convertJsonToJava(jsonString,obj);
     }
 
+    @Override
     public String convertJavaToJson(Object object) {
         return JSONUtil.convertJavaToJson(object);
-    }
-
-    public String sendKeyClient(BigInteger modulus, BigInteger expo) {
-        return null;
-    }
-
-    public String saveKeysDb(BigInteger modulus, BigInteger expo) {
-        return null;
     }
 
 }

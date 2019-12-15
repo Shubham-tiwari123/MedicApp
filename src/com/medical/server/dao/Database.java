@@ -23,6 +23,7 @@ public class Database implements DatabaseInterface {
     private static MongoCollection collection;
     private static Set<String> colName;
 
+    @Override
     public boolean createDbConn() {
         try {
             client = new MongoClient(VariableClass.IP_ADDRESS, VariableClass.PORT_NUMBER);
@@ -34,6 +35,7 @@ public class Database implements DatabaseInterface {
         }
     }
 
+    @Override
     public boolean checkCollection(String collectionName) {
             System.out.println("Checking if collection exists or not.....");
             iterable = database.listCollectionNames();
@@ -51,6 +53,7 @@ public class Database implements DatabaseInterface {
             return true;
     }
 
+    @Override
     public boolean verifyPatientIdDB(long patientId,String collectionName) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
@@ -65,6 +68,7 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
+    @Override
     public boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data, long patientID) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
@@ -77,6 +81,7 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
+    @Override
     public boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
@@ -90,14 +95,13 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
+    @Override
     public List getAllDataDB() {
         return null;
     }
 
+    @Override
     public ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName) {
-        // get call the encrypted data from database for specific id
-        // list<byte[]> = {v1,v2,v3.....vn}
-        // return the list4
         ArrayList<ArrayList<byte[]>> returnValue = new ArrayList<ArrayList<byte[]>>();
         if(createDbConn()) {
             if (checkCollection(collectionName)) {

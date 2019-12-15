@@ -18,7 +18,8 @@ public class AppendBlockResAPI extends HttpServlet {
         AppendBlockResAPI.statusCode = statusCode;
         doPost(response);
     }
-    protected void doPost(HttpServletResponse response)
+
+    private void doPost(HttpServletResponse response)
             throws IOException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("statusCode",statusCode);

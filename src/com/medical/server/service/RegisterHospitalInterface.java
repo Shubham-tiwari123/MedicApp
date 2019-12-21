@@ -8,5 +8,7 @@ public interface RegisterHospitalInterface {
     boolean checkUserName(HospitalDetails details);
     boolean saveHospitalDetails(HospitalDetails details);
     SetKeys generateKey();
-
+    boolean saveServerKey(SetKeys keys);
+    public SetKeys getServerKeys();
+    boolean saveClientKey(String pubMod,String pubExpo,String username);
 }

@@ -62,7 +62,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     }
 
     @Override
-    public SetKeys getServerKeyFromFile() {
+    public SetKeys getServerKey() {
         SetKeys getKeys = new SetKeys();
         //Read file and get the keys and store it in getKey obj and return the obj
         return getKeys;

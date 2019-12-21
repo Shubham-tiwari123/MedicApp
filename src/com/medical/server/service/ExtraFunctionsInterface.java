@@ -17,7 +17,7 @@ public interface ExtraFunctionsInterface {
 
     String convertJavaToJson(Object object);
 
-    public SetKeys getServerKeyFromFile();
+    SetKeys getServerKey();
 
-    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys);
+    String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys);
 }

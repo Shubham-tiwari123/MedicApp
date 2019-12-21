@@ -11,6 +11,7 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class DatabaseHospital implements DatabaseHospitalInterface{
@@ -86,15 +87,67 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
     }
 
     @Override
-    public boolean storeClientKeys(SetKeys keys, String collectionName, String userName){
+    public boolean storeServerKey(SetKeys keys, String collectionName){
         if(createDbConn()){
             if(checkCollection(collectionName)){
+                collection = database.getCollection(collectionName);
+                List<Document> user = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                        into(new ArrayList<Document>());
+                if(user.isEmpty()){
+                    Document document = new Document("keys", "serverKeys")
+                            .append("publicKeyModules", keys.getPublicKeyModules().toString())
+                            .append("publicKeyExpo", keys.getPublicKeyExpo().toString())
+                            .append("privateKeyModules", keys.getPrivateKeyModules().toString())
+                            .append("privateKeyExpo", keys.getPrivateKeyExpo().toString());
+                    database.getCollection(collectionName).insertOne(document);
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public SetKeys getServerKeys(String collectionName){
+        SetKeys keys = new SetKeys();
+        if(createDbConn()){
+            if(checkCollection(collectionName)){
+                collection = database.getCollection(collectionName);
+                List<Document> list = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                        into(new ArrayList<Document>());
+                if(!list.isEmpty()){
+                    for(Document val:list){
+                        System.out.println("getting server keys");
+                        String publicKeyModules = val.getString("publicKeyModules");
+                        String publicKeyExpo = val.getString("publicKeyExpo");
+                        String privateKeyModules = val.getString("privateKeyModules");
+                        String privateKeyExpo = val.getString("privateKeyExpo");
+
+                        System.out.println("setting server keys");
+                        keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
+                        keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
+                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                    }
+                    return keys;
+                }else{
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean storeClientKeys(String pubMod,String pubExpo,String userName,String collectionName){
+        if(createDbConn()){
+            if(checkCollection(collectionName) && verifyUsername(userName,collectionName)){
                 System.out.println("Storing keys");
                 Document document = new Document("userName", userName)
-                        .append("publicKeyModules", keys.getPublicKeyModules().toString())
-                        .append("publicKeyExpo", keys.getPublicKeyExpo().toString())
-                        .append("privateKeyModules", keys.getPrivateKeyModules().toString())
-                        .append("privateKeyExpo", keys.getPrivateKeyExpo().toString());
+                        .append("publicKeyModules", pubMod)
+                        .append("publicKeyExpo", pubExpo);
                 try {
                     database.getCollection(collectionName).insertOne(document);
                     return true;

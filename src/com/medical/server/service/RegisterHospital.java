@@ -48,4 +48,19 @@ public class RegisterHospital implements RegisterHospitalInterface{
         }
         return setKeys;
     }
+
+    @Override
+    public boolean saveServerKey(SetKeys keys){
+        return databaseHospital.storeServerKey(keys,VariableClass.STORE_KEYS);
+    }
+
+    @Override
+    public SetKeys getServerKeys(){
+        return databaseHospital.getServerKeys(VariableClass.STORE_KEYS);
+    }
+
+    @Override
+    public boolean saveClientKey(String pubMod,String pubExpo,String username){
+        return false;
+    }
 }

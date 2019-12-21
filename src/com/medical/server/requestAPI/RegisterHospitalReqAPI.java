@@ -4,6 +4,7 @@ import com.medical.server.dao.Database;
 import com.medical.server.dao.DatabaseHospital;
 import com.medical.server.entity.HospitalDetails;
 import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.responseAPI.RegisterHospitalResAPI;
 import com.medical.server.service.ExtraFunctions;
 import com.medical.server.service.RegisterHospital;
@@ -46,31 +47,40 @@ public class RegisterHospitalReqAPI extends HttpServlet {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         HospitalDetails details = extraFunctions.convertJsonToJava(subString,HospitalDetails.class);
+
         boolean flag=false;
         int statusCode;
         if(registerHospital.checkUserName(details)){
-            flag = registerHospital.saveHospitalDetails(details);
-            if(flag)
+            if(registerHospital.saveHospitalDetails(details)) {
+                flag = true;
                 statusCode = VariableClass.SUCCESSFUL;
-            else
+            }
+            else{
                 statusCode = VariableClass.FAILED;
+            }
         }
         else{
             statusCode = VariableClass.BAD_REQUEST;
         }
 
         if(flag){
-            SetKeys keys;
             try {
-                keys = registerHospital.generateKey();
-                resAPI.setStatusCode(statusCode,response,keys);
+                SetKeys keys = registerHospital.getServerKeys();
+                if(keys==null) {
+                    System.out.println("server key not present");
+                    keys = registerHospital.generateKey();
+                    if (registerHospital.saveServerKey(keys))
+                        resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
+                }else{
+                    System.out.println("server key already present");
+                    resAPI.setStatusCode(VariableClass.FAILED, response, null);
+                }
             }catch (Exception e){
-                boolean status = false;
                 DatabaseHospital database = new DatabaseHospital();
-                do {
-                    status= database.deleteHospital(details.getUserName(), VariableClass.REGISTER_HEALTH_CARE);
-                }while (!status);
+                database.deleteHospital(details.getUserName(),VariableClass.REGISTER_HEALTH_CARE);
+                resAPI.setStatusCode(VariableClass.FAILED, response, null);
                 e.printStackTrace();
             }
         }else

@@ -1,6 +1,7 @@
 package com.medical.server.responseAPI;
 
 import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.service.ExtraFunctions;
 import org.json.simple.JSONObject;
 
@@ -35,14 +36,19 @@ public class RegisterHospitalResAPI extends HttpServlet {
             throws IOException, NoSuchAlgorithmException {
         ExtraFunctions extraFunctions = new ExtraFunctions();
         JSONObject object = new JSONObject();
+        JSONObject valueObj = new JSONObject();
+
         if(statusCode==200) {
             String modulesHashValue = extraFunctions.calculateHash(keys.getPublicKeyModules().toString());
             String expoHashValue = extraFunctions.calculateHash(keys.getPublicKeyExpo().toString());
+
+            valueObj.put("modulesHashValue", modulesHashValue);
+            valueObj.put("expoHashValue", expoHashValue);
+            valueObj.put("modulesValue", keys.getPublicKeyModules().toString());
+            valueObj.put("expoValue", keys.getPublicKeyExpo().toString());
+
             object.put("statusCode", statusCode);
-            object.put("modulesHashValue", modulesHashValue);
-            object.put("expoHashValue", expoHashValue);
-            object.put("modulesValue", keys.getPublicKeyModules().toString());
-            object.put("expoValue", keys.getPublicKeyExpo().toString());
+            object.put("valueObj",valueObj);
 
         }else{
             object.put("statusCode", statusCode);

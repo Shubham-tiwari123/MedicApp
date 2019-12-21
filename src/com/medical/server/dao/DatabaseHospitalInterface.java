@@ -8,6 +8,8 @@ public interface DatabaseHospitalInterface {
     boolean checkCollection(String collectionName);
     boolean verifyUsername(String userName,String collectionName);
     boolean registerHospital(String collectionName, HospitalDetails details);
-    boolean storeClientKeys(SetKeys keys, String collectionName, String userName);
+    boolean storeClientKeys(String pubMod,String pubExpo,String userName,String collectionName);
+    boolean storeServerKey(SetKeys keys, String collectionName);
+    SetKeys getServerKeys(String collectionName);
     boolean deleteHospital(String userName,String collectionName);
 }

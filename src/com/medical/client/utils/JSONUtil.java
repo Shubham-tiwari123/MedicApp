@@ -1,6 +1,5 @@
 package com.medical.client.utils;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

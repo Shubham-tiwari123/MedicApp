@@ -3,7 +3,6 @@ package com.medical.client.requestAPI;
 import com.medical.client.entity.HospitalDetails;
 import com.medical.client.responseAPI.RegisterResApi;
 import com.medical.client.service.ExtraFunctions;
-import com.medical.client.service.RegisterUser;
 import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
@@ -14,17 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegisterReqApi", urlPatterns = {"/register"})
-public class RegisterReqApi extends HttpServlet {
+@WebServlet(name = "RegisterReqAPI", urlPatterns = {"/register"})
+public class RegisterReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
-        RegisterUser registerUser = new RegisterUser();
         HospitalDetails hospitalDetails = new HospitalDetails();
         JSONObject object = new JSONObject();
         ExtraFunctions extraFunctions = new ExtraFunctions();
@@ -62,13 +61,10 @@ public class RegisterReqApi extends HttpServlet {
         if(conn.getResponseCode()== HttpURLConnection.HTTP_OK) {
             System.out.println("Server successfully hit .....");
             RegisterResApi resApi = new RegisterResApi();
+            PrintWriter writer = response.getWriter();
+            writer.print(response);
             resApi.readResponse(response,conn,hospitalDetails.getUserName());
         }
 
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        //doPost(request,response);
     }
 }

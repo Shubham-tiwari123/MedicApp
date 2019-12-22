@@ -11,5 +11,5 @@ public interface RegisterUserInterface {
     SetKeys generateKeys();
     boolean storeKeys(GetKeys keys,SetKeys setKeys);
     boolean verifyServerKey(GetKeys keys);
-    ArrayList<byte[]> encryptKey(GetKeys keys, SetKeys setKeys);
+    ArrayList<byte[]> encryptKey(GetKeys keys, String encryptKey);
 }

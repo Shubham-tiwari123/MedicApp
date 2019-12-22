@@ -1,6 +1,7 @@
 package com.medical.client.dao;
 
 import com.medical.client.entity.GetKeys;
+import com.medical.client.entity.ServerKeys;
 import com.medical.client.entity.SetKeys;
 import com.medical.client.utils.VariableClass;
 import com.mongodb.MongoClient;
@@ -14,6 +15,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class Database implements DatabaseInterface {
@@ -55,7 +57,29 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public SetKeys getKeys() {
+    public ServerKeys getServerKeys(String collectionName) {
+        ServerKeys keys = new ServerKeys();
+        if(createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("saving client in db");
+                List<Document> list = (List<Document>) collection.find().
+                        into(new ArrayList<Document>());
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        System.out.println("getting server keys if");
+                        String publicKeyModules = val.getString("clientPubMod");
+                        String publicKeyExpo = val.getString("clientPubExpo");
+
+                        System.out.println("setting server keys");
+                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                    }
+                    return keys;
+                } else {
+                    return null;
+                }
+            }
+        }
         return null;
     }
 
@@ -63,12 +87,14 @@ public class Database implements DatabaseInterface {
     public boolean storeKeys(GetKeys keys,String collectionName,SetKeys setKeys) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
+                System.out.println("saving client in db");
+
                 Document document = new Document("serverExpo",keys.getExpoValue())
                         .append("serverMod",keys.getModulesValue())
                         .append("clientPubMod", setKeys.getPublicKeyModules().toString())
                         .append("clientPubExpo", setKeys.getPublicKeyExpo().toString())
                         .append("clientPriExpo",setKeys.getPrivateKeyExpo().toString())
-                        .append("clientPriMod",setKeys.getPrivateKeyModules());
+                        .append("clientPriMod",setKeys.getPrivateKeyModules().toString());
                 database.getCollection(collectionName).insertOne(document);
                 return true;
             }

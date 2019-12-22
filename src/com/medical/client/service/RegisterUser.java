@@ -53,6 +53,7 @@ public class RegisterUser implements RegisterUserInterface{
 
     @Override
     public boolean verifyServerKey(GetKeys keys) {
+        System.out.println("verifying keys with hash");
         ExtraFunctions extraFunctions = new ExtraFunctions();
         try {
             String expoHash = extraFunctions.calculateHash(keys.getExpoValue());
@@ -66,17 +67,34 @@ public class RegisterUser implements RegisterUserInterface{
     }
 
     @Override
-    public ArrayList<byte[]> encryptKey(GetKeys keys, SetKeys setKeys) {
+    public ArrayList<byte[]> encryptKey(GetKeys keys, String encryptKey) {
         ExtraFunctions extraFunctions = new ExtraFunctions();
-
-        byte[] encryptClientPubExpo = extraFunctions.encryptData(setKeys.getPublicKeyExpo().toString(),
-                new BigInteger(keys.getModulesValue()),new BigInteger(keys.getExpoValue()));
-
-        byte[] encryptClientPubMod = extraFunctions.encryptData(setKeys.getPublicKeyModules().toString(),
-                new BigInteger(keys.getModulesValue()),new BigInteger(keys.getExpoValue()));
-        ArrayList<byte[]> list = new ArrayList<>();
-        list.add(encryptClientPubExpo);
-        list.add(encryptClientPubMod);
-        return list;
+        int count = 0;
+        int start = 0, end = 0;
+        String substring;
+        ArrayList<String> storeSubString = new ArrayList<String>();
+        ArrayList<byte[]> storeEncryptedValue = new ArrayList<byte[]>();
+        while (count <= encryptKey.length()) {
+            if (encryptKey.length() - end > 250) {
+                end = start + 251;
+                substring = encryptKey.substring(start, end);
+                storeSubString.add(substring);
+                start = start + 251;
+            } else {
+                start = end;
+                end = encryptKey.length();
+                substring = encryptKey.substring(start, end);
+                storeSubString.add(substring);
+            }
+            count = count + 250;
+        }
+        count = 0;
+        while (count != storeSubString.size()) {
+            byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
+                    new BigInteger(keys.getModulesValue()),new BigInteger(keys.getExpoValue()));
+            storeEncryptedValue.add(encryptedData);
+            count++;
+        }
+        return storeEncryptedValue;
     }
 }

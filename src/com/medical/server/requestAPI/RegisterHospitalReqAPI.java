@@ -50,41 +50,35 @@ public class RegisterHospitalReqAPI extends HttpServlet {
 
         HospitalDetails details = extraFunctions.convertJsonToJava(subString,HospitalDetails.class);
 
-        boolean flag=false;
-        int statusCode;
-        if(registerHospital.checkUserName(details)){
+        System.out.println("checking hospital username:"+details.getUserName()+", "+details.getPassword());
+        if(registerHospital.checkUserName(details.getUserName())){
+            System.out.println("hospital does not exists");
             if(registerHospital.saveHospitalDetails(details)) {
-                flag = true;
-                statusCode = VariableClass.SUCCESSFUL;
+                System.out.println("hospital saved");
+                try {
+                    System.out.println("getting server keys");
+                    SetKeys keys = registerHospital.getServerKeys();
+                    if(keys==null) {
+                        System.out.println("server key not present");
+                        keys = registerHospital.generateKey();
+                        if (registerHospital.saveServerKey(keys))
+                            resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
+                    }else{
+                        System.out.println("server key already present");
+                        resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
+                    }
+                }catch (Exception e){
+                    DatabaseHospital database = new DatabaseHospital();
+                    database.deleteHospital(details.getUserName(),VariableClass.REGISTER_HEALTH_CARE);
+                    resAPI.setStatusCode(VariableClass.FAILED, response, null);
+                    e.printStackTrace();
+                }
             }
             else{
-                statusCode = VariableClass.FAILED;
-            }
-        }
-        else{
-            statusCode = VariableClass.BAD_REQUEST;
-        }
-
-        if(flag){
-            try {
-                SetKeys keys = registerHospital.getServerKeys();
-                if(keys==null) {
-                    System.out.println("server key not present");
-                    keys = registerHospital.generateKey();
-                    if (registerHospital.saveServerKey(keys))
-                        resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
-                }else{
-                    System.out.println("server key already present");
-                    resAPI.setStatusCode(VariableClass.FAILED, response, null);
-                }
-            }catch (Exception e){
-                DatabaseHospital database = new DatabaseHospital();
-                database.deleteHospital(details.getUserName(),VariableClass.REGISTER_HEALTH_CARE);
-                resAPI.setStatusCode(VariableClass.FAILED, response, null);
-                e.printStackTrace();
+                resAPI.setStatusCode(VariableClass.FAILED,response,null);
             }
         }else
-            resAPI.setStatusCode(statusCode,response,null);
+            resAPI.setStatusCode(VariableClass.BAD_REQUEST,response,null);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

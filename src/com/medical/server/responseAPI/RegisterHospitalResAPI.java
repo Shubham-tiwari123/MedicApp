@@ -41,7 +41,7 @@ public class RegisterHospitalResAPI extends HttpServlet {
         if(statusCode==200) {
             String modulesHashValue = extraFunctions.calculateHash(keys.getPublicKeyModules().toString());
             String expoHashValue = extraFunctions.calculateHash(keys.getPublicKeyExpo().toString());
-
+            System.out.println("Preparing keys to send with hash");
             valueObj.put("modulesHashValue", modulesHashValue);
             valueObj.put("expoHashValue", expoHashValue);
             valueObj.put("modulesValue", keys.getPublicKeyModules().toString());
@@ -53,6 +53,7 @@ public class RegisterHospitalResAPI extends HttpServlet {
         }else{
             object.put("statusCode", statusCode);
         }
+        System.out.println("sending server public key to client");
 
         PrintWriter writer = response.getWriter();
         writer.print(object);

@@ -58,12 +58,13 @@ public class AppendData implements AppendDataInterface {
 
     @Override
     public String getLastBlockHashDb(long patientID) {
+
         ArrayList<ArrayList<byte[]>> dataFromDb = database.getSpecificData(patientID,
                 VariableClass.STORE_DATA_COLLECTION);
         System.out.println("size of array list:"+dataFromDb.size()+"\n"+dataFromDb.get(dataFromDb.size()-1));
 
         String chain = extraFunctions.convertEncryptedData(dataFromDb.get(dataFromDb.size()-1),
-                extraFunctions.getServerKeyFromFile());
+                database.getServerKey(VariableClass.STORE_KEYS));
 
         System.out.println("chains:"+chain);
         String lastBlockHash = null;

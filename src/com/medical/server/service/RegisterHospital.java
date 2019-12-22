@@ -8,14 +8,15 @@ import com.medical.server.utils.VariableClass;
 import java.security.*;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.ArrayList;
 
 public class RegisterHospital implements RegisterHospitalInterface{
 
     DatabaseHospital databaseHospital = new DatabaseHospital();
 
     @Override
-    public boolean checkUserName(HospitalDetails details) {
-        return databaseHospital.verifyUsername(details.getUserName(), VariableClass.REGISTER_HEALTH_CARE);
+    public boolean checkUserName(String details) {
+        return databaseHospital.verifyUsername(details, VariableClass.REGISTER_HEALTH_CARE);
     }
 
     @Override
@@ -60,7 +61,23 @@ public class RegisterHospital implements RegisterHospitalInterface{
     }
 
     @Override
+    public String decryptKey(ArrayList<byte[]> encryptedData, SetKeys keys){
+        System.out.println("server private mode:"+keys.getPrivateKeyModules());
+        System.out.println("server private expo:"+keys.getPrivateKeyExpo());
+
+        ExtraFunctions extraFunctions = new ExtraFunctions();
+        StringBuilder builder = new StringBuilder();
+        for(byte[] val:encryptedData){
+            String subString = extraFunctions.decryptData(val,
+                    keys.getPrivateKeyModules(),keys.getPrivateKeyExpo());
+            builder.append(subString);
+        }
+        System.out.println("client key:\n"+builder.toString());
+        return builder.toString();
+    }
+
+    @Override
     public boolean saveClientKey(String pubMod,String pubExpo,String username){
-        return false;
+        return databaseHospital.storeClientKeys(pubMod,pubExpo,username,VariableClass.STORE_KEYS);
     }
 }

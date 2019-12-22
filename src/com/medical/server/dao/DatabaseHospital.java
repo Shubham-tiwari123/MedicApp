@@ -36,32 +36,42 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
 
     @Override
     public boolean checkCollection(String collectionName) {
-        System.out.println("Checking if collection exists or not.....");
-        iterable = database.listCollectionNames();
-        colName = new TreeSet<String>();
-        for (String col : iterable) {
-            colName.add(col);
-        }
-        if (!colName.contains(collectionName)) {
-            System.out.println("collection does not exists:");
-            System.out.println("Creating new collection");
-            database.createCollection(collectionName);
+        try {
+            System.out.println("Checking if collection exists or not.....");
+            iterable = database.listCollectionNames();
+            colName = new TreeSet<String>();
+            for (String col : iterable) {
+                colName.add(col);
+            }
+            if (!colName.contains(collectionName)) {
+                System.out.println("collection does not exists:");
+                System.out.println("Creating new collection");
+                database.createCollection(collectionName);
+                return true;
+            }
+            System.out.println("exists");
             return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
-        System.out.println("exists");
-        return true;
     }
 
     @Override
     public boolean verifyUsername(String userName,String collectionName) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
-                System.out.println("verifying");
-                collection = database.getCollection(collectionName);
-                List<Document> user = (List<Document>) collection.find(new Document("userName", userName)).
-                        into(new ArrayList<Document>());
-                System.out.println("User present:"+user.size());
-                return user.size() == 0;
+                try {
+                    System.out.println("verifying");
+                    collection = database.getCollection(collectionName);
+                    List<Document> user = (List<Document>) collection.find(new Document("userName", userName)).
+                            into(new ArrayList<Document>());
+                    System.out.println("User present:" + user.size());
+                    return user.size() == 0;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
             }
         }
         return false;
@@ -72,14 +82,19 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
         if(createDbConn()){
             if(checkCollection(collectionName)){
                 System.out.println("registering hospital");
-                Document document = new Document("userName",details.getUserName())
-                        .append("password", details.getPassword())
-                        .append("hospitalName",details.getHospitalName())
-                        .append("hospitalAddress",details.getHospitalAddress())
-                        .append("state",details.getState())
-                        .append("city",details.getCity());
-                database.getCollection(collectionName).insertOne(document);
-                return true;
+                try {
+                    Document document = new Document("userName", details.getUserName())
+                            .append("password", details.getPassword())
+                            .append("hospitalName", details.getHospitalName())
+                            .append("hospitalAddress", details.getHospitalAddress())
+                            .append("state", details.getState())
+                            .append("city", details.getCity());
+                    database.getCollection(collectionName).insertOne(document);
+                    return true;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
             }
             return false;
         }
@@ -90,18 +105,22 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
     public boolean storeServerKey(SetKeys keys, String collectionName){
         if(createDbConn()){
             if(checkCollection(collectionName)){
-                collection = database.getCollection(collectionName);
-                List<Document> user = (List<Document>) collection.find(new Document("keys", "serverKeys")).
-                        into(new ArrayList<Document>());
-                if(user.isEmpty()){
-                    Document document = new Document("keys", "serverKeys")
-                            .append("publicKeyModules", keys.getPublicKeyModules().toString())
-                            .append("publicKeyExpo", keys.getPublicKeyExpo().toString())
-                            .append("privateKeyModules", keys.getPrivateKeyModules().toString())
-                            .append("privateKeyExpo", keys.getPrivateKeyExpo().toString());
-                    database.getCollection(collectionName).insertOne(document);
-                    return true;
-                }else{
+                try {
+                    collection = database.getCollection(collectionName);
+                    List<Document> user = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                            into(new ArrayList<Document>());
+                    if (user.isEmpty()) {
+                        Document document = new Document("keys", "serverKeys")
+                                .append("publicKeyModules", keys.getPublicKeyModules().toString())
+                                .append("publicKeyExpo", keys.getPublicKeyExpo().toString())
+                                .append("privateKeyModules", keys.getPrivateKeyModules().toString())
+                                .append("privateKeyExpo", keys.getPrivateKeyExpo().toString());
+                        database.getCollection(collectionName).insertOne(document);
+                        return true;
+                    }
+                    return false;
+                }catch (Exception e){
+                    e.printStackTrace();
                     return false;
                 }
             }
@@ -114,25 +133,30 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
         SetKeys keys = new SetKeys();
         if(createDbConn()){
             if(checkCollection(collectionName)){
-                collection = database.getCollection(collectionName);
-                List<Document> list = (List<Document>) collection.find(new Document("keys", "serverKeys")).
-                        into(new ArrayList<Document>());
-                if(!list.isEmpty()){
-                    for(Document val:list){
-                        System.out.println("getting server keys");
-                        String publicKeyModules = val.getString("publicKeyModules");
-                        String publicKeyExpo = val.getString("publicKeyExpo");
-                        String privateKeyModules = val.getString("privateKeyModules");
-                        String privateKeyExpo = val.getString("privateKeyExpo");
+                try {
+                    collection = database.getCollection(collectionName);
+                    List<Document> list = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                            into(new ArrayList<Document>());
+                    if (!list.isEmpty()) {
+                        for (Document val : list) {
+                            System.out.println("getting server keys if");
+                            String publicKeyModules = val.getString("publicKeyModules");
+                            String publicKeyExpo = val.getString("publicKeyExpo");
+                            String privateKeyModules = val.getString("privateKeyModules");
+                            String privateKeyExpo = val.getString("privateKeyExpo");
 
-                        System.out.println("setting server keys");
-                        keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
-                        keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
-                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
-                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                            System.out.println("setting server keys");
+                            keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
+                            keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
+                            keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                            keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                        }
+                        return keys;
+                    } else {
+                        return null;
                     }
-                    return keys;
-                }else{
+                }catch (Exception e){
+                    e.printStackTrace();
                     return null;
                 }
             }
@@ -165,13 +189,15 @@ public class DatabaseHospital implements DatabaseHospitalInterface{
     public boolean deleteHospital(String userName, String collectionName) {
         if(createDbConn()){
             if(checkCollection(collectionName)){
-                System.out.println("deleting database");
-                collection = database.getCollection(collectionName);
-                DeleteResult result = collection.deleteOne(new Document("userName",userName));
-                if(result.getDeletedCount()==0)
+                try {
+                    System.out.println("deleting database");
+                    collection = database.getCollection(collectionName);
+                    DeleteResult result = collection.deleteOne(new Document("userName", userName));
+                    return result.getDeletedCount() != 0;
+                }catch (Exception e){
+                    e.printStackTrace();
                     return false;
-                else
-                    return true;
+                }
             }
         }
         return false;

@@ -1,5 +1,7 @@
 package com.medical.server.dao;
 
+import com.medical.server.entity.SetKeys;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,6 @@ public interface DatabaseInterface {
     boolean verifyPatientIdDB(long patientId,String collectionName);
     boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data,long patientID);
     boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName);
-    List getAllDataDB();
+    SetKeys getServerKey(String collectionName);
     ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName);
 }

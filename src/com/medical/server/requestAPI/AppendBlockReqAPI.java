@@ -2,11 +2,13 @@ package com.medical.server.requestAPI;
 
 import com.medical.server.entity.ClientSideBlock;
 import com.medical.server.entity.ClientSideBlockHash;
+import com.medical.server.entity.DeserializeValues;
 import com.medical.server.entity.SetKeys;
 import com.medical.server.responseAPI.AppendBlockResAPI;
 import com.medical.server.service.AppendData;
 import com.medical.server.service.CreateAccount;
 import com.medical.server.service.ExtraFunctions;
+import com.medical.server.service.RegisterHospital;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -65,6 +67,9 @@ public class AppendBlockReqAPI extends HttpServlet {
         SetKeys keys = new SetKeys();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
+        RegisterHospital registerHospital = new RegisterHospital();
+        ExtraFunctions extraFunctions = new ExtraFunctions();
+
         int statusCode;
         String line;
         while((line = reader.readLine())!= null) {
@@ -74,43 +79,58 @@ public class AppendBlockReqAPI extends HttpServlet {
         JSONParser parser = new JSONParser();
         try {
             JSONObject jSONObject = (JSONObject) parser.parse(data);
+            long status = (Long) jSONObject.get("statusCode");
 
-            long patientId = (Long) jSONObject.get("patientId");
-            //ArrayList<String> encryptedValues = (ArrayList<String>) jSONObject.get("encryptedValues");
-            System.out.println("id:-"+patientId);
-            ArrayList<byte[]> encryptedData = dataFromClient(patientId);
+            if(status==200){
+                String hospitalUserName = (String) jSONObject.get("hospitalUserName");
+                if(!registerHospital.checkUserName(hospitalUserName)){
+                    long patientId = (long) jSONObject.get("patientId");
+                    if(appendData.verifyID(patientId)){
+                        System.out.println("patient exist");
+                        String jsonString = (String) jSONObject.get("encrypted");
+                        DeserializeValues deserializeValues = extraFunctions.convertJsonToJava(jsonString,
+                                DeserializeValues.class);
 
-            //Start with server function
-            if(appendData.verifyID(patientId)){
-                System.out.println("patient exist");
-                String decryptString = appendData.decryptData(encryptedData,keys);
-                System.out.println("dec:"+decryptString);
-                //verify data
-                if(appendData.verifyData(decryptString)) {
-                    System.out.println("equal");
-                    String lastBlockHash = appendData.getLastBlockHashDb(patientId);
-                    String updatedBlock = appendData.updateBlock(lastBlockHash,decryptString);
-                    System.out.println("updatedblock:\n"+updatedBlock);
+                        //Get Server private keys from database;
 
-                    if(appendData.appendBlockInChain(patientId,updatedBlock,keys)) {
-                        statusCode = VariableClass.SUCCESSFUL;
-                        System.out.println("data saved");
+
+                        String decryptString = appendData.decryptData(deserializeValues.getEncryptedData(),
+                                keys);
+                        System.out.println("dec:"+decryptString);
+                        //verify data
+//                        if(appendData.verifyData(decryptString)) {
+//                            System.out.println("equal");
+//                            String lastBlockHash = appendData.getLastBlockHashDb(patientId);
+//                            String updatedBlock = appendData.updateBlock(lastBlockHash,decryptString);
+//                            System.out.println("updatedblock:\n"+updatedBlock);
+//
+//                            if(appendData.appendBlockInChain(patientId,updatedBlock,keys)) {
+//                                statusCode = VariableClass.SUCCESSFUL;
+//                                System.out.println("data saved");
+//                            }
+//                            else {
+//                                statusCode=VariableClass.FAILED;
+//                                System.out.println("not saved");
+//                            }
+//                        }
+//                        else{
+//                            statusCode= VariableClass.BAD_REQUEST;
+//                            System.out.println("not equal");
+//                        }
                     }
                     else {
-                        statusCode=VariableClass.FAILED;
-                        System.out.println("not saved");
+                        statusCode = VariableClass.BAD_REQUEST;
+                        System.out.println("no record");
                     }
+                }else{
+                    statusCode = VariableClass.BAD_REQUEST;
+                    System.out.println("no record");
                 }
-                else{
-                    statusCode= VariableClass.BAD_REQUEST;
-                    System.out.println("not equal");
-                }
-            }
-            else {
+            }else{
                 statusCode = VariableClass.BAD_REQUEST;
                 System.out.println("no record");
             }
-            resAPI.setStatusCode(statusCode,response);
+            //resAPI.setStatusCode(statusCode,response);
         } catch (Exception e) {
             e.printStackTrace();
             resAPI.setStatusCode(VariableClass.BAD_REQUEST,response);

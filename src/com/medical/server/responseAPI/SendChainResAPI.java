@@ -1,7 +1,7 @@
 package com.medical.server.responseAPI;
 
 import com.medical.server.service.ExtraFunctions;
-import com.medical.server.utils.SerializeChain;
+import com.medical.server.entity.SerializeChain;
 import org.json.simple.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -42,7 +42,8 @@ public class SendChainResAPI extends HttpServlet {
             object.put("statusCode", statusCode);
             object.put("msg", null);
         }
+
         PrintWriter writer = response.getWriter();
-        writer.print(object);
+        writer.println(object.toString());
     }
 }

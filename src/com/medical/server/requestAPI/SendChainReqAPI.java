@@ -2,6 +2,7 @@ package com.medical.server.requestAPI;
 
 import com.medical.server.entity.SetKeys;
 import com.medical.server.responseAPI.SendChainResAPI;
+import com.medical.server.service.RegisterHospital;
 import com.medical.server.service.SendData;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
@@ -24,48 +25,61 @@ public class SendChainReqAPI extends HttpServlet {
             throws ServletException, IOException {
         // read patientID from request
 
+        RegisterHospital registerHospital = new RegisterHospital();
         SendChainResAPI resAPI = new SendChainResAPI();
         SendData sendData = new SendData();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
 
         String line;
-        while((line = reader.readLine())!= null) {
+        while ((line = reader.readLine()) != null) {
             buffer.append(line);
         }
         String data = buffer.toString();
         JSONParser parser = new JSONParser();
+
         ArrayList<ArrayList<byte[]>> encryptedData = null;
 
         try {
             JSONObject jSONObject = (JSONObject) parser.parse(data);
-            long patientId = (long) jSONObject.get("patientId");
-            //long hospitalId = (long) jSONObject.get("hospitalId");
-            if(sendData.verifyID(patientId)){
-                System.out.println("user verified");
-                List<String> list = sendData.getDataDB(patientId);
-                System.out.println("list size api:"+list.size());
-                // replace this
-                SetKeys keys = sendData.getKeysOfClient(1234);
-                // encrypt the data using client public key and send the data to client;
-                encryptedData = sendData.encryptDataAgain(keys,list);
-                for(ArrayList<byte[]> val:encryptedData){
-                    System.out.println(val);
+            long status = (Long) jSONObject.get("statusCode");
+            if (status == 200) {
+                System.out.println("stattus ok");
+                String hospitalUserName = (String) jSONObject.get("hospitalUserName");
+                if (!registerHospital.checkUserName(hospitalUserName)) {
+                    System.out.println("hospital exists");
+                    long patientId = (long) jSONObject.get("patientId");
+                    if (sendData.verifyID(patientId)) {
+                        System.out.println("user verified");
+                        List<String> list = sendData.getDataDB(patientId);
+                        for(String val:list)
+                            System.out.println("val:\n"+val);
+
+                        System.out.println("list size api:" + list.size());
+                        SetKeys keys = sendData.getKeysOfClient(hospitalUserName);
+                        encryptedData = sendData.encryptDataAgain(keys, list);
+                        for (ArrayList<byte[]> val : encryptedData) {
+                            System.out.println(val);
+                        }
+                        resAPI.sendResponse(encryptedData, response, VariableClass.SUCCESSFUL);
+                    } else {
+                        resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
+                    }
+                }else {
+                    resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
                 }
-                resAPI.sendResponse(encryptedData,response,VariableClass.SUCCESSFUL);
+            }else {
+                resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
             }
-            else{
-                resAPI.sendResponse(null,response,VariableClass.BAD_REQUEST);
-            }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
-            resAPI.sendResponse(null,response,VariableClass.FAILED);
+            resAPI.sendResponse(null, response, VariableClass.FAILED);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         SendChainResAPI resAPI = new SendChainResAPI();
-        resAPI.sendResponse(null,response,VariableClass.BAD_REQUEST);
+        resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
     }
 }

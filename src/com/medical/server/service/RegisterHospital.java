@@ -12,21 +12,23 @@ import java.util.ArrayList;
 
 public class RegisterHospital implements RegisterHospitalInterface{
 
-    DatabaseHospital databaseHospital = new DatabaseHospital();
+    private DatabaseHospital databaseHospital = new DatabaseHospital();
 
     @Override
     public boolean checkUserName(String details) {
+        System.out.println("verify if username exists/not exists (file name):"+getClass());
         return databaseHospital.verifyUsername(details, VariableClass.REGISTER_HEALTH_CARE);
     }
 
     @Override
     public boolean saveHospitalDetails(HospitalDetails details) {
+        System.out.println("saving hospital details (file name):"+getClass());
         return databaseHospital.registerHospital(VariableClass.REGISTER_HEALTH_CARE,details);
     }
 
     @Override
     public SetKeys generateKey() {
-        System.out.println("generating keys");
+        System.out.println("generating keys: "+getClass());
         SetKeys setKeys = new SetKeys();
         try {
             KeyPairGenerator keyPair = KeyPairGenerator.getInstance("RSA");
@@ -52,19 +54,19 @@ public class RegisterHospital implements RegisterHospitalInterface{
 
     @Override
     public boolean saveServerKey(SetKeys keys){
+        System.out.println("saving server keys: "+getClass());
         return databaseHospital.storeServerKey(keys,VariableClass.STORE_KEYS);
     }
 
     @Override
     public SetKeys getServerKeys(){
+        System.out.println("getting server keys: "+getClass());
         return databaseHospital.getServerKeys(VariableClass.STORE_KEYS);
     }
 
     @Override
     public String decryptKey(ArrayList<byte[]> encryptedData, SetKeys keys){
-        System.out.println("server private mode:"+keys.getPrivateKeyModules());
-        System.out.println("server private expo:"+keys.getPrivateKeyExpo());
-
+        System.out.println("decrypting client public keys:"+getClass());
         ExtraFunctions extraFunctions = new ExtraFunctions();
         StringBuilder builder = new StringBuilder();
         for(byte[] val:encryptedData){
@@ -72,12 +74,12 @@ public class RegisterHospital implements RegisterHospitalInterface{
                     keys.getPrivateKeyModules(),keys.getPrivateKeyExpo());
             builder.append(subString);
         }
-        System.out.println("client key:\n"+builder.toString());
         return builder.toString();
     }
 
     @Override
     public boolean saveClientKey(String pubMod,String pubExpo,String username){
+        System.out.println("saving client public keys: "+getClass());
         return databaseHospital.storeClientKeys(pubMod,pubExpo,username,VariableClass.STORE_KEYS);
     }
 }

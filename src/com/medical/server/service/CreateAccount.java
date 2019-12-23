@@ -3,6 +3,7 @@ package com.medical.server.service;
 import com.medical.server.dao.Database;
 import com.medical.server.entity.GenesisBlockEncrypt;
 import com.medical.server.entity.GenesisBlockHash;
+import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.utils.VariableClass;
 
 import java.security.NoSuchAlgorithmException;
@@ -97,9 +98,10 @@ public class CreateAccount implements CreateAccountInterface{
         count = 0;
         //SetKeys keys = extraFunctions.getServerKeyFromFile();
 
+        if(database.getServerPrivateKeys(VariableClass.STORE_KEYS))
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    VariableClass.pubMod, VariableClass.pubExpo);
+                    StoreServerKeys.getPrivateKeyModules(), StoreServerKeys.getPrivateKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }

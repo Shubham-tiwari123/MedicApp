@@ -11,7 +11,7 @@ public interface RegisterHospitalInterface {
     boolean saveHospitalDetails(HospitalDetails details);
     SetKeys generateKey();
     boolean saveServerKey(SetKeys keys);
-    public SetKeys getServerKeys();
+    SetKeys getServerKeys();
     String decryptKey(ArrayList<byte[]> encryptedData, SetKeys keys);
     boolean saveClientKey(String pubMod,String pubExpo,String username);
 }

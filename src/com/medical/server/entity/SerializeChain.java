@@ -1,4 +1,4 @@
-package com.medical.server.utils;
+package com.medical.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;

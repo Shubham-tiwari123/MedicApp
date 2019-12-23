@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface SendDataInterface {
+
     boolean verifyID(long patientID);
 
     List<String> getDataDB(long patientID);
 
-    SetKeys getKeysOfClient(int hospitalID);
+    SetKeys getClientKeys(String hospitalID);
 
     ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data);
 
-    ArrayList<byte[]> encryptBlock(String data, SetKeys keys);
 }

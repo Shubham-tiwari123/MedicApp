@@ -19,12 +19,12 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public String decryptData(ArrayList<byte[]> data, SetKeys getKeys) {
+    public String decryptData(ArrayList<byte[]> data) {
         ArrayList<String> storeDecryptData = new ArrayList<String>();
 
         for (byte[] datum : data) {
-            String decryptedData = extraFunctions.decryptData(datum, VariableClass.priMod,
-                    VariableClass.priExpo);
+            String decryptedData = extraFunctions.decryptData(datum, StoreServerKeys.getPrivateKeyModules(),
+                    StoreServerKeys.getPrivateKeyExpo());
             storeDecryptData.add(decryptedData);
         }
         StringBuilder builder = new StringBuilder();
@@ -61,7 +61,6 @@ public class AppendData implements AppendDataInterface {
 
         ArrayList<ArrayList<byte[]>> dataFromDb = database.getSpecificData(patientID,
                 VariableClass.STORE_DATA_COLLECTION);
-        System.out.println("size of array list:"+dataFromDb.size()+"\n"+dataFromDb.get(dataFromDb.size()-1));
 
         String chain = extraFunctions.convertEncryptedData(dataFromDb.get(dataFromDb.size()-1),
                 database.getServerKey(VariableClass.STORE_KEYS));
@@ -118,7 +117,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public boolean appendBlockInChain(long patientId, String data, SetKeys keys) {
+    public boolean appendBlockInChain(long patientId, String data) {
         // encrypt the string using server private key
         ArrayList<byte[]> encryptedValue = encryptBlock(data);
         return database.updateChain(encryptedValue, patientId,VariableClass.STORE_DATA_COLLECTION);
@@ -151,10 +150,15 @@ public class AppendData implements AppendDataInterface {
 
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    VariableClass.pubMod, VariableClass.pubExpo);
+                    StoreServerKeys.getPrivateKeyModules(), StoreServerKeys.getPrivateKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }
         return storeEncryptedValue;
+    }
+
+    @Override
+    public boolean getServerKeys(){
+        return database.getServerPrivateKeys(VariableClass.STORE_KEYS);
     }
 }

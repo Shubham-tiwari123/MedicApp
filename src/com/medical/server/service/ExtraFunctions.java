@@ -28,7 +28,6 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     @Override
     public byte[] encryptData(String data, BigInteger modulus, BigInteger expo) {
         byte[] dataToEncrypt = data.getBytes(StandardCharsets.UTF_8);
-        System.out.println("data size:" + dataToEncrypt.length);
         byte[] encryptedData = null;
         try {
             RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulus, expo);
@@ -71,7 +70,8 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) {
         StringBuilder builder = new StringBuilder();
         for (byte[] byteValue : data) {
-            String val = decryptData(byteValue, VariableClass.priMod,VariableClass.priExpo);
+            String val = decryptData(byteValue, getKeys.getPublicKeyModules(),
+                    getKeys.getPublicKeyExpo());
             builder.append(val);
         }
         return builder.toString();

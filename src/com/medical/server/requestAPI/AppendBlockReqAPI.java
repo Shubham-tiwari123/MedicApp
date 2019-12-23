@@ -1,9 +1,6 @@
 package com.medical.server.requestAPI;
 
-import com.medical.server.entity.ClientSideBlock;
-import com.medical.server.entity.ClientSideBlockHash;
-import com.medical.server.entity.DeserializeValues;
-import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.*;
 import com.medical.server.responseAPI.AppendBlockResAPI;
 import com.medical.server.service.AppendData;
 import com.medical.server.service.CreateAccount;
@@ -28,38 +25,6 @@ import java.util.ArrayList;
 @WebServlet(name = "AppendBlockReqAPI", urlPatterns = {"/appendRecord"})
 public class AppendBlockReqAPI extends HttpServlet {
 
-    private static ArrayList<byte[]> dataFromClient(long patientId) throws NoSuchAlgorithmException {
-        ExtraFunctions extraFunctions = new ExtraFunctions();
-        ClientSideBlockHash block = new ClientSideBlockHash();
-        block.setPatientId(patientId);
-        block.setDate(Date.valueOf(LocalDate.now()));
-        block.setTime(Time.valueOf("20:17:36"));
-        block.setDoctorName("Mr Ram");
-        block.setHospitalName("medic center");
-        block.setSpecialistType("Surgeon");
-        block.setPrescription("mlnfnlnoi  bdnigt gfifnjg rgieningr sirggr rgrgjgjogrgr geigjsofnfrirgj" +
-                "lngngrg gignrgrklvjrprjr rgipoojr pojwoif fofnln hpoojffjr goioirijfdnfgrirnwfpwfwlln" +
-                "sninfnvg ivoienreo  vsosd rlnfefnfw wrgrsnf efe gnacn ofn ubn; jfdkdureaw");
-        System.out.println("block:"+extraFunctions.convertJavaToJson(block));
-        String calHash = extraFunctions.calculateHash(extraFunctions.convertJavaToJson(block));
-
-        ClientSideBlock sideBlock = new ClientSideBlock();
-        sideBlock.setPatientId(block.getPatientId());
-        sideBlock.setDate(block.getDate());
-        sideBlock.setTime(block.getTime());
-        sideBlock.setDoctorName(block.getDoctorName());
-        sideBlock.setHospitalName(block.getHospitalName());
-        sideBlock.setSpecialistType(block.getSpecialistType());
-        sideBlock.setPrescription(block.getPrescription());
-        sideBlock.setCurrentBlockHash(calHash);
-        String encryptString = extraFunctions.convertJavaToJson(sideBlock);
-        System.out.println("en:"+encryptString);
-        CreateAccount createAccount = new CreateAccount();
-        ArrayList<byte[]> encryptedData = createAccount.encryptBlock(encryptString);
-        System.out.println("length:"+encryptedData.size());
-        return encryptedData;
-    }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         AppendBlockResAPI resAPI = new AppendBlockResAPI();
@@ -70,7 +35,7 @@ public class AppendBlockReqAPI extends HttpServlet {
         RegisterHospital registerHospital = new RegisterHospital();
         ExtraFunctions extraFunctions = new ExtraFunctions();
 
-        int statusCode;
+        int statusCode=0;
         String line;
         while((line = reader.readLine())!= null) {
             buffer.append(line);
@@ -82,41 +47,43 @@ public class AppendBlockReqAPI extends HttpServlet {
             long status = (Long) jSONObject.get("statusCode");
 
             if(status==200){
+                System.out.println("stattus ok");
                 String hospitalUserName = (String) jSONObject.get("hospitalUserName");
                 if(!registerHospital.checkUserName(hospitalUserName)){
+                    System.out.println("hospital exists");
                     long patientId = (long) jSONObject.get("patientId");
+                    System.out.println("patient id:"+patientId);
                     if(appendData.verifyID(patientId)){
                         System.out.println("patient exist");
                         String jsonString = (String) jSONObject.get("encrypted");
+
                         DeserializeValues deserializeValues = extraFunctions.convertJsonToJava(jsonString,
                                 DeserializeValues.class);
 
-                        //Get Server private keys from database;
+                        if(appendData.getServerKeys()) {
+                            String decryptString = appendData.decryptData(deserializeValues.getEncryptedData());
+                            System.out.println("dec:" + decryptString);
+                            //verify data
+                            if(appendData.verifyData(decryptString)) {
+                                System.out.println("equal");
+                                String lastBlockHash = appendData.getLastBlockHashDb(patientId);
+                                String updatedBlock = appendData.updateBlock(lastBlockHash,decryptString);
+                                System.out.println("updated block:\n"+updatedBlock);
 
-
-                        String decryptString = appendData.decryptData(deserializeValues.getEncryptedData(),
-                                keys);
-                        System.out.println("dec:"+decryptString);
-                        //verify data
-//                        if(appendData.verifyData(decryptString)) {
-//                            System.out.println("equal");
-//                            String lastBlockHash = appendData.getLastBlockHashDb(patientId);
-//                            String updatedBlock = appendData.updateBlock(lastBlockHash,decryptString);
-//                            System.out.println("updatedblock:\n"+updatedBlock);
-//
-//                            if(appendData.appendBlockInChain(patientId,updatedBlock,keys)) {
-//                                statusCode = VariableClass.SUCCESSFUL;
-//                                System.out.println("data saved");
-//                            }
-//                            else {
-//                                statusCode=VariableClass.FAILED;
-//                                System.out.println("not saved");
-//                            }
-//                        }
-//                        else{
-//                            statusCode= VariableClass.BAD_REQUEST;
-//                            System.out.println("not equal");
-//                        }
+                                if(appendData.appendBlockInChain(patientId,updatedBlock)) {
+                                    statusCode = VariableClass.SUCCESSFUL;
+                                    System.out.println("data saved");
+                                }
+                                else {
+                                    statusCode=VariableClass.FAILED;
+                                    System.out.println("not saved");
+                                }
+                            }
+                            else{
+                                statusCode= VariableClass.BAD_REQUEST;
+                                System.out.println("not equal");
+                            }
+                        }
                     }
                     else {
                         statusCode = VariableClass.BAD_REQUEST;
@@ -130,7 +97,7 @@ public class AppendBlockReqAPI extends HttpServlet {
                 statusCode = VariableClass.BAD_REQUEST;
                 System.out.println("no record");
             }
-            //resAPI.setStatusCode(statusCode,response);
+            resAPI.setStatusCode(statusCode,response);
         } catch (Exception e) {
             e.printStackTrace();
             resAPI.setStatusCode(VariableClass.BAD_REQUEST,response);

@@ -36,13 +36,16 @@ public class CreateAccountReqAPI extends HttpServlet {
             buffer.append(line);
         }
         String data = buffer.toString();
-        System.out.println("data:\n"+data);
+        System.out.println("data for client:\n"+data);
         String username = null;
+
         JSONParser jsonParser = new JSONParser();
         try {
             JSONObject object= (JSONObject) jsonParser.parse(data);
             username = (String) object.get("username");
+            System.out.println("username:"+username);
             if(!registerHospital.checkUserName(username)) {
+                System.out.println("hospital exists");
                 long patientId = createAccount.generateNewID();
                 GenesisBlockHash block = null;
                 block = createAccount.createGenesisBlock(patientId);

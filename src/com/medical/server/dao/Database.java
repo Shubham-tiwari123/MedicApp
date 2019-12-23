@@ -1,12 +1,14 @@
 package com.medical.server.dao;
 
 import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.utils.VariableClass;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import com.mongodb.client.model.Filters;
@@ -51,7 +53,7 @@ public class Database implements DatabaseInterface {
                 database.createCollection(collectionName);
                 return true;
             }
-            System.out.println("exists");
+            System.out.println("collection exists");
             return true;
         }catch (Exception e){
             e.printStackTrace();
@@ -64,11 +66,11 @@ public class Database implements DatabaseInterface {
         if(createDbConn()){
             if(checkCollection(collectionName)){
                 try {
-                    System.out.println("checking in database");
+                    System.out.println("verifying id db...");
                     collection = database.getCollection(collectionName);
-                    List<Document> user = (List<Document>) collection.find(new Document("patient_id", patientId)).
+                    List<Document> user = (List<Document>) collection.find(new Document("patient_id",
+                            patientId)).
                             into(new ArrayList<Document>());
-                    System.out.println("List size:" + user.size());
                     return user.size() == 0;
                 }catch (Exception e){
                     e.printStackTrace();
@@ -84,6 +86,7 @@ public class Database implements DatabaseInterface {
         if(createDbConn()){
             if(checkCollection(collectionName)){
                 try {
+                    System.out.println("saving genesis block db");
                     Document document = new Document("patient_id", patientID)
                             .append("block", Arrays.asList(data));
                     database.getCollection(collectionName).insertOne(document);
@@ -102,6 +105,7 @@ public class Database implements DatabaseInterface {
         if(createDbConn()){
             if(checkCollection(collectionName)){
                 try {
+                    System.out.println("appending block in chain db...");
                     collection = database.getCollection(collectionName);
                     Bson filter = Filters.eq("patient_id", patientId);
                     UpdateResult result = collection.updateOne(filter,
@@ -119,6 +123,7 @@ public class Database implements DatabaseInterface {
     @Override
     public SetKeys getServerKey(String collectionName) {
         try {
+            System.out.println("getting server keys db...");
             DatabaseHospital databaseHospital = new DatabaseHospital();
             return databaseHospital.getServerKeys(collectionName);
         }catch (Exception e){
@@ -133,6 +138,7 @@ public class Database implements DatabaseInterface {
             ArrayList<ArrayList<byte[]>> returnValue = new ArrayList<ArrayList<byte[]>>();
             if (createDbConn()) {
                 if (checkCollection(collectionName)) {
+                    System.out.println("getting patient data db....");
                     collection = database.getCollection(collectionName);
                     List<Document> list = (List<Document>) collection.find(new Document("patient_id", patientID)).
                             into(new ArrayList<Document>());
@@ -156,5 +162,61 @@ public class Database implements DatabaseInterface {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public SetKeys getClientKeys(String hospital,String collectionName){
+        SetKeys keys = new SetKeys();
+        if(createDbConn()) {
+            if (checkCollection(collectionName)) {
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting client keys from db");
+                List<Document> list = collection.find(new Document("userName",hospital)).into(new ArrayList<Document>());
+
+                System.out.println("list:"+list.size());
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        String publicKeyModules = val.getString("publicKeyModules");
+                        String publicKeyExpo = val.getString("publicKeyExpo");
+
+                        System.out.println("setting server keys");
+                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                    }
+                    return keys;
+                }
+                return null;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean getServerPrivateKeys(String collectionName){
+        if(createDbConn()) {
+            if (checkCollection(collectionName)) {
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting server private keys from db...");
+                List<Document> list = collection.find(new Document("keys","serverKeys"))
+                        .into(new ArrayList<Document>());
+
+                System.out.println("list:"+list.size());
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        String publicKeyModules = val.getString("privateKeyModules");
+                        String publicKeyExpo = val.getString("privateKeyExpo");
+
+                        System.out.println("setting server keys");
+                        StoreServerKeys.setPrivateKeyExpo(new BigInteger(publicKeyExpo));
+                        StoreServerKeys.setPrivateKeyModules(new BigInteger(publicKeyModules));
+                    }
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        return false;
     }
 }

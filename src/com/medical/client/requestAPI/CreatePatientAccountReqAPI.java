@@ -22,6 +22,7 @@ public class CreatePatientAccountReqAPI extends HttpServlet {
 
         CreatePatientAccountResAPI resAPI = new CreatePatientAccountResAPI();
         String userName = request.getParameter("userName");
+        System.out.println("user:"+userName);
         JSONObject object = new JSONObject();
         object.put("username",userName);
 

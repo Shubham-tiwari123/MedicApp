@@ -35,7 +35,7 @@ public class SendRecord implements SendRecordInterface {
 
     @Override
     public ArrayList<byte[]> encryptBlock(String data) {
-        System.out.println("encrypting genesis block....");
+        System.out.println("encrypting block....");
         int count = 0;
         int start = 0, end = 0;
         String substring;

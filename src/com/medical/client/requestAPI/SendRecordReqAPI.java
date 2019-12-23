@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-@WebServlet(name = "SendRecordReqAPI")
+@WebServlet(name = "SendRecordReqAPI",urlPatterns = {"/sendRecord"})
 public class SendRecordReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
 
@@ -39,7 +39,7 @@ public class SendRecordReqAPI extends HttpServlet {
         String specialityType = request.getParameter("specialityType");
         String prescription = request.getParameter("prescription");
 
-        String hospitalUserName="";
+        String hospitalUserName = request.getParameter("username");;
 
         block.setPatientId(Long.parseLong(patientID));
         block.setDate(Date.valueOf(LocalDate.now()));
@@ -52,16 +52,19 @@ public class SendRecordReqAPI extends HttpServlet {
         try {
             String hash = sendRecord.calBlockHash(extraFunctions.convertJavaToJson(block));
             String encryptString = sendRecord.prepareBlock(block,hash);
+
+            System.out.println("data before sending:\n"+encryptString);
+
             ArrayList<byte[]> encryptedData = sendRecord.encryptBlock(encryptString);
             SerializeRecord serializeRecord = new SerializeRecord();
             serializeRecord.setEncryptedData(encryptedData);
             String data = extraFunctions.convertJavaToJson(serializeRecord);
-            System.out.println("data:" + data);
+            System.out.println("serializeRecord data:" + data);
             JSONObject object = new JSONObject();
             object.put("statusCode", 200);
             object.put("encrypted", data);
             object.put("hospitalUserName",hospitalUserName);
-            object.put("patientId",patientID);
+            object.put("patientId",Long.parseLong(patientID));
 
             URL url = new URL("http://localhost:8082/appendRecord");
             HttpURLConnection conn= (HttpURLConnection) url.openConnection();
@@ -73,7 +76,7 @@ public class SendRecordReqAPI extends HttpServlet {
             outputWriter.flush();
             outputWriter.close();
             if(conn.getResponseCode()== HttpURLConnection.HTTP_OK) {
-
+                System.out.println("server hit");
             }
 
         } catch (Exception e) {

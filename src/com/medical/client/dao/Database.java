@@ -4,6 +4,8 @@ import com.medical.client.entity.GetKeys;
 import com.medical.client.entity.ServerKeys;
 import com.medical.client.entity.SetKeys;
 import com.medical.client.utils.VariableClass;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -23,7 +25,6 @@ public class Database implements DatabaseInterface {
     private static MongoClient client;
     private static MongoDatabase database;
     private static MongoIterable<String> iterable;
-    private static MongoCollection collection;
     private static Set<String> colName;
 
     @Override
@@ -61,14 +62,16 @@ public class Database implements DatabaseInterface {
         ServerKeys keys = new ServerKeys();
         if(createDbConn()) {
             if (checkCollection(collectionName)) {
-                System.out.println("saving client in db");
-                List<Document> list = (List<Document>) collection.find().
-                        into(new ArrayList<Document>());
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting keys from db");
+                List<Document> list = collection.find().into(new ArrayList<Document>());
+                System.out.println("list:"+list.size());
+
                 if (!list.isEmpty()) {
                     for (Document val : list) {
                         System.out.println("getting server keys if");
-                        String publicKeyModules = val.getString("clientPubMod");
-                        String publicKeyExpo = val.getString("clientPubExpo");
+                        String publicKeyModules = val.getString("serverMod");
+                        String publicKeyExpo = val.getString("serverExpo");
 
                         System.out.println("setting server keys");
                         keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
@@ -78,6 +81,7 @@ public class Database implements DatabaseInterface {
                 } else {
                     return null;
                 }
+
             }
         }
         return null;
@@ -100,6 +104,35 @@ public class Database implements DatabaseInterface {
             }
         }
         return false;
+    }
+
+    @Override
+    public SetKeys getClientKeys(String collectionName){
+        SetKeys keys = new SetKeys();
+        if(createDbConn()) {
+            if (checkCollection(collectionName)) {
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting keys from db");
+                List<Document> list = collection.find().into(new ArrayList<Document>());
+                System.out.println("list:"+list.size());
+
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        System.out.println("getting client keys if");
+                        String privateKeyModules = val.getString("clientPriMod");
+                        String privateKeyExpo = val.getString("clientPriExpo");
+
+                        System.out.println("setting server keys");
+                        keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
+                        keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
+                    }
+                    return keys;
+                }
+                return null;
+            }
+            return null;
+        }
+        return null;
     }
 
 }

@@ -12,4 +12,5 @@ public interface DatabaseInterface {
     boolean checkCollection(String collectionName);
     ServerKeys getServerKeys(String collectionName);
     boolean storeKeys(GetKeys keys,String collectionName,SetKeys setKeys);
+    SetKeys getClientKeys(String collectionName);
 }

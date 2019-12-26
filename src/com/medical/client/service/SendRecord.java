@@ -4,22 +4,19 @@ import com.medical.client.dao.Database;
 import com.medical.client.entity.ClientSideBlock;
 import com.medical.client.entity.ClientSideBlockHash;
 import com.medical.client.entity.ServerKeys;
-import com.medical.client.entity.SetKeys;
 import com.medical.client.utils.VariableClass;
-
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class SendRecord implements SendRecordInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
 
     @Override
-    public String calBlockHash(String data) throws NoSuchAlgorithmException {
+    public String calBlockHash(String data) throws Exception {
         return extraFunctions.calculateHash(data);
     }
 
     @Override
-    public String prepareBlock(ClientSideBlockHash block, String hashValue) {
+    public String prepareBlock(ClientSideBlockHash block, String hashValue) throws Exception {
         ClientSideBlock sideBlock = new ClientSideBlock();
 
         sideBlock.setPatientId(block.getPatientId());
@@ -34,7 +31,7 @@ public class SendRecord implements SendRecordInterface {
     }
 
     @Override
-    public ArrayList<byte[]> encryptBlock(String data) {
+    public ArrayList<byte[]> encryptBlock(String data) throws Exception {
         System.out.println("encrypting block....");
         int count = 0;
         int start = 0, end = 0;
@@ -58,7 +55,7 @@ public class SendRecord implements SendRecordInterface {
         count = 0;
         ServerKeys keys = getKeysFromDatabase();
         while (count != storeSubString.size()) {
-            byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
+            byte[] encryptedData = extraFunctions.encryptData(storeSubString.get(count),
                     keys.getPublicKeyModules(), keys.getPublicKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
@@ -67,7 +64,7 @@ public class SendRecord implements SendRecordInterface {
     }
 
     @Override
-    public ServerKeys getKeysFromDatabase(){
+    public ServerKeys getKeysFromDatabase() throws Exception {
         Database database = new Database();
         return database.getServerKeys(VariableClass.STORE_KEYS);
     }

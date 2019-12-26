@@ -56,7 +56,7 @@ public class SendChainReqAPI extends HttpServlet {
                             System.out.println("val:\n"+val);
 
                         System.out.println("list size api:" + list.size());
-                        SetKeys keys = sendData.getKeysOfClient(hospitalUserName);
+                        SetKeys keys = sendData.getClientKeys(hospitalUserName);
                         encryptedData = sendData.encryptDataAgain(keys, list);
                         for (ArrayList<byte[]> val : encryptedData) {
                             System.out.println(val);

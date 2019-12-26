@@ -6,10 +6,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public interface CreateAccountInterface {
-    long generateNewID();
-    boolean checkIdDB(long generatedID);
+
+    boolean verifyHospital(String details) throws Exception;
+
+    long generateNewID() throws Exception;
+
+    boolean checkIdDB(long generatedID) throws Exception;
+
     GenesisBlockHash createGenesisBlock(long generatedID) throws NoSuchAlgorithmException;
-    boolean storeBlock(GenesisBlockHash block, long patientID);
+
+    boolean storeBlock(GenesisBlockHash block, long patientID) throws Exception;
+
     String calBlockHashValue(String data) throws NoSuchAlgorithmException;
-    ArrayList<byte[]> encryptBlock(String data);
+
+    ArrayList<byte[]> encryptBlock(String data) throws Exception;
 }

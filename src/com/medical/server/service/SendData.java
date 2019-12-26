@@ -13,13 +13,13 @@ public class SendData implements SendDataInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
 
     @Override
-    public boolean verifyID(long patientID) {
+    public boolean verifyID(long patientID) throws Exception{
         System.out.println("verify patientID (file name):"+getClass());
         return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
     }
 
     @Override
-    public List<String> getDataDB(long patientID) {
+    public List<String> getDataDB(long patientID) throws Exception{
         System.out.println("getting data from db (file name):"+getClass());
         ArrayList<ArrayList<byte[]>> getAllData= database.getSpecificData(patientID,
                 VariableClass.STORE_DATA_COLLECTION);
@@ -42,13 +42,13 @@ public class SendData implements SendDataInterface {
     }
 
     @Override
-    public SetKeys getClientKeys(String hospitalID) {
+    public SetKeys getClientKeys(String hospitalID) throws Exception{
         System.out.println("getting hospital public key for encryption:"+getClass());
         return database.getClientKeys(hospitalID,VariableClass.STORE_KEYS);
     }
 
     @Override
-    public ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data) {
+    public ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data)  throws Exception{
         System.out.println("encrypting data for sending(file name):"+getClass());
         ArrayList<ArrayList<byte[]>> encryptDataList = new ArrayList<>();
         for (String val : data) {
@@ -58,7 +58,7 @@ public class SendData implements SendDataInterface {
         return encryptDataList;
     }
 
-    private ArrayList<byte[]> encryptBlock(String data,SetKeys keys) {
+    private ArrayList<byte[]> encryptBlock(String data,SetKeys keys) throws Exception{
         int count = 0;
         int start = 0, end = 0;
         String substring;

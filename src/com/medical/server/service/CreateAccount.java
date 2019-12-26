@@ -1,6 +1,7 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
+import com.medical.server.dao.DatabaseHospital;
 import com.medical.server.entity.GenesisBlockEncrypt;
 import com.medical.server.entity.GenesisBlockHash;
 import com.medical.server.entity.StoreServerKeys;
@@ -18,20 +19,33 @@ public class CreateAccount implements CreateAccountInterface{
 
     private Database database =new Database();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
-    private static long generatedID = 0;
+    private DatabaseHospital databaseHospital = new DatabaseHospital();
 
     @Override
-    public long generateNewID() {
+    public boolean verifyHospital(String details) throws Exception {
+        System.out.println("verify if username exists/not exists (file name):"+getClass());
+        return databaseHospital.verifyUsername(details, VariableClass.REGISTER_HEALTH_CARE);
+    }
+
+    @Override
+    public long generateNewID() throws Exception {
+        int count=0;
+        long generatedID;
         do {
             Random random = new Random();
-            generatedID = 10000+random.nextInt(99999);
-        }while(!checkIdDB(generatedID));
-        System.out.println("generated id:"+generatedID);
+            generatedID = 10000+random.nextInt(89999);
+            count++;
+        }while(!checkIdDB(generatedID) && count!=7);
+        if(count==7){
+            System.out.println("server times out");
+            throw new Exception("Not of limit");
+        }
+        System.out.println("generated id:"+ generatedID);
         return generatedID;
     }
 
     @Override
-    public boolean checkIdDB(long generatedID) {
+    public boolean checkIdDB(long generatedID) throws Exception{
         return database.verifyPatientIdDB(generatedID, VariableClass.STORE_DATA_COLLECTION);
     }
 
@@ -56,7 +70,7 @@ public class CreateAccount implements CreateAccountInterface{
     }
 
     @Override
-    public boolean storeBlock(GenesisBlockHash block, long patientID) {
+    public boolean storeBlock(GenesisBlockHash block, long patientID) throws Exception{
         GenesisBlockEncrypt blockEncrypt = new GenesisBlockEncrypt();
         blockEncrypt.setId(block.getId());
         blockEncrypt.setCompanyName(block.getCompanyName());
@@ -74,7 +88,7 @@ public class CreateAccount implements CreateAccountInterface{
     }
 
     @Override
-    public ArrayList<byte[]> encryptBlock(String data) {
+    public ArrayList<byte[]> encryptBlock(String data) throws Exception{
         System.out.println("encrypting genesis block....");
         int count = 0;
         int start = 0, end = 0;

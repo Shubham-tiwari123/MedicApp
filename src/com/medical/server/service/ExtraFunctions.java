@@ -26,27 +26,22 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     }
 
     @Override
-    public byte[] encryptData(String data, BigInteger modulus, BigInteger expo) {
+    public byte[] encryptData(String data, BigInteger modulus, BigInteger expo) throws Exception{
         byte[] dataToEncrypt = data.getBytes(StandardCharsets.UTF_8);
         byte[] encryptedData = null;
-        try {
             RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulus, expo);
             KeyFactory factory = KeyFactory.getInstance("RSA");
             PublicKey publicKey = factory.generatePublic(rsaPublicKeySpec);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             encryptedData = cipher.doFinal(dataToEncrypt);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
         return encryptedData;
     }
 
     @Override
-    public String decryptData(byte[] data, BigInteger modulus, BigInteger expo) {
+    public String decryptData(byte[] data, BigInteger modulus, BigInteger expo) throws Exception{
         byte[] decryptedData;
         String value = null;
-        try {
             RSAPrivateKeySpec rsaPrivateKeySpec = new RSAPrivateKeySpec(modulus, expo);
             KeyFactory factory = KeyFactory.getInstance("RSA");
             PrivateKey privateKey = factory.generatePrivate(rsaPrivateKeySpec);
@@ -54,9 +49,6 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(data);
             value = new String(decryptedData,StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
         return value;
     }
 
@@ -67,7 +59,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return getKeys;
     }
 
-    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) {
+    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) throws Exception{
         StringBuilder builder = new StringBuilder();
         for (byte[] byteValue : data) {
             String val = decryptData(byteValue, getKeys.getPublicKeyModules(),
@@ -78,12 +70,12 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
     }
 
     @Override
-    public <T> T convertJsonToJava(String jsonString, Class<T> obj) {
+    public <T> T convertJsonToJava(String jsonString, Class<T> obj) throws Exception{
         return JSONUtil.convertJsonToJava(jsonString,obj);
     }
 
     @Override
-    public String convertJavaToJson(Object object) {
+    public String convertJavaToJson(Object object) throws Exception{
         return JSONUtil.convertJavaToJson(object);
     }
 

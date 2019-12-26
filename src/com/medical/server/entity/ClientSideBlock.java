@@ -1,13 +1,14 @@
 package com.medical.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
 // specifying the order in which JSON will be generated.
 @JsonPropertyOrder(value = {
-        "patientId","date","time","hospitalName","doctorName","specialistType","prescription",
+        "patientId", "date", "time", "hospitalName", "doctorName", "specialistType", "prescription",
         "currentBlockHash"
 })
 public class ClientSideBlock implements Serializable {

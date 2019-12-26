@@ -6,13 +6,13 @@ import com.medical.server.entity.StoreServerKeys;
 import java.util.ArrayList;
 
 public interface DatabaseInterface {
-    boolean createDbConn();
-    boolean checkCollection(String collectionName);
-    boolean verifyPatientIdDB(long patientId,String collectionName);
-    boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data,long patientID);
-    boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName);
-    SetKeys getServerKey(String collectionName);
-    SetKeys getClientKeys(String hospital,String collectionName);
-    boolean getServerPrivateKeys(String collectionName);
-    ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName);
+    boolean createDbConn() throws Exception;
+    boolean checkCollection(String collectionName) throws Exception;
+    boolean verifyPatientIdDB(long patientId,String collectionName) throws Exception;
+    boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data,long patientID) throws Exception;
+    boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName) throws Exception;
+    SetKeys getServerKey(String collectionName) throws Exception;
+    SetKeys getClientKeys(String hospital,String collectionName) throws Exception;
+    boolean getServerPrivateKeys(String collectionName) throws Exception;
+    ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName) throws Exception;
 }

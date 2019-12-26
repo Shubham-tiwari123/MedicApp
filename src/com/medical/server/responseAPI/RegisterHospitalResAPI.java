@@ -3,6 +3,7 @@ package com.medical.server.responseAPI;
 import com.medical.server.entity.SetKeys;
 import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.service.ExtraFunctions;
+import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
@@ -25,37 +26,41 @@ public class RegisterHospitalResAPI extends HttpServlet {
             throws IOException {
         RegisterHospitalResAPI.statusCode = statusCode;
         this.keys = keys;
-        try {
-            doPost(response);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        doPost(response);
     }
 
     private void doPost(HttpServletResponse response)
-            throws IOException, NoSuchAlgorithmException {
+            throws IOException {
         ExtraFunctions extraFunctions = new ExtraFunctions();
         JSONObject object = new JSONObject();
         JSONObject valueObj = new JSONObject();
+        PrintWriter writer = response.getWriter();
 
         if(statusCode==200) {
-            String modulesHashValue = extraFunctions.calculateHash(keys.getPublicKeyModules().toString());
-            String expoHashValue = extraFunctions.calculateHash(keys.getPublicKeyExpo().toString());
-            System.out.println("Preparing keys to send with hash");
-            valueObj.put("modulesHashValue", modulesHashValue);
-            valueObj.put("expoHashValue", expoHashValue);
-            valueObj.put("modulesValue", keys.getPublicKeyModules().toString());
-            valueObj.put("expoValue", keys.getPublicKeyExpo().toString());
+            try {
+                String modulesHashValue = extraFunctions.calculateHash(keys.getPublicKeyModules().toString());
+                String expoHashValue = extraFunctions.calculateHash(keys.getPublicKeyExpo().toString());
+                System.out.println("Preparing keys to send with hash");
+                valueObj.put("modulesHashValue", modulesHashValue);
+                valueObj.put("expoHashValue", expoHashValue);
+                valueObj.put("modulesValue", keys.getPublicKeyModules().toString());
+                valueObj.put("expoValue", keys.getPublicKeyExpo().toString());
 
-            object.put("statusCode", statusCode);
-            object.put("valueObj",valueObj);
+                object.put("statusCode", statusCode);
+                object.put("valueObj", valueObj);
+                System.out.println("sending server public key to client");
+                writer.print(object);
 
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println("sending error");
+                object.put("statusCode", VariableClass.FAILED);
+                writer.print(object);
+            }
         }else{
+            System.out.println("sending error");
             object.put("statusCode", statusCode);
         }
-        System.out.println("sending server public key to client");
 
-        PrintWriter writer = response.getWriter();
-        writer.print(object);
     }
 }

@@ -27,153 +27,121 @@ public class Database implements DatabaseInterface {
     private static Set<String> colName;
 
     @Override
-    public boolean createDbConn() {
-        try {
-            client = new MongoClient(VariableClass.IP_ADDRESS, VariableClass.PORT_NUMBER);
-            database = client.getDatabase(VariableClass.DATABASE_NAME);
-            return true;
-        } catch (Exception e) {
-            System.out.println("exception in: "+getClass()+"  "+ e);
-            return false;
-        }
+    public boolean createDbConn() throws Exception {
+        client = new MongoClient(VariableClass.IP_ADDRESS, VariableClass.PORT_NUMBER);
+        database = client.getDatabase(VariableClass.DATABASE_NAME);
+        return true;
     }
 
     @Override
-    public boolean checkCollection(String collectionName) {
-        try{
-            System.out.println("Checking if collection exists or not.....");
-            iterable = database.listCollectionNames();
-            colName = new TreeSet<String>();
-            for (String col : iterable) {
-                colName.add(col);
+    public boolean checkCollection(String collectionName) throws Exception {
+        System.out.println("Checking if collection exists or not.....");
+        iterable = database.listCollectionNames();
+        colName = new TreeSet<String>();
+        for (String col : iterable) {
+            colName.add(col);
+        }
+        if (!colName.contains(collectionName)) {
+            System.out.println("collection does not exists:");
+            System.out.println("Creating new collection");
+            database.createCollection(collectionName);
+            return true;
+        }
+        System.out.println("collection exists");
+        return true;
+    }
+
+    @Override
+    public boolean verifyPatientIdDB(long patientId, String collectionName) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("verifying id db...");
+                collection = database.getCollection(collectionName);
+                List<Document> user = (List<Document>) collection.find(new Document("patient_id",
+                        patientId)).
+                        into(new ArrayList<Document>());
+                return user.size() == 0;
             }
-            if (!colName.contains(collectionName)) {
-                System.out.println("collection does not exists:");
-                System.out.println("Creating new collection");
-                database.createCollection(collectionName);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data, long patientID)
+            throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("saving genesis block db");
+                Document document = new Document("patient_id", patientID)
+                        .append("block", Arrays.asList(data));
+                database.getCollection(collectionName).insertOne(document);
                 return true;
             }
-            System.out.println("collection exists");
-            return true;
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     @Override
-    public boolean verifyPatientIdDB(long patientId,String collectionName) {
-        if(createDbConn()){
-            if(checkCollection(collectionName)){
-                try {
-                    System.out.println("verifying id db...");
-                    collection = database.getCollection(collectionName);
-                    List<Document> user = (List<Document>) collection.find(new Document("patient_id",
-                            patientId)).
-                            into(new ArrayList<Document>());
-                    return user.size() == 0;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return false;
-                }
+    public boolean updateChain(ArrayList<byte[]> data, long patientId, String collectionName)
+            throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("appending block in chain db...");
+                collection = database.getCollection(collectionName);
+                Bson filter = Filters.eq("patient_id", patientId);
+                UpdateResult result = collection.updateOne(filter,
+                        Updates.addToSet("block", data));
+                return result.getMatchedCount() == 1;
             }
         }
         return false;
     }
 
     @Override
-    public boolean saveGenesisBlockDB(String collectionName, ArrayList<byte[]> data, long patientID) {
-        if(createDbConn()){
-            if(checkCollection(collectionName)){
-                try {
-                    System.out.println("saving genesis block db");
-                    Document document = new Document("patient_id", patientID)
-                            .append("block", Arrays.asList(data));
-                    database.getCollection(collectionName).insertOne(document);
-                    return true;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-        }
-        return false;
+    public SetKeys getServerKey(String collectionName) throws Exception {
+        System.out.println("getting server keys db...");
+        DatabaseHospital databaseHospital = new DatabaseHospital();
+        return databaseHospital.getServerKeys(collectionName);
     }
 
     @Override
-    public boolean updateChain(ArrayList<byte[]> data, long patientId,String collectionName) {
-        if(createDbConn()){
-            if(checkCollection(collectionName)){
-                try {
-                    System.out.println("appending block in chain db...");
-                    collection = database.getCollection(collectionName);
-                    Bson filter = Filters.eq("patient_id", patientId);
-                    UpdateResult result = collection.updateOne(filter,
-                            Updates.addToSet("block", data));
-                    return result.getMatchedCount() == 1;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public SetKeys getServerKey(String collectionName) {
-        try {
-            System.out.println("getting server keys db...");
-            DatabaseHospital databaseHospital = new DatabaseHospital();
-            return databaseHospital.getServerKeys(collectionName);
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public ArrayList<ArrayList<byte[]>>  getSpecificData(long patientID,String collectionName) {
-        try {
-            ArrayList<ArrayList<byte[]>> returnValue = new ArrayList<ArrayList<byte[]>>();
-            if (createDbConn()) {
-                if (checkCollection(collectionName)) {
-                    System.out.println("getting patient data db....");
-                    collection = database.getCollection(collectionName);
-                    List<Document> list = (List<Document>) collection.find(new Document("patient_id", patientID)).
-                            into(new ArrayList<Document>());
-                    System.out.println("list:" + list);
-                    for (Document doc : list) {
-                        ArrayList<ArrayList<Binary>> blocks = (ArrayList<ArrayList<Binary>>) doc.get("block");
-                        System.out.println(blocks.size());
-                        for (ArrayList<Binary> blockList : blocks) {
-                            ArrayList<byte[]> subList = new ArrayList<byte[]>();
-                            for (Binary blockPart : blockList) {
-                                subList.add(blockPart.getData());
-                            }
-                            returnValue.add(subList);
+    public ArrayList<ArrayList<byte[]>> getSpecificData(long patientID, String collectionName)
+            throws Exception {
+        ArrayList<ArrayList<byte[]>> returnValue = new ArrayList<ArrayList<byte[]>>();
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("getting patient data db....");
+                collection = database.getCollection(collectionName);
+                List<Document> list = (List<Document>) collection.find(new Document("patient_id", patientID)).
+                        into(new ArrayList<Document>());
+                System.out.println("list:" + list);
+                for (Document doc : list) {
+                    ArrayList<ArrayList<Binary>> blocks = (ArrayList<ArrayList<Binary>>) doc.get("block");
+                    System.out.println(blocks.size());
+                    for (ArrayList<Binary> blockList : blocks) {
+                        ArrayList<byte[]> subList = new ArrayList<byte[]>();
+                        for (Binary blockPart : blockList) {
+                            subList.add(blockPart.getData());
                         }
+                        returnValue.add(subList);
                     }
                 }
             }
-            System.out.println("size:" + returnValue.size());
-            return returnValue;
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
         }
+        System.out.println("size:" + returnValue.size());
+        return returnValue;
     }
 
     @Override
-    public SetKeys getClientKeys(String hospital,String collectionName){
+    public SetKeys getClientKeys(String hospital, String collectionName) throws Exception {
         SetKeys keys = new SetKeys();
-        if(createDbConn()) {
+        if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 MongoCollection<Document> collection = database.getCollection(collectionName);
                 System.out.println("getting client keys from db");
-                List<Document> list = collection.find(new Document("userName",hospital)).into(new ArrayList<Document>());
+                List<Document> list = collection.find(new Document("userName", hospital)).into(new ArrayList<Document>());
 
-                System.out.println("list:"+list.size());
+                System.out.println("list:" + list.size());
                 if (!list.isEmpty()) {
                     for (Document val : list) {
                         String publicKeyModules = val.getString("publicKeyModules");
@@ -193,15 +161,15 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public boolean getServerPrivateKeys(String collectionName){
-        if(createDbConn()) {
+    public boolean getServerPrivateKeys(String collectionName) throws Exception {
+        if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 MongoCollection<Document> collection = database.getCollection(collectionName);
                 System.out.println("getting server private keys from db...");
-                List<Document> list = collection.find(new Document("keys","serverKeys"))
+                List<Document> list = collection.find(new Document("keys", "serverKeys"))
                         .into(new ArrayList<Document>());
 
-                System.out.println("list:"+list.size());
+                System.out.println("list:" + list.size());
                 if (!list.isEmpty()) {
                     for (Document val : list) {
                         String publicKeyModules = val.getString("privateKeyModules");

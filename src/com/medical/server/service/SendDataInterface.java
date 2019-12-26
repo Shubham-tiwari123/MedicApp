@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface SendDataInterface {
 
-    boolean verifyID(long patientID);
+    boolean verifyID(long patientID) throws Exception;
 
-    List<String> getDataDB(long patientID);
+    List<String> getDataDB(long patientID) throws Exception;
 
-    SetKeys getClientKeys(String hospitalID);
+    SetKeys getClientKeys(String hospitalID) throws Exception;
 
-    ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data);
+    ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data) throws Exception;
 
 }

@@ -14,12 +14,12 @@ public class AppendData implements AppendDataInterface {
     private static ClientSideBlock block;
 
     @Override
-    public boolean verifyID(long patientID) {
+    public boolean verifyID(long patientID) throws Exception {
         return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
     }
 
     @Override
-    public String decryptData(ArrayList<byte[]> data) {
+    public String decryptData(ArrayList<byte[]> data)  throws Exception{
         ArrayList<String> storeDecryptData = new ArrayList<String>();
 
         for (byte[] datum : data) {
@@ -35,7 +35,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public boolean verifyData(String data) throws NoSuchAlgorithmException {
+    public boolean verifyData(String data) throws Exception {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
 
         ClientSideBlockHash blockHash = new ClientSideBlockHash();
@@ -57,7 +57,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public String getLastBlockHashDb(long patientID) {
+    public String getLastBlockHashDb(long patientID) throws Exception{
 
         ArrayList<ArrayList<byte[]>> dataFromDb = database.getSpecificData(patientID,
                 VariableClass.STORE_DATA_COLLECTION);
@@ -79,7 +79,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public String updateBlock(String lastBlockHash, String data) throws NoSuchAlgorithmException {
+    public String updateBlock(String lastBlockHash, String data) throws Exception {
         block = extraFunctions.convertJsonToJava(data, ClientSideBlock.class);
 
         //insert last block hash
@@ -117,14 +117,14 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public boolean appendBlockInChain(long patientId, String data) {
+    public boolean appendBlockInChain(long patientId, String data) throws Exception{
         // encrypt the string using server private key
         ArrayList<byte[]> encryptedValue = encryptBlock(data);
         return database.updateChain(encryptedValue, patientId,VariableClass.STORE_DATA_COLLECTION);
     }
 
     @Override
-    public ArrayList<byte[]> encryptBlock(String data) {
+    public ArrayList<byte[]> encryptBlock(String data) throws Exception{
         System.out.println("encrypting genesis block....");
         int count = 0;
         int start = 0, end = 0;
@@ -158,7 +158,7 @@ public class AppendData implements AppendDataInterface {
     }
 
     @Override
-    public boolean getServerKeys(){
+    public boolean getServerKeys() throws Exception{
         return database.getServerPrivateKeys(VariableClass.STORE_KEYS);
     }
 }

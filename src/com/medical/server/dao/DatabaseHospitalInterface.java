@@ -4,13 +4,21 @@ import com.medical.server.entity.HospitalDetails;
 import com.medical.server.entity.SetKeys;
 
 public interface DatabaseHospitalInterface {
-    boolean createDbConn();
-    boolean checkCollection(String collectionName);
 
-    boolean verifyUsername(String userName,String collectionName);
-    boolean registerHospital(String collectionName, HospitalDetails details);
-    boolean storeClientKeys(String pubMod,String pubExpo,String userName,String collectionName);
-    boolean storeServerKey(SetKeys keys, String collectionName);
-    SetKeys getServerKeys(String collectionName);
-    boolean deleteHospital(String userName,String collectionName);
+    boolean createDbConn() throws Exception;
+
+    boolean checkCollection(String collectionName) throws Exception;
+
+    boolean verifyUsername(String userName, String collectionName) throws Exception;
+
+    boolean registerHospital(String collectionName, HospitalDetails details) throws Exception;
+
+    boolean storeClientKeys(String pubMod, String pubExpo, String userName, String collectionName)
+            throws Exception;
+
+    boolean storeServerKey(SetKeys keys, String collectionName) throws Exception;
+
+    SetKeys getServerKeys(String collectionName) throws Exception;
+
+    boolean deleteHospital(String userName, String collectionName) throws Exception;
 }

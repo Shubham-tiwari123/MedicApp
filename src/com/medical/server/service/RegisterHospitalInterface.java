@@ -7,11 +7,17 @@ import java.util.ArrayList;
 
 public interface RegisterHospitalInterface {
 
-    boolean checkUserName(String details);
-    boolean saveHospitalDetails(HospitalDetails details);
-    SetKeys generateKey();
-    boolean saveServerKey(SetKeys keys);
-    SetKeys getServerKeys();
-    String decryptKey(ArrayList<byte[]> encryptedData, SetKeys keys);
-    boolean saveClientKey(String pubMod,String pubExpo,String username);
+    boolean checkUserName(String details) throws Exception;
+
+    boolean saveHospitalDetails(HospitalDetails details) throws Exception;
+
+    SetKeys generateKey() throws Exception;
+
+    boolean saveServerKey(SetKeys keys) throws Exception;
+
+    SetKeys getServerKeys() throws Exception;
+
+    String decryptKey(ArrayList<byte[]> encryptedData, SetKeys keys) throws Exception;
+
+    boolean saveClientKey(String pubMod, String pubExpo, String username) throws Exception;
 }

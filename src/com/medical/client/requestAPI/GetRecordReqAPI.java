@@ -1,8 +1,8 @@
 package com.medical.client.requestAPI;
 
 import com.medical.client.dao.Database;
+import com.medical.client.entity.ClientKeys;
 import com.medical.client.entity.DeserializeChain;
-import com.medical.client.entity.SetKeys;
 import com.medical.client.service.ExtraFunctions;
 import com.medical.client.utils.VariableClass;
 import org.json.simple.JSONObject;
@@ -13,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -64,13 +63,13 @@ public class GetRecordReqAPI extends HttpServlet {
                     ArrayList<ArrayList<byte[]>> encryptedData = reads.getEncryptedData();
 
                     Database database = new Database();
-                    SetKeys getKeys = database.getClientKeys(VariableClass.STORE_KEYS);
-                    if (getKeys != null) {
+                    ClientKeys clientKeys = database.getClientKeys2(VariableClass.STORE_KEYS);
+                    if (clientKeys != null) {
                         for (ArrayList<byte[]> val : encryptedData) {
                             StringBuilder builder = new StringBuilder();
                             for (byte[] encryptedVal : val) {
                                 String subString = extraFunctions.decryptData(encryptedVal,
-                                        getKeys.getPrivateKeyModules(), getKeys.getPrivateKeyExpo());
+                                        clientKeys.getPrivateKeyModules(), clientKeys.getPrivateKeyExpo());
                                 builder.append(subString);
                             }
                             System.out.println("data:\n" + builder.toString());

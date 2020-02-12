@@ -1,6 +1,5 @@
 package com.medical.client.requestAPI;
 
-import com.medical.client.entity.ClientSideBlock;
 import com.medical.client.entity.ClientSideBlockHash;
 import com.medical.client.entity.SerializeRecord;
 import com.medical.client.service.ExtraFunctions;
@@ -18,7 +17,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -55,6 +53,7 @@ public class SendRecordReqAPI extends HttpServlet {
 
             System.out.println("data before sending:\n"+encryptString);
 
+            // encryption done using server public key but it should be done using client private key
             ArrayList<byte[]> encryptedData = sendRecord.encryptBlock(encryptString);
             SerializeRecord serializeRecord = new SerializeRecord();
             serializeRecord.setEncryptedData(encryptedData);
@@ -77,6 +76,7 @@ public class SendRecordReqAPI extends HttpServlet {
             outputWriter.close();
             if(conn.getResponseCode()== HttpURLConnection.HTTP_OK) {
                 System.out.println("server hit");
+                //read response and if successful then display block else display try again
             }
 
         } catch (Exception e) {

@@ -3,14 +3,12 @@ package com.medical.client.requestAPI;
 import com.medical.client.entity.HospitalDetails;
 import com.medical.client.responseAPI.RegisterHospitalResApi;
 import com.medical.client.service.ExtraFunctions;
-import com.medical.client.utils.VariableClass;
 import org.json.simple.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -35,15 +33,20 @@ public class RegisterHospitalReqAPI extends HttpServlet {
             String hospitalAddress = request.getParameter("hospitalAddress");
             String state = request.getParameter("state");
             String city = request.getParameter("city");
+            String phoneNumber = request.getParameter("phoneNumber");
+            String pincode = request.getParameter("pincode");
 
             System.out.println(userName + " " + password + " " + hospitalAddress + " " +
                     hospitalName + " " + state + " " + city);
+
             hospitalDetails.setPassword(password);
             hospitalDetails.setUserName(userName);
             hospitalDetails.setHospitalName(hospitalName);
             hospitalDetails.setHospitalAddress(hospitalAddress);
             hospitalDetails.setState(state);
             hospitalDetails.setCity(city);
+            hospitalDetails.setPhoneNumber(phoneNumber);
+            hospitalDetails.setPinCode(pincode);
 
             String jsonString = extraFunctions.convertJavaToJson(hospitalDetails);
             System.out.println("Hospital details to send:\n" + jsonString);
@@ -65,7 +68,7 @@ public class RegisterHospitalReqAPI extends HttpServlet {
                 System.out.println("Server successfully hit .....");
                 PrintWriter writer = response.getWriter();
                 writer.print(response);
-                resApi.readResponse(conn, hospitalDetails.getUserName());
+                resApi.readResponse(conn, hospitalDetails.getUserName(),response,request);
             }
         } catch (Exception e) {
             System.out.println("Something went wrong try again....");

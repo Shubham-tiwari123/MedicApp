@@ -1,6 +1,6 @@
 package com.medical.client.requestAPI;
 
-import com.medical.client.responseAPI.CreatePatientAccountResAPI;
+import com.medical.client.responseAPI.RegisterPatientResAPI;
 import org.json.simple.JSONObject;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +14,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "CreatePatientAccountReqAPI", urlPatterns = {"/createPatientAccount"})
-public class CreatePatientAccountReqAPI extends HttpServlet {
+@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/createPatientAccount"})
+public class RegisterPatientReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
-        CreatePatientAccountResAPI resAPI = new CreatePatientAccountResAPI();
+        RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
         try {
             String userName = request.getParameter("userName");
             JSONObject object = new JSONObject();

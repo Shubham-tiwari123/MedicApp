@@ -3,20 +3,15 @@ package com.medical.client.responseAPI;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
-@WebServlet(name = "CreatePatientAccountReqAPI")
-public class CreatePatientAccountResAPI extends HttpServlet {
+@WebServlet(name = "RegisterPatientReqAPI")
+public class RegisterPatientResAPI extends HttpServlet {
 
     public void readResponse(HttpURLConnection conn){
         try {

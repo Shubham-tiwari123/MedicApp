@@ -2,10 +2,10 @@ package com.medical.server.entity;
 
 import java.math.BigInteger;
 
-public class SetKeys {
-    private int status;
-    private BigInteger publicKeyModules;
-    private BigInteger publicKeyExpo;
+public class ServerKeys {
+    //server keys:
+    private BigInteger publicKeyModules ;
+    private BigInteger publicKeyExpo ;
     private BigInteger privateKeyModules;
     private BigInteger privateKeyExpo;
 
@@ -39,13 +39,5 @@ public class SetKeys {
 
     public void setPrivateKeyExpo(BigInteger privateKeyExpo) {
         this.privateKeyExpo = privateKeyExpo;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 }

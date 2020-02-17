@@ -1,6 +1,5 @@
 package com.medical.server.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.io.Serializable;
@@ -9,15 +8,15 @@ import java.sql.Time;
 
 
 @JsonPropertyOrder(value = {
-        "id","creationDate","creationTime","companyName","doctorName","previousBlockHash"
+        "id","creationDate","creationTime","companyName","doctorName","previousBlockHash",
+        "currentBlockHash"
 })
-public class GenesisBlockHash implements Serializable{
+public class GenesisBlock implements Serializable{
     private  long id;
     private  Date creationDate;
     private  Time creationTime;
     private  String companyName;
     private  String previousBlockHash;
-    @JsonIgnore
     private  String currentBlockHash;
 
     public  long getId() {
@@ -59,11 +58,11 @@ public class GenesisBlockHash implements Serializable{
     public  void setPreviousBlockHash(String previousBlockHash) {
         this.previousBlockHash = previousBlockHash;
     }
-    @JsonIgnore
+
     public  String getCurrentBlockHash() {
         return currentBlockHash;
     }
-    @JsonIgnore
+
     public  void setCurrentBlockHash(String currentBlockHash) {
         this.currentBlockHash = currentBlockHash;
     }

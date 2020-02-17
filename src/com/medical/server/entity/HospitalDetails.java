@@ -10,6 +10,15 @@ public class HospitalDetails implements Serializable {
     private String city;
     private String userName;
     private String password;
+    private String phoneNumber;
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public String getHospitalName() {
         return hospitalName;

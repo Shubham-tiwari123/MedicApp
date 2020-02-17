@@ -8,9 +8,10 @@ import java.sql.Time;
 
 // specifying the order in which JSON will be generated.
 @JsonPropertyOrder(value = {
-        "patientId","date","time","hospitalName","doctorName","specialistType","prescription"
+        "patientId", "date", "time", "hospitalName", "doctorName", "specialistType", "prescription",
+        "currentBlockHash","previousBlockHash"
 })
-public class ClientSideBlockHash implements Serializable {
+public class MedicBlock implements Serializable {
     private long patientId;
     private Date date;
     private Time time;
@@ -18,6 +19,8 @@ public class ClientSideBlockHash implements Serializable {
     private String doctorName;
     private String specialistType;
     private String prescription;
+    private String currentBlockHash;
+    private String previousBlockHash;
 
     public long getPatientId() {
         return patientId;
@@ -73,6 +76,22 @@ public class ClientSideBlockHash implements Serializable {
 
     public void setPrescription(String prescription) {
         this.prescription = prescription;
+    }
+
+    public String getCurrentBlockHash() {
+        return currentBlockHash;
+    }
+
+    public void setCurrentBlockHash(String currentBlockHash) {
+        this.currentBlockHash = currentBlockHash;
+    }
+
+    public String getPreviousBlockHash() {
+        return previousBlockHash;
+    }
+
+    public void setPreviousBlockHash(String previousBlockHash) {
+        this.previousBlockHash = previousBlockHash;
     }
 }
 

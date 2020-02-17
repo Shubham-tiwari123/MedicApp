@@ -1,17 +1,12 @@
 package com.medical.server.requestAPI;
 
-import com.medical.server.dao.Database;
-import com.medical.server.dao.DatabaseHospital;
 import com.medical.server.entity.HospitalDetails;
-import com.medical.server.entity.SetKeys;
-import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.responseAPI.RegisterHospitalResAPI;
 import com.medical.server.service.ExtraFunctions;
-import com.medical.server.service.RegisterHospital;
+import com.medical.server.service.Hospital;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,7 +24,7 @@ public class RegisterHospitalReqAPI extends HttpServlet {
 
         RegisterHospitalResAPI resAPI = new RegisterHospitalResAPI();
         ExtraFunctions extraFunctions = new ExtraFunctions();
-        RegisterHospital registerHospital = new RegisterHospital();
+        Hospital registerHospital = new Hospital();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
 
@@ -52,30 +47,14 @@ public class RegisterHospitalReqAPI extends HttpServlet {
                 System.out.println("hospital does not exists....registering");
                 if (registerHospital.saveHospitalDetails(details)) {
                     System.out.println("hospital saved");
-                    System.out.println("getting server keys");
-                    SetKeys keys = registerHospital.getServerKeys();
-
-                    if (keys.getStatus() == 400) {
-                        System.out.println("server key not present");
-                        keys = registerHospital.generateKey();
-                        if (registerHospital.saveServerKey(keys)) {
-                            resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
-                        }else
-                            resAPI.setStatusCode(VariableClass.FAILED, response, null);
-                    }
-                    else if(keys.getStatus()==200){
-                        System.out.println("server key already present");
-                        resAPI.setStatusCode(VariableClass.SUCCESSFUL, response, keys);
-                    }else{
-                        resAPI.setStatusCode(VariableClass.FAILED, response, null);
-                    }
+                    resAPI.sendResponse(VariableClass.SUCCESSFUL,response);
                 } else {
-                    resAPI.setStatusCode(VariableClass.FAILED, response, null);
+                    resAPI.sendResponse(VariableClass.FAILED, response);
                 }
             } else
-                resAPI.setStatusCode(VariableClass.BAD_REQUEST, response, null);
+                resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
         }catch (Exception e){
-            resAPI.setStatusCode(VariableClass.BAD_REQUEST, response, null);
+            resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
             e.printStackTrace();
         }
     }
@@ -83,6 +62,6 @@ public class RegisterHospitalReqAPI extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         RegisterHospitalResAPI resAPI = new RegisterHospitalResAPI();
-        resAPI.setStatusCode(VariableClass.BAD_REQUEST,response,null);
+        resAPI.sendResponse(VariableClass.BAD_REQUEST,response);
     }
 }

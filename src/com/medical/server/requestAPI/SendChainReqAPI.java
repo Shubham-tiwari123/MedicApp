@@ -2,7 +2,7 @@ package com.medical.server.requestAPI;
 
 import com.medical.server.entity.SetKeys;
 import com.medical.server.responseAPI.SendChainResAPI;
-import com.medical.server.service.RegisterHospital;
+import com.medical.server.service.Hospital;
 import com.medical.server.service.SendData;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
@@ -25,7 +25,7 @@ public class SendChainReqAPI extends HttpServlet {
             throws ServletException, IOException {
         // read patientID from request
 
-        RegisterHospital registerHospital = new RegisterHospital();
+        Hospital registerHospital = new Hospital();
         SendChainResAPI resAPI = new SendChainResAPI();
         SendData sendData = new SendData();
         StringBuilder buffer = new StringBuilder();

@@ -2,9 +2,9 @@ package com.medical.server.service;
 
 import com.medical.server.dao.Database;
 import com.medical.server.dao.DatabaseHospital;
-import com.medical.server.entity.GenesisBlockEncrypt;
-import com.medical.server.entity.GenesisBlockHash;
-import com.medical.server.entity.StoreServerKeys;
+import com.medical.server.entity.GenesisBlock;
+import com.medical.server.entity.PatientRecord;
+import com.medical.server.entity.ServerKeys;
 import com.medical.server.utils.VariableClass;
 
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class CreateAccount implements CreateAccountInterface{
+public class RegisterPatient implements RegisterPatientInterface {
 
     private Database database =new Database();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
@@ -45,19 +45,25 @@ public class CreateAccount implements CreateAccountInterface{
     }
 
     @Override
+    public boolean storePatient(PatientRecord patientRecord) throws Exception {
+        return false;
+    }
+
+    @Override
     public boolean checkIdDB(long generatedID) throws Exception{
         return database.verifyPatientIdDB(generatedID, VariableClass.STORE_DATA_COLLECTION);
     }
 
     @Override
-    public GenesisBlockHash createGenesisBlock(long generatedID) throws NoSuchAlgorithmException {
+    public GenesisBlock createGenesisBlock(long generatedID) throws Exception {
         System.out.println("creating genesis block.....");
-        GenesisBlockHash block = new GenesisBlockHash();
+        GenesisBlock block = new GenesisBlock();
         block.setId(generatedID);
         block.setCreationDate(Date.valueOf(LocalDate.now()));
         block.setCreationTime(Time.valueOf(LocalTime.now()));
         block.setCompanyName("medicApp");
         block.setPreviousBlockHash("shivamB56vishankC13divyaC19mehulC15");
+        block.setCurrentBlockHash("0");
         String jsonString = extraFunctions.convertJavaToJson(block);
         block.setCurrentBlockHash(calBlockHashValue(jsonString));
         System.out.println("current hash:"+block.getCurrentBlockHash());
@@ -70,17 +76,9 @@ public class CreateAccount implements CreateAccountInterface{
     }
 
     @Override
-    public boolean storeBlock(GenesisBlockHash block, long patientID) throws Exception{
-        GenesisBlockEncrypt blockEncrypt = new GenesisBlockEncrypt();
-        blockEncrypt.setId(block.getId());
-        blockEncrypt.setCompanyName(block.getCompanyName());
-        blockEncrypt.setCreationDate(block.getCreationDate());
-        blockEncrypt.setCreationTime(block.getCreationTime());
-        blockEncrypt.setPreviousBlockHash(block.getPreviousBlockHash());
-        blockEncrypt.setCurrentBlockHash(block.getCurrentBlockHash());
-
+    public boolean storeBlock(GenesisBlock block, long patientID) throws Exception{
         System.out.println("storing genesis block");
-        String data = extraFunctions.convertJavaToJson(blockEncrypt);
+        String data = extraFunctions.convertJavaToJson(block);
         System.out.println("data:\n  "+data);
         ArrayList<byte[]> encryptedData = encryptBlock(data);
         return database.saveGenesisBlockDB(VariableClass.STORE_DATA_COLLECTION,encryptedData,
@@ -111,11 +109,10 @@ public class CreateAccount implements CreateAccountInterface{
         }
         count = 0;
         //SetKeys keys = extraFunctions.getServerKeyFromFile();
-
-        if(database.getServerPrivateKeys(VariableClass.STORE_KEYS))
+        ServerKeys serverKey = database.getServerKey(VariableClass.STORE_KEYS);
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    StoreServerKeys.getPrivateKeyModules(), StoreServerKeys.getPrivateKeyExpo());
+                    serverKey.getPrivateKeyModules(), serverKey.getPrivateKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }

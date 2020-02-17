@@ -6,7 +6,9 @@ public interface AppendDataInterface {
 
     boolean verifyID(long patientID) throws Exception;
 
-    String decryptData(ArrayList<byte[]> data) throws Exception; //verify sender
+    boolean verifyHospital(String username) throws Exception;
+
+    String decryptData(ArrayList<byte[]> data,String hospitalUserName) throws Exception; //verify sender
 
     boolean verifyData(String data) throws Exception; //cal hash
 
@@ -21,4 +23,8 @@ public interface AppendDataInterface {
     boolean getServerKeys() throws Exception;
 
     boolean appendBlockInChain(long patientId, String data) throws Exception;
+
+    public <T> T convertJsonToJava(String jsonString, Class<T> obj) throws Exception;
+
+    public String convertJavaToJson(Object object) throws Exception;
 }

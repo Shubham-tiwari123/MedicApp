@@ -1,10 +1,11 @@
 package com.medical.server.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.medical.server.entity.ServerKeys;
 import com.medical.server.entity.SetKeys;
-import com.medical.server.utils.JSONUtil;
-import com.medical.server.utils.VariableClass;
 
 import javax.crypto.Cipher;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -59,11 +60,11 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return getKeys;
     }
 
-    public String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) throws Exception{
+    public String convertEncryptedData(ArrayList<byte[]> data, ServerKeys serverKeys) throws Exception{
         StringBuilder builder = new StringBuilder();
         for (byte[] byteValue : data) {
-            String val = decryptData(byteValue, getKeys.getPublicKeyModules(),
-                    getKeys.getPublicKeyExpo());
+            String val = decryptData(byteValue, serverKeys.getPublicKeyModules(),
+                    serverKeys.getPublicKeyExpo());
             builder.append(val);
         }
         return builder.toString();
@@ -71,12 +72,26 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
 
     @Override
     public <T> T convertJsonToJava(String jsonString, Class<T> obj) throws Exception{
-        return JSONUtil.convertJsonToJava(jsonString,obj);
+        ObjectMapper mapper = new ObjectMapper();
+        T result=null;
+        try {
+            result = mapper.readValue(jsonString,obj);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override
     public String convertJavaToJson(Object object) throws Exception{
-        return JSONUtil.convertJavaToJson(object);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResult = null;
+        try {
+            jsonResult = mapper.writeValueAsString(object);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return jsonResult;
     }
 
 }

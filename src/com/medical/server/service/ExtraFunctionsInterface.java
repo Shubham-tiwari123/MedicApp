@@ -1,5 +1,6 @@
 package com.medical.server.service;
 
+import com.medical.server.entity.ServerKeys;
 import com.medical.server.entity.SetKeys;
 
 import java.math.BigInteger;
@@ -20,5 +21,5 @@ public interface ExtraFunctionsInterface {
 
     SetKeys getServerKey();
 
-    String convertEncryptedData(ArrayList<byte[]> data, SetKeys getKeys) throws Exception;
+    String convertEncryptedData(ArrayList<byte[]> data, ServerKeys serverKeys) throws Exception;
 }

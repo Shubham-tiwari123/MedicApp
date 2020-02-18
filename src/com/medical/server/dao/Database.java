@@ -1,5 +1,7 @@
 package com.medical.server.dao;
 
+import com.medical.server.entity.ClientKeys;
+import com.medical.server.entity.ServerKeys;
 import com.medical.server.entity.SetKeys;
 import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.utils.VariableClass;
@@ -58,8 +60,7 @@ public class Database implements DatabaseInterface {
                 System.out.println("verifying id db...");
                 collection = database.getCollection(collectionName);
                 List<Document> user = (List<Document>) collection.find(new Document("patient_id",
-                        patientId)).
-                        into(new ArrayList<Document>());
+                        patientId)).into(new ArrayList<Document>());
                 return user.size() == 0;
             }
         }
@@ -98,10 +99,34 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public SetKeys getServerKey(String collectionName) throws Exception {
+    public ServerKeys getServerKey(String collectionName) throws Exception {
         System.out.println("getting server keys db...");
-        DatabaseHospital databaseHospital = new DatabaseHospital();
-        return databaseHospital.getServerKeys(collectionName);
+        ServerKeys keys = new ServerKeys();
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                collection = database.getCollection(collectionName);
+                List<Document> list = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                        into(new ArrayList<Document>());
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        System.out.println("getting server keys if");
+                        String publicKeyModules = val.getString("publicKeyModules");
+                        String publicKeyExpo = val.getString("publicKeyExpo");
+                        String privateKeyModules = val.getString("privateKeyModules");
+                        String privateKeyExpo = val.getString("privateKeyExpo");
+
+                        System.out.println("setting server keys");
+                        keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
+                        keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
+                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
+                    }
+                    return keys;
+                }
+            }
+            return null;
+        }
+        return null;
     }
 
     @Override
@@ -133,8 +158,8 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public SetKeys getClientKeys(String hospital, String collectionName) throws Exception {
-        SetKeys keys = new SetKeys();
+    public ClientKeys getClientKeys(String hospital, String collectionName) throws Exception {
+        ClientKeys keys = new ClientKeys();
         if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -147,9 +172,9 @@ public class Database implements DatabaseInterface {
                         String publicKeyModules = val.getString("publicKeyModules");
                         String publicKeyExpo = val.getString("publicKeyExpo");
 
-                        System.out.println("setting server keys");
-                        keys.setPublicKeyModules(new BigInteger(publicKeyModules));
-                        keys.setPublicKeyExpo(new BigInteger(publicKeyExpo));
+                        System.out.println("setting client keys");
+                        keys.setClientPubKeyMod(new BigInteger(publicKeyModules));
+                        keys.setClientPubKeyExpo(new BigInteger(publicKeyExpo));
                     }
                     return keys;
                 }
@@ -182,6 +207,46 @@ public class Database implements DatabaseInterface {
                     return true;
                 }
                 return false;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean storeServerKeys(ServerKeys keys, String collectionName) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                collection = database.getCollection(collectionName);
+                List<Document> user = (List<Document>) collection.find(new Document("keys", "serverKeys")).
+                        into(new ArrayList<Document>());
+                if (user.isEmpty()) {
+                    Document document = new Document("keys", "serverKeys")
+                            .append("publicKeyModules", keys.getPublicKeyModules().toString())
+                            .append("publicKeyExpo", keys.getPublicKeyExpo().toString())
+                            .append("privateKeyModules", keys.getPrivateKeyModules().toString())
+                            .append("privateKeyExpo", keys.getPrivateKeyExpo().toString());
+                    database.getCollection(collectionName).insertOne(document);
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean storeClientKeys(ClientKeys keys, String collectionName, String signature)
+            throws Exception {
+
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("Storing keys");
+                Document document = new Document("userName", signature)
+                        .append("publicKeyModules", keys.getClientPubKeyMod().toString())
+                        .append("publicKeyExpo", keys.getClientPubKeyExpo().toString());
+                database.getCollection(collectionName).insertOne(document);
+                return true;
             }
             return false;
         }

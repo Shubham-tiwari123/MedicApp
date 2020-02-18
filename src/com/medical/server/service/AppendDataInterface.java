@@ -1,5 +1,5 @@
 package com.medical.server.service;
-import java.security.NoSuchAlgorithmException;
+
 import java.util.ArrayList;
 
 public interface AppendDataInterface {
@@ -8,9 +8,9 @@ public interface AppendDataInterface {
 
     boolean verifyHospital(String username) throws Exception;
 
-    String decryptData(ArrayList<byte[]> data,String hospitalUserName) throws Exception; //verify sender
+    String decryptData(ArrayList<byte[]> data,String hospitalUserName) throws Exception;
 
-    boolean verifyData(String data) throws Exception; //cal hash
+    boolean verifyData(String data) throws Exception;
 
     String getLastBlockHashDb(long patientID) throws Exception;
 

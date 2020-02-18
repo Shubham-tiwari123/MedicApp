@@ -2,8 +2,6 @@ package com.medical.server.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medical.server.entity.ServerKeys;
-import com.medical.server.entity.SetKeys;
-
 import javax.crypto.Cipher;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -51,13 +49,6 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
             decryptedData = cipher.doFinal(data);
             value = new String(decryptedData,StandardCharsets.UTF_8);
         return value;
-    }
-
-    @Override
-    public SetKeys getServerKey() {
-        SetKeys getKeys = new SetKeys();
-        //Read file and get the keys and store it in getKey obj and return the obj
-        return getKeys;
     }
 
     public String convertEncryptedData(ArrayList<byte[]> data, ServerKeys serverKeys) throws Exception{

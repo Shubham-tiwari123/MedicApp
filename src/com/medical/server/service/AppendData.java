@@ -64,7 +64,7 @@ public class AppendData implements AppendDataInterface {
         System.out.println("chains:"+chain);
         String lastBlockHash = null;
         if (dataFromDb.size() == 1) {
-            GenesisBlock block = extraFunctions.convertJsonToJava(chain, GenesisBlock.class);
+            GenesisBlock block = convertJsonToJava(chain, GenesisBlock.class);
             lastBlockHash = block.getCurrentBlockHash();
         } else {
             MedicBlock medicBlock = convertJsonToJava(chain,MedicBlock.class);
@@ -77,15 +77,15 @@ public class AppendData implements AppendDataInterface {
     @Override
     public String updateBlock(String lastBlockHash, String data) throws Exception {
         System.out.println("updating block");
-        MedicBlock block = extraFunctions.convertJsonToJava(data, MedicBlock.class);
+        MedicBlock block = convertJsonToJava(data, MedicBlock.class);
         block.setPreviousBlockHash(lastBlockHash);
-        String convertObj = extraFunctions.convertJavaToJson(block);
+        String convertObj = convertJavaToJson(block);
         System.out.println("previous added:"+convertObj);
         // re-calculate hash value
         String newHashOfBlock = calCurrentBlockHash(convertObj);
         // create new block and insert current hash
         block.setCurrentBlockHash(newHashOfBlock);
-        return extraFunctions.convertJavaToJson(block);
+        return convertJavaToJson(block);
     }
 
     @Override
@@ -134,10 +134,10 @@ public class AppendData implements AppendDataInterface {
         }
         count = 0;
         //SetKeys keys = extraFunctions.getServerKeyFromFile();
-
+        ServerKeys serverKeys = database.getServerKey(VariableClass.STORE_KEYS);
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    StoreServerKeys.getPrivateKeyModules(), StoreServerKeys.getPrivateKeyExpo());
+                    serverKeys.getPrivateKeyModules(), serverKeys.getPrivateKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }

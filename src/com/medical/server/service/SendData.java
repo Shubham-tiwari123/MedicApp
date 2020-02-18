@@ -1,9 +1,9 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
-import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.ClientKeys;
+import com.medical.server.entity.ServerKeys;
 import com.medical.server.utils.VariableClass;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +13,14 @@ public class SendData implements SendDataInterface {
     private ExtraFunctions extraFunctions = new ExtraFunctions();
 
     @Override
+    public boolean verifyHospital(String userName) throws Exception {
+        return database.verifyHospital(userName, VariableClass.REGISTER_HEALTH_CARE);
+    }
+
+    @Override
     public boolean verifyID(long patientID) throws Exception{
         System.out.println("verify patientID (file name):"+getClass());
-        return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
+        return !database.verifyPatientIdDB(patientID, VariableClass.REGISTER_PATIENT);
     }
 
     @Override
@@ -26,7 +31,7 @@ public class SendData implements SendDataInterface {
         List<String> convertToString = new ArrayList<>();
 
         System.out.println("getting server public key from db for decryption (file name):"+getClass());
-        SetKeys keys = database.getServerKey(VariableClass.STORE_KEYS);
+        ServerKeys keys = database.getServerKey(VariableClass.STORE_KEYS);
 
         System.out.println("Decrypting data...and converting to string (file name):"+getClass());
         for(ArrayList<byte[]> val:getAllData){
@@ -42,13 +47,14 @@ public class SendData implements SendDataInterface {
     }
 
     @Override
-    public SetKeys getClientKeys(String hospitalID) throws Exception{
+    public ClientKeys getClientKeys(String hospitalID) throws Exception{
         System.out.println("getting hospital public key for encryption:"+getClass());
         return database.getClientKeys(hospitalID,VariableClass.STORE_KEYS);
     }
 
+    //encrypt data using client public key
     @Override
-    public ArrayList<ArrayList<byte[]>> encryptDataAgain(SetKeys keys, List<String> data)  throws Exception{
+    public ArrayList<ArrayList<byte[]>> encryptDataAgain(ClientKeys keys, List<String> data) throws Exception{
         System.out.println("encrypting data for sending(file name):"+getClass());
         ArrayList<ArrayList<byte[]>> encryptDataList = new ArrayList<>();
         for (String val : data) {
@@ -58,7 +64,7 @@ public class SendData implements SendDataInterface {
         return encryptDataList;
     }
 
-    private ArrayList<byte[]> encryptBlock(String data,SetKeys keys) throws Exception{
+    private ArrayList<byte[]> encryptBlock(String data, ClientKeys keys) throws Exception{
         int count = 0;
         int start = 0, end = 0;
         String substring;
@@ -81,7 +87,7 @@ public class SendData implements SendDataInterface {
         count = 0;
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    keys.getPublicKeyModules(), keys.getPublicKeyExpo());
+                    keys.getClientPubKeyMod(), keys.getClientPubKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }

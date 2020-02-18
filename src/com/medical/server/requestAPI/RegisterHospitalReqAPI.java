@@ -5,9 +5,6 @@ import com.medical.server.responseAPI.RegisterHospitalResAPI;
 import com.medical.server.service.ExtraFunctions;
 import com.medical.server.service.Hospital;
 import com.medical.server.utils.VariableClass;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet(name = "RegisterHospitalReqAPI",urlPatterns = {"/registerHospital"})
+@WebServlet(name = "RegisterHospitalReqAPI",urlPatterns = {"/register-hospital"})
 public class RegisterHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -28,31 +25,29 @@ public class RegisterHospitalReqAPI extends HttpServlet {
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
 
+        int statusCode;
         String line;
         while((line = reader.readLine())!= null) {
             buffer.append(line);
         }
         String data = buffer.toString();
         System.out.println("Data from client:\n"+data);
-
         String subString = null;
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject object = (JSONObject) jsonParser.parse(data);
-            subString = (String) object.get("details");
-
-            HospitalDetails details = extraFunctions.convertJsonToJava(subString, HospitalDetails.class);
+            HospitalDetails details = extraFunctions.convertJsonToJava(data, HospitalDetails.class);
 
             if (registerHospital.checkUserName(details.getUserName())) {
                 System.out.println("hospital does not exists....registering");
                 if (registerHospital.saveHospitalDetails(details)) {
                     System.out.println("hospital saved");
-                    resAPI.sendResponse(VariableClass.SUCCESSFUL,response);
+                    statusCode = VariableClass.SUCCESSFUL;
                 } else {
-                    resAPI.sendResponse(VariableClass.FAILED, response);
+                    statusCode = VariableClass.FAILED;
                 }
             } else
-                resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
+                statusCode = VariableClass.BAD_REQUEST;
+            resAPI.sendResponse(statusCode,response);
+
         }catch (Exception e){
             resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
             e.printStackTrace();

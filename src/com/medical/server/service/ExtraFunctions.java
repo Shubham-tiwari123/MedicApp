@@ -1,7 +1,10 @@
 package com.medical.server.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.medical.server.entity.ClientKeys;
 import com.medical.server.entity.ServerKeys;
+import com.medical.server.utils.VariableClass;
+
 import javax.crypto.Cipher;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -85,4 +88,39 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return jsonResult;
     }
 
+    // extra function
+    public ArrayList<byte[]> encryptBlock(String data) throws Exception {
+
+        ClientKeys clientKeys = new ClientKeys();
+        clientKeys.setClientPubKeyExpo(VariableClass.clientPriExpo);
+        clientKeys.setClientPubKeyMod(VariableClass.clientPriMod);
+        System.out.println("encrypting block....");
+        int count = 0;
+        int start = 0, end = 0;
+        String substring;
+        ArrayList<String> storeSubString = new ArrayList<String>();
+        ArrayList<byte[]> storeEncryptedValue = new ArrayList<byte[]>();
+        while (count <= data.length()) {
+            if (data.length() - end > 250) {
+                end = start + 251;
+                substring = data.substring(start, end);
+                storeSubString.add(substring);
+                start = start + 251;
+            } else {
+                start = end;
+                end = data.length();
+                substring = data.substring(start, end);
+                storeSubString.add(substring);
+            }
+            count = count + 250;
+        }
+        count = 0;
+        while (count != storeSubString.size()) {
+            byte[] encryptedData = encryptData(storeSubString.get(count),
+                    clientKeys.getClientPubKeyMod(), clientKeys.getClientPubKeyExpo());
+            storeEncryptedValue.add(encryptedData);
+            count++;
+        }
+        return storeEncryptedValue;
+    }
 }

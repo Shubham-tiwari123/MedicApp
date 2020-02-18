@@ -1,7 +1,6 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
-import com.medical.server.dao.DatabaseHospital;
 import com.medical.server.entity.GenesisBlock;
 import com.medical.server.entity.PatientRecord;
 import com.medical.server.entity.ServerKeys;
@@ -19,12 +18,11 @@ public class RegisterPatient implements RegisterPatientInterface {
 
     private Database database =new Database();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
-    private DatabaseHospital databaseHospital = new DatabaseHospital();
 
     @Override
     public boolean verifyHospital(String details) throws Exception {
         System.out.println("verify if username exists/not exists (file name):"+getClass());
-        return databaseHospital.verifyUsername(details, VariableClass.REGISTER_HEALTH_CARE);
+        return database.verifyHospital(details, VariableClass.REGISTER_HEALTH_CARE);
     }
 
     @Override
@@ -46,12 +44,12 @@ public class RegisterPatient implements RegisterPatientInterface {
 
     @Override
     public boolean storePatient(PatientRecord patientRecord) throws Exception {
-        return false;
+        return database.registerPatient(VariableClass.REGISTER_PATIENT,patientRecord);
     }
 
     @Override
     public boolean checkIdDB(long generatedID) throws Exception{
-        return database.verifyPatientIdDB(generatedID, VariableClass.STORE_DATA_COLLECTION);
+        return database.verifyPatientIdDB(generatedID, VariableClass.REGISTER_PATIENT);
     }
 
     @Override
@@ -110,9 +108,14 @@ public class RegisterPatient implements RegisterPatientInterface {
         count = 0;
         //SetKeys keys = extraFunctions.getServerKeyFromFile();
         ServerKeys serverKey = database.getServerKey(VariableClass.STORE_KEYS);
+
         while (count != storeSubString.size()) {
-            byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    serverKey.getPrivateKeyModules(), serverKey.getPrivateKeyExpo());
+            /*byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
+                    serverKey.getPrivateKeyModules(), serverKey.getPrivateKeyExpo());*/
+
+            byte[] encryptedData = extraFunctions.encryptData(storeSubString.get(count),
+                    VariableClass.serverPriMod,VariableClass.serverPriExpo);
+
             storeEncryptedValue.add(encryptedData);
             count++;
         }

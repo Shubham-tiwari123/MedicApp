@@ -18,13 +18,11 @@ public class RegisterHospitalResAPI extends HttpServlet {
         doPost(response);
     }
 
-    private void doPost(HttpServletResponse response)
-            throws IOException {
+    private void doPost(HttpServletResponse response) throws IOException {
         JSONObject object = new JSONObject();
         PrintWriter writer = response.getWriter();
         object.put("statusCode", statusCode);
-        System.out.println("sending server public key to client");
+        System.out.println("sending response to client");
         writer.print(object);
-
     }
 }

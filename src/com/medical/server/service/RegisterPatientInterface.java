@@ -2,8 +2,6 @@ package com.medical.server.service;
 
 import com.medical.server.entity.GenesisBlock;
 import com.medical.server.entity.PatientRecord;
-
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public interface RegisterPatientInterface {

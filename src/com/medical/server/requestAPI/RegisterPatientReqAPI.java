@@ -1,7 +1,8 @@
 package com.medical.server.requestAPI;
+
 import com.medical.server.entity.GenesisBlock;
 import com.medical.server.entity.PatientRecord;
-import com.medical.server.responseAPI.CreateAccountResAPI;
+import com.medical.server.responseAPI.RegisterPatientResAPI;
 import com.medical.server.service.ExtraFunctions;
 import com.medical.server.service.RegisterPatient;
 import com.medical.server.utils.VariableClass;
@@ -18,15 +19,18 @@ import java.io.IOException;
 
 public class RegisterPatientReqAPI extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         try {
-            CreateAccountResAPI resAPI = new CreateAccountResAPI();
+            RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
             RegisterPatient registerPatient = new RegisterPatient();
             StringBuilder buffer = new StringBuilder();
             BufferedReader reader = request.getReader();
             JSONParser jsonParser = new JSONParser();
             ExtraFunctions extraFunctions = new ExtraFunctions();
 
+            long generatePatientID = 0;
+            int statusCode=0;
             String clientData;
             while ((clientData = reader.readLine()) != null) {
                 buffer.append(clientData);
@@ -34,34 +38,38 @@ public class RegisterPatientReqAPI extends HttpServlet {
             System.out.println("data for client:\n" + buffer.toString());
             JSONObject object = (JSONObject) jsonParser.parse(buffer.toString());
             String hospitalUserName = (String) object.get("hospitalUserName");
-            if(registerPatient.verifyHospital(hospitalUserName)){
-                long generatePatientID = registerPatient.generateNewID();
+
+            if(!registerPatient.verifyHospital(hospitalUserName)){
+                generatePatientID = registerPatient.generateNewID();
                 String patientData = (String) object.get("patientData");
                 PatientRecord patientRecord = extraFunctions.convertJsonToJava(patientData,PatientRecord.class);
                 patientRecord.setPatientID(generatePatientID);
+
                 if(registerPatient.storePatient(patientRecord)){
+
                     GenesisBlock genesisBlock = registerPatient.createGenesisBlock(generatePatientID);
                     if(registerPatient.storeBlock(genesisBlock,generatePatientID)){
-                        // return successful
+                        statusCode = VariableClass.SUCCESSFUL;
                     } else{
-                        //return failed
+                        statusCode = VariableClass.FAILED;
                     }
                 }else{
-                    //return failed
+                    statusCode = VariableClass.INTERNAL_SERVER_ERROR;
                 }
-
             }else {
-                //send bad request
+                statusCode = VariableClass.BAD_REQUEST;
             }
-
+            resAPI.sendResponse(generatePatientID,statusCode,response);
         }catch (Exception e){
             System.out.println("exception:"+e);
+            RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
+            resAPI.sendResponse(0,VariableClass.INTERNAL_SERVER_ERROR,response);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        CreateAccountResAPI resAPI = new CreateAccountResAPI();
+        RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
         resAPI.sendResponse(0, VariableClass.BAD_REQUEST, response);
     }
 }

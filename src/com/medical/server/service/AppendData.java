@@ -1,7 +1,6 @@
 package com.medical.server.service;
 
 import com.medical.server.dao.Database;
-import com.medical.server.dao.DatabaseHospital;
 import com.medical.server.entity.*;
 import com.medical.server.utils.VariableClass;
 
@@ -11,23 +10,23 @@ import java.util.ArrayList;
 public class AppendData implements AppendDataInterface {
 
     private Database database = new Database();
-    private DatabaseHospital databaseHospital = new DatabaseHospital();
     private ExtraFunctions extraFunctions = new ExtraFunctions();
     private static MedicBlock block;
 
     @Override
     public boolean verifyID(long patientID) throws Exception {
-        return !database.verifyPatientIdDB(patientID, VariableClass.STORE_DATA_COLLECTION);
+        return !database.verifyPatientIdDB(patientID, VariableClass.REGISTER_PATIENT);
     }
 
     @Override
     public boolean verifyHospital (String username) throws Exception{
-        return databaseHospital.verifyUsername(username,VariableClass.REGISTER_HEALTH_CARE);
+        return database.verifyHospital(username,VariableClass.REGISTER_HEALTH_CARE);
     }
 
     @Override
     public String decryptData(ArrayList<byte[]> data,String hospitalUserName)  throws Exception{
         ClientKeys clientKeys = database.getClientKeys(hospitalUserName,VariableClass.STORE_KEYS);
+
         ArrayList<String> storeDecryptData = new ArrayList<String>();
 
         for (byte[] datum : data) {
@@ -133,7 +132,6 @@ public class AppendData implements AppendDataInterface {
             count = count + 250;
         }
         count = 0;
-        //SetKeys keys = extraFunctions.getServerKeyFromFile();
         ServerKeys serverKeys = database.getServerKey(VariableClass.STORE_KEYS);
         while (count != storeSubString.size()) {
             byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
@@ -142,10 +140,5 @@ public class AppendData implements AppendDataInterface {
             count++;
         }
         return storeEncryptedValue;
-    }
-
-    @Override
-    public boolean getServerKeys() throws Exception{
-        return database.getServerPrivateKeys(VariableClass.STORE_KEYS);
     }
 }

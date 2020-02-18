@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet(name = "CreateAccountResAPI")
-public class CreateAccountResAPI extends HttpServlet {
+public class RegisterPatientResAPI extends HttpServlet {
     private static long patientId;
     private static int responseCode;
 
     public void sendResponse(long patientID,int responseCode,HttpServletResponse response)
             throws  IOException {
-        CreateAccountResAPI.patientId=patientID;
-        CreateAccountResAPI.responseCode=responseCode;
+        RegisterPatientResAPI.patientId=patientID;
+        RegisterPatientResAPI.responseCode=responseCode;
         doPost(response);
     }
 

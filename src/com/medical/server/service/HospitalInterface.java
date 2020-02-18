@@ -8,4 +8,6 @@ public interface HospitalInterface {
 
     boolean saveHospitalDetails(HospitalDetails details) throws Exception;
 
+    boolean loginHospital(String userName,String password) throws Exception;
+
 }

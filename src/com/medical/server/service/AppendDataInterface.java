@@ -20,11 +20,9 @@ public interface AppendDataInterface {
 
     ArrayList<byte[]> encryptBlock(String data) throws Exception;
 
-    boolean getServerKeys() throws Exception;
-
     boolean appendBlockInChain(long patientId, String data) throws Exception;
 
-    public <T> T convertJsonToJava(String jsonString, Class<T> obj) throws Exception;
+    <T> T convertJsonToJava(String jsonString, Class<T> obj) throws Exception;
 
-    public String convertJavaToJson(Object object) throws Exception;
+    String convertJavaToJson(Object object) throws Exception;
 }

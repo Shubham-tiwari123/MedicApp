@@ -13,14 +13,14 @@ public class AppendBlockResAPI extends HttpServlet {
 
     private static int statusCode;
 
-    public void setStatusCode(int statusCode,HttpServletResponse response)
+    public void sendResponse(int statusCode, HttpServletResponse response)
             throws IOException {
         AppendBlockResAPI.statusCode = statusCode;
         doPost(response);
     }
 
-    private void doPost(HttpServletResponse response)
-            throws IOException {
+    private void doPost(HttpServletResponse response) throws IOException {
+        System.out.println("Sending response to client");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("statusCode",statusCode);
         PrintWriter writer = response.getWriter();

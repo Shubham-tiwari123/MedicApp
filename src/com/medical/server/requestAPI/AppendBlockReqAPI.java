@@ -1,14 +1,11 @@
 package com.medical.server.requestAPI;
 
-import com.medical.server.entity.*;
+import com.medical.server.entity.DeserializeValues;
 import com.medical.server.responseAPI.AppendBlockResAPI;
 import com.medical.server.service.AppendData;
-import com.medical.server.service.ExtraFunctions;
-import com.medical.server.service.Hospital;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet(name = "AppendBlockReqAPI", urlPatterns = {"/appendRecord"})
+@WebServlet(name = "AppendBlockReqAPI", urlPatterns = {"/append-record"})
 public class AppendBlockReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -25,8 +22,6 @@ public class AppendBlockReqAPI extends HttpServlet {
         AppendData appendData = new AppendData();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
-        Hospital registerHospital = new Hospital();
-        ExtraFunctions extraFunctions = new ExtraFunctions();
 
         int statusCode = 0;
         String line;
@@ -78,16 +73,16 @@ public class AppendBlockReqAPI extends HttpServlet {
                 statusCode = VariableClass.BAD_REQUEST;
                 System.out.println("no record");
             }
-            resAPI.setStatusCode(statusCode, response);
+            resAPI.sendResponse(statusCode, response);
         } catch (Exception e) {
             e.printStackTrace();
-            resAPI.setStatusCode(VariableClass.BAD_REQUEST, response);
+            resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         AppendBlockResAPI resAPI = new AppendBlockResAPI();
-        resAPI.setStatusCode(VariableClass.BAD_REQUEST, response);
+        resAPI.sendResponse(VariableClass.BAD_REQUEST, response);
     }
 }

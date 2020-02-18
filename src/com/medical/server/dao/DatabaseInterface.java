@@ -1,11 +1,13 @@
 package com.medical.server.dao;
 
 import com.medical.server.entity.ClientKeys;
+import com.medical.server.entity.HospitalDetails;
+import com.medical.server.entity.PatientRecord;
 import com.medical.server.entity.ServerKeys;
-import com.medical.server.entity.SetKeys;
 import java.util.ArrayList;
 
 public interface DatabaseInterface {
+
     boolean createDbConn() throws Exception;
 
     boolean checkCollection(String collectionName) throws Exception;
@@ -20,11 +22,18 @@ public interface DatabaseInterface {
 
     ClientKeys getClientKeys(String hospital, String collectionName) throws Exception;
 
-    boolean getServerPrivateKeys(String collectionName) throws Exception;
-
     boolean storeServerKeys(ServerKeys keys, String collectionName) throws Exception;
 
     boolean storeClientKeys(ClientKeys keys, String collectionName, String signature) throws Exception;
 
     ArrayList<ArrayList<byte[]>> getSpecificData(long patientID, String collectionName) throws Exception;
+
+
+    boolean verifyHospital(String userName, String collectionName) throws Exception;
+
+    boolean registerHospital(String collectionName, HospitalDetails details) throws Exception;
+
+    boolean registerPatient(String collectionName, PatientRecord record) throws Exception;
+
+    boolean checkLoginCredentials(String userName,String password,String collectionName) throws Exception;
 }

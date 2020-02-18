@@ -3,7 +3,6 @@ package com.medical.server.responseAPI;
 import com.medical.server.service.ExtraFunctions;
 import com.medical.server.entity.SerializeChain;
 import org.json.simple.JSONObject;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -18,15 +17,14 @@ public class SendChainResAPI extends HttpServlet {
     private static int statusCode;
 
     public void sendResponse(ArrayList<ArrayList<byte[]>> encryptedValue,
-                             HttpServletResponse response,int statusCode)
-            throws IOException {
+                             HttpServletResponse response,int statusCode) throws Exception {
         SendChainResAPI.encryptedData = encryptedValue;
         SendChainResAPI.statusCode= statusCode;
         doPost(response);
     }
 
     private void doPost(HttpServletResponse response)
-            throws IOException {
+            throws Exception {
         ExtraFunctions extraFunctions = new ExtraFunctions();
         JSONObject object = new JSONObject();
         if(encryptedData!=null) {

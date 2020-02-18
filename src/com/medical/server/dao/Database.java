@@ -1,24 +1,22 @@
 package com.medical.server.dao;
 
 import com.medical.server.entity.ClientKeys;
+import com.medical.server.entity.HospitalDetails;
+import com.medical.server.entity.PatientRecord;
 import com.medical.server.entity.ServerKeys;
-import com.medical.server.entity.SetKeys;
-import com.medical.server.entity.StoreServerKeys;
 import com.medical.server.utils.VariableClass;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
-
-import java.math.BigInteger;
-import java.util.*;
-
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
+import java.math.BigInteger;
+import java.util.*;
 
 public class Database implements DatabaseInterface {
 
@@ -37,7 +35,6 @@ public class Database implements DatabaseInterface {
 
     @Override
     public boolean checkCollection(String collectionName) throws Exception {
-        System.out.println("Checking if collection exists or not.....");
         iterable = database.listCollectionNames();
         colName = new TreeSet<String>();
         for (String col : iterable) {
@@ -59,7 +56,7 @@ public class Database implements DatabaseInterface {
             if (checkCollection(collectionName)) {
                 System.out.println("verifying id db...");
                 collection = database.getCollection(collectionName);
-                List<Document> user = (List<Document>) collection.find(new Document("patient_id",
+                List<Document> user = (List<Document>) collection.find(new Document("patientID",
                         patientId)).into(new ArrayList<Document>());
                 return user.size() == 0;
             }
@@ -122,6 +119,12 @@ public class Database implements DatabaseInterface {
                         keys.setPublicKeyModules(new BigInteger(publicKeyModules));
                     }
                     return keys;
+                }else{
+                    keys.setPrivateKeyExpo(VariableClass.serverPriExpo);
+                    keys.setPrivateKeyModules(VariableClass.serverPriMod);
+                    keys.setPublicKeyExpo(VariableClass.serverPubExpo);
+                    keys.setPublicKeyModules(VariableClass.serverPubMod);
+                    return keys;
                 }
             }
             return null;
@@ -158,6 +161,84 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
+    public boolean verifyHospital(String userName, String collectionName) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("verifying");
+                collection = database.getCollection(collectionName);
+                List<Document> user = (List<Document>) collection.find(new Document("userName", userName)).
+                        into(new ArrayList<Document>());
+                System.out.println("User present:" + user.size());
+                return user.size() == 0;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean registerHospital(String collectionName, HospitalDetails details) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("registering hospital");
+                Document document = new Document("userName", details.getUserName())
+                        .append("password", details.getPassword())
+                        .append("hospitalName", details.getHospitalName())
+                        .append("hospitalAddress", details.getHospitalAddress())
+                        .append("state", details.getState())
+                        .append("city", details.getCity())
+                        .append("phoneNumber",details.getPhoneNumber());
+                database.getCollection(collectionName).insertOne(document);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean registerPatient(String collectionName, PatientRecord record) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("registering hospital");
+                Document document = new Document("patientID", record.getPatientID())
+                        .append("name", record.getName())
+                        .append("age", record.getAge())
+                        .append("address", record.getAddress())
+                        .append("phoneNumber", record.getPhoneNumber())
+                        .append("gender", record.getGender());
+                database.getCollection(collectionName).insertOne(document);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkLoginCredentials(String userName, String password,String collectionName) throws Exception {
+        String pass = null;
+        if(createDbConn()){
+            if(checkCollection(collectionName)){
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting client keys from db");
+                List<Document> list = collection.find(new Document("userName", userName))
+                        .into(new ArrayList<Document>());
+                System.out.println("list:" + list.size());
+                if (!list.isEmpty()) {
+                    for (Document val : list) {
+                        pass = val.getString("password");
+                    }
+                    return password.equals(pass);
+                }
+                return false;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
     public ClientKeys getClientKeys(String hospital, String collectionName) throws Exception {
         ClientKeys keys = new ClientKeys();
         if (createDbConn()) {
@@ -178,39 +259,15 @@ public class Database implements DatabaseInterface {
                     }
                     return keys;
                 }
-                return null;
+                else{
+                    keys.setClientPubKeyExpo(VariableClass.clientPubExpo);
+                    keys.setClientPubKeyMod(VariableClass.clientPubMod);
+                    return keys;
+                }
             }
             return null;
         }
         return null;
-    }
-
-    @Override
-    public boolean getServerPrivateKeys(String collectionName) throws Exception {
-        if (createDbConn()) {
-            if (checkCollection(collectionName)) {
-                MongoCollection<Document> collection = database.getCollection(collectionName);
-                System.out.println("getting server private keys from db...");
-                List<Document> list = collection.find(new Document("keys", "serverKeys"))
-                        .into(new ArrayList<Document>());
-
-                System.out.println("list:" + list.size());
-                if (!list.isEmpty()) {
-                    for (Document val : list) {
-                        String publicKeyModules = val.getString("privateKeyModules");
-                        String publicKeyExpo = val.getString("privateKeyExpo");
-
-                        System.out.println("setting server keys");
-                        StoreServerKeys.setPrivateKeyExpo(new BigInteger(publicKeyExpo));
-                        StoreServerKeys.setPrivateKeyModules(new BigInteger(publicKeyModules));
-                    }
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-        return false;
     }
 
     @Override

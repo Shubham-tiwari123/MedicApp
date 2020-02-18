@@ -1,14 +1,11 @@
 package com.medical.server.requestAPI;
 
-import com.medical.server.entity.SetKeys;
+import com.medical.server.entity.ClientKeys;
 import com.medical.server.responseAPI.SendChainResAPI;
-import com.medical.server.service.Hospital;
 import com.medical.server.service.SendData;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,15 +19,14 @@ import java.util.List;
 public class SendChainReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         // read patientID from request
-
-        Hospital registerHospital = new Hospital();
         SendChainResAPI resAPI = new SendChainResAPI();
         SendData sendData = new SendData();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
 
+        int statusCode =0;
         String line;
         while ((line = reader.readLine()) != null) {
             buffer.append(line);
@@ -42,11 +38,8 @@ public class SendChainReqAPI extends HttpServlet {
 
         try {
             JSONObject jSONObject = (JSONObject) parser.parse(data);
-            long status = (Long) jSONObject.get("statusCode");
-            if (status == 200) {
-                System.out.println("stattus ok");
                 String hospitalUserName = (String) jSONObject.get("hospitalUserName");
-                if (!registerHospital.checkUserName(hospitalUserName)) {
+                if (!sendData.verifyHospital(hospitalUserName)) {
                     System.out.println("hospital exists");
                     long patientId = (long) jSONObject.get("patientId");
                     if (sendData.verifyID(patientId)) {
@@ -56,30 +49,36 @@ public class SendChainReqAPI extends HttpServlet {
                             System.out.println("val:\n"+val);
 
                         System.out.println("list size api:" + list.size());
-                        SetKeys keys = sendData.getClientKeys(hospitalUserName);
+                        ClientKeys keys = sendData.getClientKeys(hospitalUserName);
                         encryptedData = sendData.encryptDataAgain(keys, list);
                         for (ArrayList<byte[]> val : encryptedData) {
                             System.out.println(val);
                         }
-                        resAPI.sendResponse(encryptedData, response, VariableClass.SUCCESSFUL);
+                        statusCode = VariableClass.SUCCESSFUL;
                     } else {
-                        resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
+                        statusCode = VariableClass.BAD_REQUEST;
                     }
                 }else {
-                    resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
+                    statusCode = VariableClass.BAD_REQUEST;
+                    encryptedData=null;
                 }
-            }else {
-                resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
-            }
+                resAPI.sendResponse(encryptedData,response,statusCode);
         } catch (Exception e) {
             System.out.println(e);
-            resAPI.sendResponse(null, response, VariableClass.FAILED);
+            try {
+                resAPI.sendResponse(null, response, VariableClass.FAILED);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response){
         SendChainResAPI resAPI = new SendChainResAPI();
-        resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
+        try {
+            resAPI.sendResponse(null, response, VariableClass.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

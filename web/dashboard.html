@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0px;
+            overflow: hidden;
+            background-color: #F8FAFB;
+        }
+
+        .div1 {
+            height: 10vh;
+            width: 100%;
+            background-color: #e2f0ec;
+            box-shadow: 0px 5px 15px rgba(122, 122, 122, 0.63);
+            position: fixed;
+        }
+
+        .div2 {
+            background-color: transparent;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .div3 {
+            float: left;
+            height: inherit;
+            width: 20%;
+            background-color: white;
+            box-shadow: 0px 20px 20px rgba(122, 122, 122, 0.63);
+        }
+
+        .div4 {
+            float: right;
+            background-color: transparent;
+            height: 100%;
+            width: 80%;
+        }
+
+        #company-name {
+            width: 199px;
+            height: auto;
+            padding-top: 12px;
+            padding-left: 60px;
+            float: left;
+            color: #37A1F6;
+            font: bold 35px Arial, Helvetica, sans-serif;
+            background-color: transparent;;
+        }
+
+        #patient-image {
+            width: 50px;
+            height: 50px;
+            margin-top: 10px;
+            float: right;
+            margin-right: 60px;
+        }
+
+        #menu-bar {
+            background-color: transparent;
+            width: 200px;
+            height: fit-content;
+            margin-left: 40px;
+            font: bold 22px Arial, Helvetica, sans-serif;
+            margin-top: 200px;
+        }
+
+        #border-image {
+            margin-top: 80px;
+            width: 80%;
+            height: 48%;
+            border: 1px solid transparent;
+            margin-left: 10%;
+        }
+
+        #server-img {
+            float: left;
+            width: 180px;
+            height: 180px;
+            margin-top: 40px;
+            margin-left: 20px;
+            border: 3px solid grey;
+            border-radius: 50%;
+        }
+
+        #submitBtn {
+            width: 130px;
+            height: 40px;
+            border-radius: 40px;
+            background-color: #3BD535;
+            border: #3BD535;
+            color: white;
+            font: bold 22px Arial, Helvetica, sans-serif;
+            box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+            float: left;
+            margin-top: 120px;
+            margin-left: 100px;
+        }
+
+        #client-img {
+            float: right;
+            width: 180px;
+            height: 180px;
+            margin-top: 45px;
+            margin-right: 80px;
+            border: 3px solid grey;
+            border-radius: 50%;
+        }
+
+        #text2 {
+            width: 900px;
+            height: 50px;
+            margin-top: 240px;
+        }
+
+        #table1 {
+            height: fit-content;
+            width: 92%;
+            margin-left: 4%;
+            margin-top: 30px;
+        }
+
+            #table2, th {
+                width: 15%;
+                height: 40px;
+                background-color: #3BD535;
+                color: white;
+                font: bold 23px Arial, Helvetica, sans-serif;
+                border-radius: 20px 0 0 0;
+            }
+
+            #table3, th {
+                width: 80%;
+                height: 40px;
+                background-color: #3BD535;
+                color: white;
+                font: bold 23px Arial, Helvetica, sans-serif;
+                border-radius: 0 20px 0 0;
+            }
+    </style>
+</head>
+<body>
+<div class="div1">
+    <div id="company-name">
+        <b>Medic</b>
+    </div>
+    <div id="patient-image">
+        <img src="person.png"
+             style="height: 40px; width: 40px; border: 2px solid rgba(65, 65, 65, 0.69);border-radius: 50%;">
+    </div>
+</div>
+<div class="div2">
+    <div class="div3">
+        <div id="menu-bar">
+            <a href="#" style="color: #5083fb;text-decoration: none">Dashboard</a><br><br>
+            <b style="margin-top: 100px;"><a href="#" style="color: #5083fb;
+                text-decoration: none">Register Patient</a></b><br><br>
+            <a href="#" style="color: #5083fb;
+                text-decoration: none">Medical Form</a><br><br>
+            <a href="#" style="color: #5083fb;
+                text-decoration: none">View Record</a><br><br>
+            <a href="#" style="color: #5083fb;
+                text-decoration: none;">Logout</a>
+        </div>
+    </div>
+    <div class="div4">
+        <div id="border-image">
+            <img src="server.png" id="server-img">
+            <button id="submitBtn">CONNECT</button>
+            <img src="client.png" id="client-img">
+            <div id="text2">
+                <b style="float: left;  font: bold 25px Arial, Helvetica, sans-serif; margin-left: 40px;
+                    color: #37A1F6;">Medic Server</b>
+                <b style="float: right; font: bold 25px Arial, Helvetica, sans-serif;
+                    margin-right: 21%; color: #37A1F6;">Hospital</b>
+            </div>
+        </div>
+        <div id="table1" >
+            <table style="border-collapse: collapse; width: 100%; box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+            border-radius: 20px">
+                <tr>
+                    <th id="table2" style="border-right: 2px solid gray;">PC</th>
+                    <th id="table3" >Public Keys</th>
+                </tr>
+                <tr>
+                    <td style="width: 40px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
+                         color:#034377; padding-left:35px;border-right: 2px solid gray;">Hospital
+                    </td>
+
+                    <td style="width: 100px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
+                          color:#034377; padding-left: 45px; border:1px solid  lightgray">Enter Hospital Public key
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 40px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
+                        color:#034377;background-color:lightgrey;padding-left: 45px;border-right: 2px solid gray;
+                        border-bottom-left-radius:20px;">Server
+                    </td>
+
+                    <td style="width: 100px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
+                         color:#034377;background-color:lightgrey;padding-left: 45px; border-bottom-right-radius:20px;">
+                        Enter Server Public key
+                    </td>
+                </tr>
+                <!--<tr>
+                    <td style="width: 40px; height: 50px;font: bold 20px Arial, Helvetica, sans-serif;
+                         color:#034377; padding-left:35px;border:1px solid lightgray">Hospital
+                    </td>
+
+                    <td style="width: 100px; height: 50px;font: bold 20px Arial, Helvetica, sans-serif;
+                          color:#034377; padding-left: 45px; border:1px solid  lightgray">Enter Hospital Public key
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 40px; height: 50px;font: bold 20px Arial, Helvetica, sans-serif;
+                        color:#034377;background-color:lightgrey;padding-left: 45px; border-bottom-left-radius:20px;
+                        border:1px solid grey; ">Server
+                    </td>
+
+                    <td style="width: 100px; height: 50px;font: bold 20px Arial, Helvetica, sans-serif;
+                         color:#034377;background-color:lightgrey;padding-left: 45px; border-bottom-right-radius:20px;
+                          border:1px solid grey;">Enter Server Public key
+                    </td>
+                </tr>-->
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

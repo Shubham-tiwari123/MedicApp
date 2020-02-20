@@ -1,17 +1,14 @@
 package com.medical.client.requestAPI;
 
-import com.medical.client.entity.ClientSideBlockHash;
+import com.medical.client.entity.MedicBlock;
 import com.medical.client.entity.SerializeRecord;
 import com.medical.client.service.ExtraFunctions;
 import com.medical.client.service.SendRecord;
 import org.json.simple.JSONObject;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -27,7 +24,7 @@ import java.util.ArrayList;
 public class SendRecordReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
 
-        ClientSideBlockHash block = new ClientSideBlockHash();
+        MedicBlock block = new MedicBlock();
         ExtraFunctions extraFunctions = new ExtraFunctions();
         SendRecord sendRecord = new SendRecord();
 
@@ -46,21 +43,21 @@ public class SendRecordReqAPI extends HttpServlet {
         block.setHospitalName(hospitalName);
         block.setSpecialistType(specialityType);
         block.setPrescription(prescription);
+        block.setCurrentBlockHash("0");
+        block.setPreviousBlockHash("0");
 
         try {
-            String hash = sendRecord.calBlockHash(extraFunctions.convertJavaToJson(block));
-            String encryptString = sendRecord.prepareBlock(block,hash);
-
+            //String hash = sendRecord.calBlockHash(extraFunctions.convertJavaToJson(block));
+            String encryptString = sendRecord.prepareBlock(block);
             System.out.println("data before sending:\n"+encryptString);
 
-            // encryption done using server public key but it should be done using client private key
+            // encryption done using client private key
             ArrayList<byte[]> encryptedData = sendRecord.encryptBlock(encryptString);
             SerializeRecord serializeRecord = new SerializeRecord();
             serializeRecord.setEncryptedData(encryptedData);
             String data = extraFunctions.convertJavaToJson(serializeRecord);
             System.out.println("serializeRecord data:" + data);
             JSONObject object = new JSONObject();
-            object.put("statusCode", 200);
             object.put("encrypted", data);
             object.put("hospitalUserName",hospitalUserName);
             object.put("patientId",Long.parseLong(patientID));
@@ -82,10 +79,5 @@ public class SendRecordReqAPI extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
     }
 }

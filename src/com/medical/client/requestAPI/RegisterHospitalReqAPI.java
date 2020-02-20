@@ -34,7 +34,6 @@ public class RegisterHospitalReqAPI extends HttpServlet {
             String state = request.getParameter("state");
             String city = request.getParameter("city");
             String phoneNumber = request.getParameter("phoneNumber");
-            String pincode = request.getParameter("pincode");
 
             System.out.println(userName + " " + password + " " + hospitalAddress + " " +
                     hospitalName + " " + state + " " + city);
@@ -46,7 +45,6 @@ public class RegisterHospitalReqAPI extends HttpServlet {
             hospitalDetails.setState(state);
             hospitalDetails.setCity(city);
             hospitalDetails.setPhoneNumber(phoneNumber);
-            hospitalDetails.setPinCode(pincode);
 
             String jsonString = extraFunctions.convertJavaToJson(hospitalDetails);
             System.out.println("Hospital details to send:\n" + jsonString);

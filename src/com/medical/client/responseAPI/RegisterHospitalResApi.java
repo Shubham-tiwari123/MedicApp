@@ -36,8 +36,11 @@ public class RegisterHospitalResApi extends HttpServlet {
             if(status==200){
                 //forward to login page
                 request.getRequestDispatcher("").forward(request,response);
+            }else if(status==401){
+                //return to same page with error msg "username already exists"
+                request.getRequestDispatcher("").forward(request,response);
             }else{
-                //return to same page with error msg
+                //return to same page with error msg "server error"
                 request.getRequestDispatcher("").forward(request,response);
             }
 

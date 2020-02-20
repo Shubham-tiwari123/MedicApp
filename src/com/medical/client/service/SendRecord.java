@@ -1,9 +1,8 @@
 package com.medical.client.service;
 
 import com.medical.client.dao.Database;
-import com.medical.client.entity.ClientSideBlock;
-import com.medical.client.entity.ClientSideBlockHash;
-import com.medical.client.entity.ServerKeys;
+import com.medical.client.entity.ClientKeys;
+import com.medical.client.entity.MedicBlock;
 import com.medical.client.utils.VariableClass;
 import java.util.ArrayList;
 
@@ -16,22 +15,16 @@ public class SendRecord implements SendRecordInterface {
     }
 
     @Override
-    public String prepareBlock(ClientSideBlockHash block, String hashValue) throws Exception {
-        ClientSideBlock sideBlock = new ClientSideBlock();
-
-        sideBlock.setPatientId(block.getPatientId());
-        sideBlock.setDate(block.getDate());
-        sideBlock.setTime(block.getTime());
-        sideBlock.setDoctorName(block.getDoctorName());
-        sideBlock.setHospitalName(block.getHospitalName());
-        sideBlock.setSpecialistType(block.getSpecialistType());
-        sideBlock.setPrescription(block.getPrescription());
-        sideBlock.setCurrentBlockHash(hashValue);
-        return extraFunctions.convertJavaToJson(sideBlock);
+    public String prepareBlock(MedicBlock block) throws Exception {
+        String jsonString = extraFunctions.convertJavaToJson(block);
+        String hash = calBlockHash(jsonString);
+        block.setCurrentBlockHash(hash);
+        return extraFunctions.convertJavaToJson(block);
     }
 
     @Override
     public ArrayList<byte[]> encryptBlock(String data) throws Exception {
+        ClientKeys keys = getKeysFromDatabase();
         System.out.println("encrypting block....");
         int count = 0;
         int start = 0, end = 0;
@@ -53,10 +46,9 @@ public class SendRecord implements SendRecordInterface {
             count = count + 250;
         }
         count = 0;
-        ServerKeys keys = getKeysFromDatabase();
         while (count != storeSubString.size()) {
             byte[] encryptedData = extraFunctions.encryptData(storeSubString.get(count),
-                    keys.getPublicKeyModules(), keys.getPublicKeyExpo());
+                    keys.getPrivateKeyModules(), keys.getPrivateKeyExpo());
             storeEncryptedValue.add(encryptedData);
             count++;
         }
@@ -64,8 +56,8 @@ public class SendRecord implements SendRecordInterface {
     }
 
     @Override
-    public ServerKeys getKeysFromDatabase() throws Exception {
+    public ClientKeys getKeysFromDatabase() throws Exception {
         Database database = new Database();
-        return database.getServerKeys(VariableClass.STORE_KEYS);
+        return database.getClientKeys2(VariableClass.STORE_KEYS);
     }
 }

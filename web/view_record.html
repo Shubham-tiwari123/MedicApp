@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>view record</title>
+    <style>
+        body{
+            margin: 0px;
+            overflow: hidden;
+            background-color: #F8FAFB;
+        }
+
+        .div1 {
+            height: 10vh;
+            width: 100%;
+            background-color: #e2f0ec;
+            box-shadow: 0px 5px 15px rgba(122, 122, 122, 0.63);
+            position: fixed;
+        }
+        .div2 {
+            background-color: transparent;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .div3 {
+            float: left;
+            height: inherit;
+            width: 20%;
+            background-color: white;
+            box-shadow: 0px 20px 20px  rgba(122, 122, 122, 0.63);
+        }
+
+        .div4 {
+            float: right;
+            background-color: transparent;
+            height: 100%;
+            width: 80%;
+        }
+       
+        #company-name{
+            width: 199px;
+            height: auto;
+            padding-top: 12px;
+            padding-left: 60px;
+            float: left;
+            color: #37A1F6;
+            font: bold 35px Arial, Helvetica, sans-serif;
+            background-color: transparent;;
+        }
+
+        #patient-image {
+            width: 50px;
+            height: 50px;
+            margin-top: 10px;
+            float: right;
+            margin-right: 60px;
+        }
+
+        #menu-bar {
+            background-color: transparent;
+            width: 200px;
+            height: fit-content;
+            margin-left: 40px;
+            font: bold 22px Arial, Helvetica, sans-serif;
+            margin-top: 200px;
+        }
+        #form-box {
+           margin-left:100px ;
+           margin-top: 110px;
+           width: 70%;
+           height:80%;
+           border: 1px solid rgba(65, 65, 65, 0.69);
+           box-shadow: 5px 10px 15px rgba(65, 65, 65, 0.69);
+           border-radius: 50px;
+           background-color: white;
+           color: #034377 ;
+           font:  25px Arial, Helvetica, sans-serif;
+           
+        }
+        #input-boxtext {
+            float: left;
+            margin-left: 30px;
+            margin-top: 15px;
+        }
+        #submitBtn {
+            width: 100px;
+            height: 35px;
+            border-radius: 20px;
+            background-color: #57B846;
+            border: #57B846;
+            color: white;
+            font: bold 25px Arial, Helvetica, sans-serif;
+            box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+            float:right;
+            margin-right: 30px;
+        }
+        
+         #form-input-div
+         {
+             width: 100%;
+             height: 60px;
+             margin-top: 20px;       
+         }
+
+         #text-box
+        {
+            text-align: center;
+            float: left;
+            margin-top: 10px;
+            margin-left: 30px;
+            background-color: #E4E4E4;
+            width: 210px;
+            border-radius: 32px;
+            height: 38px;
+            border: 1px solid rgba(65, 65, 65, 0.69);
+            box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+            font: bold 16px Arial, Helvetica, sans-serif;
+            color:rgba(65, 65, 65, 0.69);   
+        }
+
+        #form-text-set
+        {
+            width: 65%;
+            height: 25px;
+            margin-top: 20px;
+            margin-left: 50px;
+         }
+        #view-recordbox
+        {
+            background-color: #E4E4E4;
+            width: 87%;
+            height: 72%;
+            border:1px solid black;
+            margin-left: 50px;
+            border: 1px solid rgba(65, 65, 65, 0.69);
+            box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+            border-radius: 32px;
+            margin-top: 10px;
+        }
+        #insideview-box
+        {
+            width: auto;
+            margin-left: 30px;
+            margin-top:28px;
+            height: 12%;
+            border: 1px solid black;
+            border-radius: 20px; 
+            background-color: white;  
+            margin-right: 30px; 
+               
+        }
+        #insidebox-content
+        {
+            color:lightslategray;
+            margin-top:13px;
+            font: 23px Arial, Helvetica, sans-serif;
+        }
+     </style>
+</head>
+<body>
+    <div class="div1">
+        <div id="company-name">
+            <b>Medic</b>
+        </div>
+        <div id="patient-image">
+            <img src="person.png" style="height: 40px; width: 40px; border: 2px solid rgba(65, 65, 65, 0.69);border-radius: 50%;">
+        </div>
+    </div>
+    <div class="div2">
+        <div class="div3">
+            <div id="menu-bar">
+                <a href="#" style="color: #5083fb;text-decoration: none">Dashboard</a><br><br>
+                <b style="margin-top: 100px;"><a href="#" style="color: #5083fb;
+                text-decoration: none">Register Patient</a></b><br><br>
+                <a href="#" style="color: #5083fb;
+                text-decoration: none">Medical Form</a><br><br>
+                <a href="#" style="color: #5083fb;
+                text-decoration: none">View Record</a><br><br>
+                <a href="#" style="color: #5083fb;
+                text-decoration: none;">Logout</a>
+            </div>
+        </div>
+        <div class="div4">
+             <div id="form-box">
+                <div id="form-input-div">
+                    <div id="input-boxtext">
+                        Patient Id
+                    </div>
+                     <input type="text"  id="text-box">
+                     
+                        <a href="#" style="color: inherit;text-decoration: none; float:right;">
+                            <button id="submitBtn" style="width: 155px; height: 42px; margin-right: 70px;">Get Record</button>
+                        </a>
+                </div>      
+                     <div id="form-text-set">
+                                <b style="float: left;  font: bold 23px Arial, Helvetica, sans-serif;
+                                 margin-left: 100px; color:lightslategray">Date</b>
+                                <b style="float: right; font: bold 23px Arial, Helvetica,
+                                 sans-serif; margin-right: 150px; color:lightslategray;">Hospital Name</b>
+                    </div>
+                    <div id="view-recordbox">
+                        <div id="insideview-box">
+                            <div id="insidebox-content">
+                                    <b style="float: left; margin-left: 50px;">24-02-2019</b>
+                                    <b style="float: left; margin-left: 150px; ">DY Patil</b>
+                                    <a href="#" style="color: inherit;text-decoration: none; float:right; ">
+                                    <button id="submitBtn">View</button>
+                                    </a>
+                            </div>
+                        </div>
+                            <div id="insideview-box">
+                                <div id="insidebox-content">
+                                        <b style="float: left; margin-left: 50px;">24-02-2019</b>
+                                        <b style="float: left; margin-left: 150px; ">DY Patil</b>
+                                        <a href="#" style="color: inherit;text-decoration: none; float:right; ">
+                                        <button id="submitBtn">View</button>
+                                        </a>
+                                 </div>
+                            </div>
+                            <div id="insideview-box">
+                                <div id="insidebox-content">
+                                        <b style="float: left; margin-left: 50px;">24-02-2019</b>
+                                        <b style="float: left; margin-left: 150px; ">DY Patil</b>
+                                        <a href="#" style="color: inherit;text-decoration: none; float:right; ">
+                                        <button id="submitBtn">View</button>
+                                        </a>
+                                 </div>
+                            </div>
+                            <div id="insideview-box">
+                                <div id="insidebox-content">
+                                        <b style="float: left; margin-left: 50px;">24-02-2019</b>
+                                        <b style="float: left; margin-left: 150px; ">DY Patil</b>
+                                        <a href="#" style="color: inherit;text-decoration: none; float:right; ">
+                                        <button id="submitBtn">View</button>
+                                        </a>
+                                 </div>
+                            </div>
+                            <div id="insideview-box">
+                                <div id="insidebox-content">
+                                        <b style="float: left; margin-left: 50px;">24-02-2019</b>
+                                        <b style="float: left; margin-left: 150px; ">DY Patil</b>
+                                        <a href="#" style="color: inherit;text-decoration: none; float:right; ">
+                                        <button id="submitBtn">View</button>
+                                        </a>
+                                 </div>
+                            </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

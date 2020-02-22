@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Medical Form</title>
+    <title>Detail View</title>
     <style>
         body {
             margin: 0px;
@@ -234,7 +234,7 @@
                         Patient ID
                     </div>
                     <div id="form-fill">
-                        <input type="text" name="patientID" class="input-box" id="patientID">
+                        <input type="text" name="patientID" class="input-box" id="patientID" disabled>
                     </div>
                 </div>
                 <div id="right-div">
@@ -242,7 +242,7 @@
                         Doctor Name
                     </div>
                     <div id="form-fill">
-                        <input type="text" name="doctorName" class="input-box" id="doctorName">
+                        <input type="text" name="doctorName" class="input-box" id="doctorName" disabled>
                     </div>
                 </div>
             </div>
@@ -253,7 +253,7 @@
                         Speciality
                     </div>
                     <div id="form-fill">
-                        <input type="text" name="speciality" class="input-box" id="speciality">
+                        <input type="text" name="speciality" class="input-box" id="speciality" disabled>
                     </div>
                 </div>
                 <div id="right-div">
@@ -274,159 +274,16 @@
                     </div>
                 </div>
                 <div style="width: 100%; height: 80%">
-                    <textarea style="max-width: 89%;max-height: 196px; min-height: 196px; min-width: 89%;
+                    <textarea style="max-width: 89%;max-height: 220px; min-height: 220px; min-width: 89%;
                      background-color: #E4E4E4;; margin-left: 40px; border-radius: 20px;
                      box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);font: bold 16px Arial, Helvetica, sans-serif;
-                     color: rgba(65, 65, 65, 0.69);border: 1px solid rgba(65, 65, 65, 0.69); padding: 10px;" id="prescription"></textarea>
+                     color: rgba(65, 65, 65, 0.69);border: 1px solid rgba(65, 65, 65, 0.69); padding: 10px;"
+                              id="prescription" disabled></textarea>
                 </div>
-            </div>
-
-            <div style="margin-top: 18px; float: right; margin-right: 40px">
-                <a href="#" style="color: inherit;text-decoration: none">
-                    <button id="submitBtn" onclick="sendResponse()">SUBMIT</button>
-                </a>
             </div>
         </div>
     </div>
 </div>
-
-<script src="http://code.jquery.com/jquery-latest.min.js "></script>
-<script>
-    let today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1; //January is 0!
-
-    let yyyy = today.getFullYear();
-    if (dd < 10) {
-        dd = '0' + dd;
-    }
-    if (mm < 10) {
-        mm = '0' + mm;
-    }
-    today = dd + '/' + mm + '/' + yyyy;
-    console.log("daate:",today);
-
-    let modal = document.getElementById("popup-msg");
-    let conform_btn = document.getElementById("confirm-btn");
-
-    conform_btn.onclick = function(){
-        document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
-        modal.style.display = "none";
-
-    };
-
-    window.onload = function(){
-        console.log("Loading window");
-        document.getElementById("patientID").value="";
-        document.getElementById("doctorName").value="";
-        document.getElementById("speciality").value="";
-        document.getElementById("date").value=today;
-        document.getElementById("prescription").value="";
-    };
-
-    async function sendResponse() {
-        const patientID = document.getElementById("patientID").value;
-        const doctorName = document.getElementById("doctorName").value;
-        const speciality = document.getElementById("speciality").value;
-        const date = document.getElementById("date").value;
-        const prescription = document.getElementById("prescription").value;
-
-        let flag = await validateForm(patientID,doctorName,speciality,date,prescription);
-
-        if(flag) {
-            modal.style.display = "block";
-            document.getElementById("popup-text").innerText = "Submitting record...";
-            document.getElementById("confirm-btn").style.visibility="hidden";
-
-            console.log("values:",patientID,doctorName,speciality,date,prescription);
-
-            let response = $.post('/submit-block', {
-                patientID: Number(patientID),
-                doctorName:doctorName,
-                speciality:speciality,
-                date:date,
-                prescription: prescription
-            });
-
-            setTimeout(function () {
-                console.log("set timeout");
-
-                response.success(function (result) {
-                    console.log("set timeout2")
-                    const resultObj = jQuery.parseJSON(result);
-
-                    if(resultObj.statusCode==200){
-                        document.getElementById("patientID").value="";
-                        document.getElementById("doctorName").value="";
-                        document.getElementById("speciality").value="";
-                        document.getElementById("date").value=today;
-                        document.getElementById("prescription").value="";
-                        // forward to login page
-                    }else{
-                        document.getElementById("popup-text").innerText = "Server error...please try again";
-                        document.getElementById("popup-text").style.color = "#BA0606";
-                        document.getElementById("confirm-btn").style.visibility ="visible";
-                    }
-
-                });
-
-                response.error(function (jqXHR, textStatus, errorThrown) {
-                    document.getElementById("popup-text").innerText = "Server error...please try again";
-                    document.getElementById("popup-text").style.color = "#BA0606";
-                    document.getElementById("confirm-btn").style.visibility ="visible";
-                })
-            }, 2000);
-
-        }
-    }
-
-
-    function validateForm(patientID,doctorName,speciality,date,prescription) {
-        console.log("validating form", typeof date);
-        let letters = /^[A-Za-z]+$/;
-        if(patientID===""||isNaN(patientID)){
-            alert("Please provide valid patientID");
-            document.getElementById("patientID").focus();
-            return false;
-        }
-        if(doctorName===""){
-            alert("Please provide doctor name");
-            document.getElementById("doctorName").focus();
-            return false;
-        }
-        if(!doctorName.match(letters)){
-            alert("Alphabets only allowed");
-            document.getElementById("doctorName").focus();
-            return false;
-        }
-        if(speciality===""){
-            alert("Please provide speciality");
-            document.getElementById("speciality").focus();
-            return false;
-        }
-        if(!speciality.match(letters)){
-            alert("Alphabets only allowed");
-            document.getElementById("speciality").focus();
-            return false;
-        }
-        if(date===""){
-            alert("Please provide date");
-            document.getElementById("date").focus();
-            return false;
-        }
-        if(prescription===""){
-            alert("Please fill prescription");
-            document.getElementById("prescription").focus();
-            return false;
-        }
-        if(!prescription.match(letters)){
-            alert("Alphabets only allowed");
-            document.getElementById("prescription").focus();
-            return false;
-        }
-        return true;
-    }
-</script>
 
 </body>
 </html>

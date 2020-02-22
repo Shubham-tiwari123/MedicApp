@@ -88,7 +88,7 @@
             margin-top: 15px;
         }
 
-        #input-box {
+        .input-box {
             float: right;
             margin-top: 5px;
             margin-right: 30px;
@@ -119,9 +119,64 @@
             height: 50px;
             margin-top: 30px;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 14%;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 25%;
+            height: 120px;
+            border-radius: 20px;
+        }
+
+        #popup-text{
+            font:bold 24px Arial, Helvetica, sans-serif;
+            color: rgba(92, 93, 94, 0.78);
+            text-align: center;
+            width: 100%;
+            height: fit-content;
+            margin-top: 30px;
+        }
+
+        #confirm-btn{
+            background-color: #57B846;
+            border: #57B846;
+            color: white;
+            margin-left: 40%;
+            height: 30px;
+            width: 60px;
+            border-radius: 40px;
+            font:bold 18px Arial, Helvetica, sans-serif;
+            box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
+        }
     </style>
 </head>
 <body>
+
+<div id="popup-msg" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <p id="popup-text" >Patient ID: 58452945</p>
+        <button id="confirm-btn">OK</button>
+    </div>
+</div>
+
 <div class="div1">
     <div id="company-name">
         <b>Medic</b>
@@ -152,7 +207,7 @@
                     Name
                 </div>
                 <div id="form-fill">
-                    <input type="text" name="patientName" id="input-box">
+                    <input type="text" id="patientName" class="input-box">
                 </div>
             </div>
 
@@ -161,7 +216,7 @@
                     Age
                 </div>
                 <div id="form-fill">
-                    <input type="text" name="patientAge" id="input-box">
+                    <input type="number" id="patientAge" class="input-box">
                 </div>
             </div>
 
@@ -170,7 +225,13 @@
                     Gender
                 </div>
                 <div id="form-fill">
-                    <input type="text" name="patientGender" id="input-box">
+                    <select id="patientGender" class="input-box" style="height: 45px">
+                        <option>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Transgender">Transgender</option>
+                    </select>
+                    <!--<input type="text" id="patientGender" class="input-box">-->
                 </div>
             </div>
 
@@ -179,7 +240,7 @@
                     Phone Number
                 </div>
                 <div id="form-fill">
-                    <input type="text" name="patientNumber" id="input-box">
+                    <input type="text" id="patientNumber" class="input-box">
                 </div>
             </div>
 
@@ -188,17 +249,119 @@
                     Address
                 </div>
                 <div id="form-fill">
-                    <input type="text" name="patientAddress" id="input-box">
+                    <input type="text" id="patientAddress" class="input-box">
                 </div>
             </div>
 
             <div id="form-input-div">
                 <a href="#" style="color: inherit;text-decoration: none">
-                    <button id="submitBtn">SUBMIT</button>
+                    <button id="submitBtn" onclick="sendResponse()">SUBMIT</button>
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<script src="http://code.jquery.com/jquery-latest.min.js "></script>
+<script>
+    let modal = document.getElementById("popup-msg");
+    let conform_btn = document.getElementById("confirm-btn");
+
+    conform_btn.onclick = function(){
+        modal.style.display = "none";
+    };
+
+    window.onload = function(){
+        console.log("Loading window");
+        document.getElementById("patientName").value = "";
+        document.getElementById("patientAge").value = "";
+        document.getElementById("patientAddress").value = "";
+        document.getElementById("patientNumber").value = "";
+        document.getElementById("patientGender").value = "Select Gender";
+    };
+
+    async function sendResponse() {
+        const name = document.getElementById("patientName").value;
+        const age = document.getElementById("patientAge").value;
+        const address = document.getElementById("patientAddress").value;
+        const phoneNumber = document.getElementById("patientNumber").value;
+        const gender = document.getElementById("patientGender").value;
+
+        let flag = await validateForm(name,age,address,phoneNumber,gender);
+
+        if(flag) {
+            modal.style.display = "block";
+            document.getElementById("popup-text").innerText = "Waiting for response...";
+            document.getElementById("confirm-btn").style.visibility="hidden";
+
+            console.log("values:",name,age,address,phoneNumber,gender);
+
+            let response = $.post('/register-patient', {
+                name: name,
+                age: Number(age),
+                address: address,
+                phoneNumber: Number(phoneNumber),
+                gender: gender,
+            });
+
+            setTimeout(function () {
+                response.success(function (result) {
+                    document.getElementById("patientName").value = "";
+                    document.getElementById("patientAge").value = "";
+                    document.getElementById("patientAddress").value = "";
+                    document.getElementById("patientNumber").value = "";
+                    document.getElementById("patientGender").value = "Select Gender";
+                    document.getElementById("popup-text").innerText = "Patient ID: 34567876543";
+                    document.getElementById("popup-text").style.color = "#5A9C18";
+                    document.getElementById("confirm-btn").style.visibility="visible";
+                });
+
+                response.error(function (jqXHR, textStatus, errorThrown) {
+                    document.getElementById("popup-text").innerText = "Server Error";
+                    document.getElementById("popup-text").style.color = "#BA0606";
+                    document.getElementById("confirm-btn").style.visibility ="visible";
+                })
+            }, 2000);
+
+        }
+    }
+
+
+    function validateForm(name,age,address,phoneNumber,gender) {
+        console.log("validating form");
+        if(name===""){
+            alert("Please provide name");
+            document.getElementById("patientName").focus();
+            return false;
+        }
+        if(age===""){
+            alert("Please provide age");
+            document.getElementById("patientAge").focus();
+            return false;
+        }
+        if(Number(age)>99){
+            alert("Age must be between 1-99");
+            document.getElementById("patientAge").focus();
+            return false;
+        }
+        if(gender==="Select Gender"){
+            alert("Please provide valid gender");
+            document.getElementById("patientGender").focus();
+            return false;
+        }
+        if(phoneNumber===""||phoneNumber.length!==10){
+            alert("Please provide valid number");
+            document.getElementById("patientNumber").focus();
+            return false;
+        }
+        if(address===""){
+            alert("Please provide address");
+            document.getElementById("patientAddress").focus();
+            return false;
+        }
+        return true;
+    }
+</script>
+
 </body>
 </html>

@@ -4,10 +4,11 @@ import com.medical.client.dao.Database;
 import com.medical.client.entity.ClientKeys;
 import com.medical.client.entity.ServerKeys;
 import com.medical.client.service.ConnectToServer;
-import com.medical.client.utils.VariableClass;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +16,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebServlet(name = "ConnectDeviceReqAPI",urlPatterns = {"/connect-server"})
+@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect-server"})
 public class ConnectToServerReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
         ConnectToServer connect = new ConnectToServer();
@@ -24,7 +25,7 @@ public class ConnectToServerReqAPI extends HttpServlet {
         int statusCode = 200;
         try {
             System.out.println("client hit");
-            URL url = new URL("http://localhost:8080/connect-server");
+            URL url = new URL("http://localhost:8082/connect-server");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
 
@@ -40,7 +41,19 @@ public class ConnectToServerReqAPI extends HttpServlet {
                                 case 0:
                                     if (resString.equals("200")) {
                                         System.out.println("Network is secured");
-                                        String clientKeys = connect.prepareKeysToSend();
+                                        String hospitalSignature = null;
+                                        Cookie[] cookies = request.getCookies();
+                                        Cookie cookie;
+                                        if(cookies!=null){
+                                            for (Cookie value : cookies) {
+                                                cookie = value;
+                                                if (cookie.getName().equals("loginStatus")) {
+                                                    hospitalSignature = cookie.getValue();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        String clientKeys = connect.prepareKeysToSend(hospitalSignature);
                                         if (connect.sendData(clientKeys)) {
                                             System.out.println("Client keys send...");
                                             count++;
@@ -132,8 +145,8 @@ public class ConnectToServerReqAPI extends HttpServlet {
         try {
             doPost(request,response);
             Database database = new Database();
-            ClientKeys clientKeys = database.getClientKeys2(VariableClass.STORE_KEYS);
-            ServerKeys serverKeys = database.getServerKeys(VariableClass.STORE_KEYS);
+            ClientKeys clientKeys = database.getClientKeys(ConstantClass.STORE_KEYS);
+            ServerKeys serverKeys = database.getServerKeys(ConstantClass.STORE_KEYS);
 
             String server = serverKeys.getPublicKeyModules().toString().substring(0,80);
             String client = clientKeys.getPublicKeyModules().toString().substring(0,80);
@@ -148,4 +161,3 @@ public class ConnectToServerReqAPI extends HttpServlet {
         }
     }
 }
-//0735393422  Gauteng

@@ -2,10 +2,12 @@ package com.medical.client.requestAPI;
 
 import com.medical.client.entity.MedicBlock;
 import com.medical.client.entity.SerializeRecord;
+import com.medical.client.responseAPI.SendRecordResAPI;
 import com.medical.client.service.ExtraFunctions;
 import com.medical.client.service.SendRecord;
 import org.json.simple.JSONObject;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ public class SendRecordReqAPI extends HttpServlet {
         MedicBlock block = new MedicBlock();
         ExtraFunctions extraFunctions = new ExtraFunctions();
         SendRecord sendRecord = new SendRecord();
+        SendRecordResAPI resAPI = new SendRecordResAPI();
 
         String patientID = request.getParameter("patientID");
         String doctorName = request.getParameter("doctorName");
@@ -34,7 +37,18 @@ public class SendRecordReqAPI extends HttpServlet {
         String specialityType = request.getParameter("specialityType");
         String prescription = request.getParameter("prescription");
 
-        String hospitalUserName = request.getParameter("username");;
+        String hospitalUserName = null;
+        Cookie[] cookies = request.getCookies();
+        Cookie cookie;
+        if(cookies!=null){
+            for (Cookie value : cookies) {
+                cookie = value;
+                if (cookie.getName().equals("loginStatus")) {
+                    hospitalUserName = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
         block.setPatientId(Long.parseLong(patientID));
         block.setDate(Date.valueOf(LocalDate.now()));
@@ -61,8 +75,9 @@ public class SendRecordReqAPI extends HttpServlet {
             object.put("encrypted", data);
             object.put("hospitalUserName",hospitalUserName);
             object.put("patientId",Long.parseLong(patientID));
+            System.out.println("data:::"+object);
 
-            URL url = new URL("http://localhost:8082/appendRecord");
+            URL url = new URL("http://localhost:8082/append-record");
             HttpURLConnection conn= (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
@@ -74,6 +89,7 @@ public class SendRecordReqAPI extends HttpServlet {
             if(conn.getResponseCode()== HttpURLConnection.HTTP_OK) {
                 System.out.println("server hit");
                 //read response and if successful then display block else display try again
+                resAPI.readResponse(conn,response);
             }
 
         } catch (Exception e) {

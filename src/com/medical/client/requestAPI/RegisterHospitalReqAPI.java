@@ -4,7 +4,6 @@ import com.medical.client.entity.HospitalDetails;
 import com.medical.client.responseAPI.RegisterHospitalResApi;
 import com.medical.client.service.ExtraFunctions;
 import org.json.simple.JSONObject;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/registerHospital"})
+@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register-hospital"})
 public class RegisterHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
@@ -48,24 +47,21 @@ public class RegisterHospitalReqAPI extends HttpServlet {
 
             String jsonString = extraFunctions.convertJavaToJson(hospitalDetails);
             System.out.println("Hospital details to send:\n" + jsonString);
-            //Preparing JSON
-            object.put("details", jsonString);
 
-
-            URL url = new URL("http://localhost:8082/registerHospital");
+            URL url = new URL("http://localhost:8082/register-hospital");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             OutputStream output = conn.getOutputStream();
             OutputStreamWriter outputWriter = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-            outputWriter.write(object.toString());
+            outputWriter.write(jsonString);
             outputWriter.flush();
             outputWriter.close();
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println("Server successfully hit .....");
-                PrintWriter writer = response.getWriter();
-                writer.print(response);
+                /*PrintWriter writer = response.getWriter();
+                writer.print(response);*/
                 resApi.readResponse(conn, hospitalDetails.getUserName(),response,request);
             }
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package com.medical.client.dao;
 
 import com.medical.client.entity.ClientKeys;
 import com.medical.client.entity.ServerKeys;
-import com.medical.client.utils.VariableClass;
+import com.medical.client.utils.ConstantClass;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -25,8 +25,8 @@ public class Database implements DatabaseInterface {
 
     @Override
     public boolean createDbConn() throws Exception {
-        client = new MongoClient(VariableClass.IP_ADDRESS, VariableClass.PORT_NUMBER);
-        database = client.getDatabase(VariableClass.DATABASE_NAME);
+        client = new MongoClient(ConstantClass.IP_ADDRESS, ConstantClass.PORT_NUMBER);
+        database = client.getDatabase(ConstantClass.DATABASE_NAME);
         return true;
     }
 
@@ -81,54 +81,6 @@ public class Database implements DatabaseInterface {
         return null;
     }
 
-    /*@Override
-    public boolean storeKeys(GetKeys keys, String collectionName, SetKeys setKeys) throws Exception {
-        if (createDbConn()) {
-            if (checkCollection(collectionName)) {
-                System.out.println("saving client and server keys in db");
-                Document document = new Document("serverExpo", keys.getExpoValue())
-                        .append("serverMod", keys.getModulesValue())
-                        .append("clientPubMod", setKeys.getPublicKeyModules().toString())
-                        .append("clientPubExpo", setKeys.getPublicKeyExpo().toString())
-                        .append("clientPriExpo", setKeys.getPrivateKeyExpo().toString())
-                        .append("clientPriMod", setKeys.getPrivateKeyModules().toString());
-                database.getCollection(collectionName).insertOne(document);
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }*/
-
-    /*@Override
-    public SetKeys getClientKeys(String collectionName) throws Exception {
-        SetKeys keys = new SetKeys();
-        if (createDbConn()) {
-            if (checkCollection(collectionName)) {
-                MongoCollection<Document> collection = database.getCollection(collectionName);
-                System.out.println("getting keys from db");
-                List<Document> list = collection.find().into(new ArrayList<Document>());
-                System.out.println("list:" + list.size());
-
-                if (!list.isEmpty()) {
-                    for (Document val : list) {
-                        System.out.println("getting client keys if");
-                        String privateKeyModules = val.getString("clientPriMod");
-                        String privateKeyExpo = val.getString("clientPriExpo");
-
-                        System.out.println("setting server keys");
-                        keys.setPrivateKeyExpo(new BigInteger(privateKeyExpo));
-                        keys.setPrivateKeyModules(new BigInteger(privateKeyModules));
-                    }
-                    return keys;
-                }
-                return null;
-            }
-            return null;
-        }
-        return null;
-    }*/
-
     @Override
     public boolean storeServerKeys(ServerKeys keys, String collectionName) throws Exception {
         if (createDbConn()) {
@@ -164,7 +116,7 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public ClientKeys getClientKeys2(String collectionName) throws Exception {
+    public ClientKeys getClientKeys(String collectionName) throws Exception {
         ClientKeys keys = new ClientKeys();
         if (createDbConn()) {
             if (checkCollection(collectionName)) {

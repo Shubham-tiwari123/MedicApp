@@ -3,6 +3,7 @@ package com.medical.client.entity;
 import java.io.Serializable;
 
 public class HospitalDetails implements Serializable {
+
     private String hospitalName;
     private String hospitalAddress;
     private String state;

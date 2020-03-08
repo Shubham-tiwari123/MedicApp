@@ -14,7 +14,7 @@ public interface ConnectToServerInterface {
 
     String verifyNetwork()  throws Exception;
 
-    String prepareKeysToSend() throws Exception;
+    String prepareKeysToSend(String hospitalSignature) throws Exception;
 
     boolean verifyServerKeys(String clientKeys) throws Exception;
 

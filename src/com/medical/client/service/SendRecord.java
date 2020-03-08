@@ -3,7 +3,7 @@ package com.medical.client.service;
 import com.medical.client.dao.Database;
 import com.medical.client.entity.ClientKeys;
 import com.medical.client.entity.MedicBlock;
-import com.medical.client.utils.VariableClass;
+import com.medical.client.utils.ConstantClass;
 import java.util.ArrayList;
 
 public class SendRecord implements SendRecordInterface {
@@ -58,6 +58,6 @@ public class SendRecord implements SendRecordInterface {
     @Override
     public ClientKeys getKeysFromDatabase() throws Exception {
         Database database = new Database();
-        return database.getClientKeys2(VariableClass.STORE_KEYS);
+        return database.getClientKeys(ConstantClass.STORE_KEYS);
     }
 }

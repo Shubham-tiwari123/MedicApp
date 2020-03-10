@@ -68,4 +68,22 @@ public class GetClientRecord implements GetClientRecordInterface {
         }
         return true;
     }
+
+    public List<String> getRecord(ArrayList<ArrayList<byte[]>> encryptedData, ClientKeys clientKeys) throws Exception {
+
+        List<String> medicBlocks = new ArrayList<>();
+        ExtraFunctions extraFunctions = new ExtraFunctions();
+        for (ArrayList<byte[]> val : encryptedData) {
+            StringBuilder builder = new StringBuilder();
+            for (byte[] encryptedVal : val) {
+                String subString = extraFunctions.decryptData(encryptedVal,
+                        clientKeys.getPrivateKeyModules(), clientKeys.getPrivateKeyExpo());
+                builder.append(subString);
+            }
+            System.out.println("data:\n" + builder.toString());
+
+            medicBlocks.add(builder.toString());
+        }
+        return medicBlocks;
+    }
 }

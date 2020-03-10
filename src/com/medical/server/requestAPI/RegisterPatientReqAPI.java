@@ -4,6 +4,7 @@ import com.medical.server.entity.GenesisBlock;
 import com.medical.server.entity.PatientRecord;
 import com.medical.server.responseAPI.RegisterPatientResAPI;
 import com.medical.server.service.ExtraFunctions;
+import com.medical.server.service.Hospital;
 import com.medical.server.service.RegisterPatient;
 import com.medical.server.utils.VariableClass;
 import org.json.simple.JSONObject;
@@ -14,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
-@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register-patient"})
+@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register-patient","/patients"})
 
 public class RegisterPatientReqAPI extends HttpServlet {
 
@@ -69,7 +72,18 @@ public class RegisterPatientReqAPI extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
-        resAPI.sendResponse(0, VariableClass.BAD_REQUEST, response);
+        RegisterPatient registerPatient = new RegisterPatient();
+        System.out.println("fghjkl;");
+        try {
+            List<String> result = registerPatient.getAllPatients();
+            System.out.println("result:"+result);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("statusCode",200);
+            jsonObject.put("result",result);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(jsonObject.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

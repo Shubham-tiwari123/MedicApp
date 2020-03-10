@@ -4,6 +4,8 @@ import com.medical.server.dao.Database;
 import com.medical.server.entity.HospitalDetails;
 import com.medical.server.utils.VariableClass;
 
+import java.util.List;
+
 public class Hospital implements HospitalInterface {
 
     private Database database = new Database();
@@ -23,6 +25,11 @@ public class Hospital implements HospitalInterface {
     @Override
     public boolean loginHospital(String userName, String password) throws Exception {
         return database.checkLoginCredentials(userName,password,VariableClass.REGISTER_HEALTH_CARE);
+    }
+
+    @Override
+    public List<String> getAllHospitals() throws Exception {
+        return database.getAllHospitals(VariableClass.REGISTER_HEALTH_CARE);
     }
 
 }

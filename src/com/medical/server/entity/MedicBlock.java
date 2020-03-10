@@ -13,7 +13,7 @@ import java.sql.Time;
 })
 public class MedicBlock implements Serializable {
     private long patientId;
-    private Date date;
+    private String date;
     private Time time;
     private String hospitalName;
     private String doctorName;
@@ -30,11 +30,11 @@ public class MedicBlock implements Serializable {
         this.patientId = patientId;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

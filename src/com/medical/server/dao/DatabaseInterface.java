@@ -5,6 +5,7 @@ import com.medical.server.entity.HospitalDetails;
 import com.medical.server.entity.PatientRecord;
 import com.medical.server.entity.ServerKeys;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface DatabaseInterface {
 
@@ -28,7 +29,6 @@ public interface DatabaseInterface {
 
     ArrayList<ArrayList<byte[]>> getSpecificData(long patientID, String collectionName) throws Exception;
 
-
     boolean verifyHospital(String userName, String collectionName) throws Exception;
 
     boolean registerHospital(String collectionName, HospitalDetails details) throws Exception;
@@ -36,4 +36,8 @@ public interface DatabaseInterface {
     boolean registerPatient(String collectionName, PatientRecord record) throws Exception;
 
     boolean checkLoginCredentials(String userName,String password,String collectionName) throws Exception;
+
+    List<String> getAllHospitals(String collectionName) throws Exception;
+
+    List<String> getAllPatients(String collectionName) throws Exception;
 }

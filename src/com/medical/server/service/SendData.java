@@ -47,9 +47,9 @@ public class SendData implements SendDataInterface {
     }
 
     @Override
-    public ClientKeys getClientKeys(String hospitalID) throws Exception{
+    public ClientKeys getClientKeys(String hospitalUserName) throws Exception{
         System.out.println("getting hospital public key for encryption:"+getClass());
-        return database.getClientKeys(hospitalID,VariableClass.STORE_KEYS);
+        return database.getClientKeys(hospitalUserName,VariableClass.STORE_KEYS);
     }
 
     //encrypt data using client public key

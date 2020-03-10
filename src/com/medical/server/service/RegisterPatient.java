@@ -12,6 +12,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class RegisterPatient implements RegisterPatientInterface {
@@ -110,15 +111,20 @@ public class RegisterPatient implements RegisterPatientInterface {
         ServerKeys serverKey = database.getServerKey(VariableClass.STORE_KEYS);
 
         while (count != storeSubString.size()) {
-            /*byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
-                    serverKey.getPrivateKeyModules(), serverKey.getPrivateKeyExpo());*/
-
+            byte[] encryptedData =  extraFunctions.encryptData(storeSubString.get(count),
+                    serverKey.getPrivateKeyModules(), serverKey.getPrivateKeyExpo());
+/*
             byte[] encryptedData = extraFunctions.encryptData(storeSubString.get(count),
-                    VariableClass.serverPriMod,VariableClass.serverPriExpo);
+                    VariableClass.serverPriMod,VariableClass.serverPriExpo);*/
 
             storeEncryptedValue.add(encryptedData);
             count++;
         }
         return storeEncryptedValue;
+    }
+
+    @Override
+    public List<String> getAllPatients() throws Exception {
+        return database.getAllPatients(VariableClass.REGISTER_PATIENT);
     }
 }

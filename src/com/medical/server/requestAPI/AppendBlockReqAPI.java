@@ -22,7 +22,6 @@ public class AppendBlockReqAPI extends HttpServlet {
         AppendData appendData = new AppendData();
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
-
         int statusCode = 0;
         String line;
         while ((line = reader.readLine()) != null) {

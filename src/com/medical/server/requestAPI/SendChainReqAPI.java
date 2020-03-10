@@ -49,6 +49,7 @@ public class SendChainReqAPI extends HttpServlet {
                             System.out.println("val:\n"+val);
 
                         System.out.println("list size api:" + list.size());
+                        // encrypting data using client public key so that client can only decrypt it
                         ClientKeys keys = sendData.getClientKeys(hospitalUserName);
                         encryptedData = sendData.encryptDataAgain(keys, list);
                         for (ArrayList<byte[]> val : encryptedData) {
@@ -57,6 +58,7 @@ public class SendChainReqAPI extends HttpServlet {
                         statusCode = VariableClass.SUCCESSFUL;
                     } else {
                         statusCode = VariableClass.BAD_REQUEST;
+                        encryptedData = null;
                     }
                 }else {
                     statusCode = VariableClass.BAD_REQUEST;

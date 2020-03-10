@@ -3,6 +3,7 @@ package com.medical.server.service;
 import com.medical.server.entity.GenesisBlock;
 import com.medical.server.entity.PatientRecord;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface RegisterPatientInterface {
 
@@ -21,4 +22,6 @@ public interface RegisterPatientInterface {
     String calBlockHashValue(String data) throws Exception;
 
     ArrayList<byte[]> encryptBlock(String data) throws Exception;
+
+    List<String> getAllPatients() throws Exception;
 }

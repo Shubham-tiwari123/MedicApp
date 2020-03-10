@@ -4,10 +4,13 @@ import com.medical.client.entity.HospitalDetails;
 import com.medical.client.responseAPI.RegisterHospitalResApi;
 import com.medical.client.service.ExtraFunctions;
 import org.json.simple.JSONObject;
+
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -15,7 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register-hospital"})
+@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register-hospital","/sign-up"})
 public class RegisterHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
@@ -68,6 +71,11 @@ public class RegisterHospitalReqAPI extends HttpServlet {
             System.out.println("Something went wrong try again....");
             e.printStackTrace();
         }
+    }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/register.jsp").forward(request,response);
     }
 }

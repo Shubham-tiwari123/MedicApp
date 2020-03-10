@@ -16,8 +16,8 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect-server"})
-public class ConnectToServerReqAPI extends HttpServlet {
+@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect-server","/get-keys"})
+public class ServerReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
         ConnectToServer connect = new ConnectToServer();
         int count = 0;
@@ -143,16 +143,20 @@ public class ConnectToServerReqAPI extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response){
         try {
-            doPost(request,response);
+            /*doPost(request,response);*/
             Database database = new Database();
+            JSONObject object = new JSONObject();
             ClientKeys clientKeys = database.getClientKeys(ConstantClass.STORE_KEYS);
             ServerKeys serverKeys = database.getServerKeys(ConstantClass.STORE_KEYS);
-
-            String server = serverKeys.getPublicKeyModules().toString().substring(0,80);
-            String client = clientKeys.getPublicKeyModules().toString().substring(0,80);
-            JSONObject object = new JSONObject();
-            object.put("PC",client);
-            object.put("Server",server);
+            if(clientKeys!=null || serverKeys!=null){
+                String server = serverKeys.getPublicKeyModules().toString().substring(0,65);
+                String client = clientKeys.getPublicKeyModules().toString().substring(0,65);
+                object.put("PC",client);
+                object.put("Server",server);
+                object.put("statusCode",200);
+            }else{
+                object.put("statusCode",301);
+            }
             PrintWriter writer = response.getWriter();
             writer.println(object.toJSONString());
 

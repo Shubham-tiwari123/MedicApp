@@ -4,6 +4,8 @@ import com.medical.client.entity.PatientRecord;
 import com.medical.client.responseAPI.RegisterPatientResAPI;
 import com.medical.client.service.ExtraFunctions;
 import org.json.simple.JSONObject;
+
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register-patient"})
 public class RegisterPatientReqAPI extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response){
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         RegisterPatientResAPI resAPI = new RegisterPatientResAPI();
         ExtraFunctions extraFunctions = new ExtraFunctions();
         String hospitalUserName = null;
@@ -77,13 +79,16 @@ public class RegisterPatientReqAPI extends HttpServlet {
 
         }catch (Exception e){
             System.out.println("Something went wrong try again......");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("statusCode",400);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(jsonObject.toString());
             e.printStackTrace();
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        PrintWriter writer = response.getWriter();
-        writer.println("BAD_REQUEST.....try again");
+            throws IOException, ServletException {
+        request.getRequestDispatcher("/register_patient.jsp").forward(request,response);
     }
 }

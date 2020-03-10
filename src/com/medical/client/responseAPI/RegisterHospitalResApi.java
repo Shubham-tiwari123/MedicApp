@@ -31,9 +31,9 @@ public class RegisterHospitalResApi extends HttpServlet {
             if(status==200){
                 //forward to login page
                 //set cookie with hospital username
-                Cookie loginCookie = new Cookie("loginStatus",userName);
+                /*Cookie loginCookie = new Cookie("loginStatus",userName);
                 response.addCookie(loginCookie);
-                request.getRequestDispatcher("").forward(request,response);
+                request.getRequestDispatcher("").forward(request,response);*/
             }else if(status==401){
                 //return to same page with error msg "username already exists"
                 request.getRequestDispatcher("").forward(request,response);

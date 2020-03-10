@@ -11,20 +11,20 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
 @WebServlet(name = "SendRecordReqAPI",urlPatterns = {"/sendRecord"})
 public class SendRecordReqAPI extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response){
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         MedicBlock block = new MedicBlock();
         ExtraFunctions extraFunctions = new ExtraFunctions();
@@ -33,8 +33,8 @@ public class SendRecordReqAPI extends HttpServlet {
 
         String patientID = request.getParameter("patientID");
         String doctorName = request.getParameter("doctorName");
-        String hospitalName = request.getParameter("hospitalName");
-        String specialityType = request.getParameter("specialityType");
+        String date = request.getParameter("date");
+        String specialityType = request.getParameter("speciality");
         String prescription = request.getParameter("prescription");
 
         String hospitalUserName = null;
@@ -51,10 +51,10 @@ public class SendRecordReqAPI extends HttpServlet {
         }
 
         block.setPatientId(Long.parseLong(patientID));
-        block.setDate(Date.valueOf(LocalDate.now()));
+        block.setDate(date);
         block.setTime(Time.valueOf(LocalTime.now()));
         block.setDoctorName(doctorName);
-        block.setHospitalName(hospitalName);
+        block.setHospitalName(hospitalUserName);
         block.setSpecialistType(specialityType);
         block.setPrescription(prescription);
         block.setCurrentBlockHash("0");
@@ -93,6 +93,10 @@ public class SendRecordReqAPI extends HttpServlet {
             }
 
         } catch (Exception e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("statusCode",400);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(jsonObject.toString());
             e.printStackTrace();
         }
     }

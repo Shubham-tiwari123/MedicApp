@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 @WebServlet(name = "GetRecordResAPI")
 public class GetRecordResAPI extends HttpServlet {
 
-    public void readResponse(HttpURLConnection conn) {
+    public void readResponse(HttpURLConnection conn, HttpServletResponse response) throws IOException {
         ExtraFunctions extraFunctions = new ExtraFunctions();
         GetClientRecord clientRecord = new GetClientRecord();
         try {
@@ -42,16 +43,34 @@ public class GetRecordResAPI extends HttpServlet {
                 if (clientKeys != null) {
                     List<MedicBlock> medicBlocks = clientRecord.medicBlocks(encryptedData,clientKeys);
                     if(clientRecord.verifyChain(medicBlocks)){
+                        List<String> record = clientRecord.getRecord(encryptedData,clientKeys);
                         System.out.println("Chain is verified");
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("statusCode",200);
+                        jsonObject.put("medicalRecord",record);
+                        PrintWriter printWriter = response.getWriter();
+                        printWriter.println(jsonObject.toString());
                     }
                     else{
                         System.out.println("Chain not verified....try again");
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("statusCode",400);
+                        PrintWriter printWriter = response.getWriter();
+                        printWriter.println(jsonObject.toString());
                     }
                 }
             } else {
                 System.out.println("Error in the response");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("statusCode",400);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.println(jsonObject.toString());
             }
         } catch (Exception e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("statusCode",400);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(jsonObject.toString());
             e.printStackTrace();
         }
     }

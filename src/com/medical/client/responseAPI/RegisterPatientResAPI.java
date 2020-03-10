@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 
 @WebServlet(name = "RegisterPatientReqAPI")
@@ -27,12 +28,18 @@ public class RegisterPatientResAPI extends HttpServlet {
             JSONObject object = (JSONObject) jsonParser.parse(output.toString());
             long status = (long) object.get("statusCode");
 
+            JSONObject jsonObject = new JSONObject();
             if(status==200){
                 long patientId = (long) object.get("patientId");
+                jsonObject.put("patientID",patientId);
+                jsonObject.put("statusCode",200);
                 System.out.println("patient id:"+patientId);
             }else{
                 System.out.println("something went wrong please try again....");
+                jsonObject.put("statusCode",400);
             }
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(jsonObject.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

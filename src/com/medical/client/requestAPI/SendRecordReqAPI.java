@@ -22,7 +22,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-@WebServlet(name = "SendRecordReqAPI",urlPatterns = {"/sendRecord"})
+@WebServlet(name = "SendRecordReqAPI",urlPatterns = {"/send_record"})
 public class SendRecordReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -43,8 +43,10 @@ public class SendRecordReqAPI extends HttpServlet {
         if(cookies!=null){
             for (Cookie value : cookies) {
                 cookie = value;
-                if (cookie.getName().equals("loginStatus")) {
-                    hospitalUserName = cookie.getValue();
+                if (cookie.getName().equals("loginHospitalStatus")) {
+                    String[] val = cookie.getValue().split("&");
+                    System.out.println("Val:"+val[0]+" val:"+val[1]);
+                    hospitalUserName = val[0];
                     break;
                 }
             }
@@ -90,6 +92,11 @@ public class SendRecordReqAPI extends HttpServlet {
                 System.out.println("server hit");
                 //read response and if successful then display block else display try again
                 resAPI.readResponse(conn,response);
+            }else{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("statusCode",400);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.println(jsonObject.toString());
             }
 
         } catch (Exception e) {

@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect-server","/get-keys"})
+@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect_server"})
 public class ServerReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
         ConnectToServer connect = new ConnectToServer();
@@ -140,10 +140,8 @@ public class ServerReqAPI extends HttpServlet {
 
         }
     }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response){
+    /*protected void doGet(HttpServletRequest request, HttpServletResponse response){
         try {
-            /*doPost(request,response);*/
             Database database = new Database();
             JSONObject object = new JSONObject();
             ClientKeys clientKeys = database.getClientKeys(ConstantClass.STORE_KEYS);
@@ -163,5 +161,5 @@ public class ServerReqAPI extends HttpServlet {
         }catch (Exception e){
             System.out.println(e);
         }
-    }
+    }*/
 }

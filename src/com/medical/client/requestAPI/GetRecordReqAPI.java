@@ -1,7 +1,6 @@
 package com.medical.client.requestAPI;
 
 import com.medical.client.responseAPI.GetRecordResAPI;
-import com.medical.client.service.ExtraFunctions;
 import org.json.simple.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,7 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "GetRecordReqAPI", urlPatterns = {"/readRecord"})
+@WebServlet(name = "GetRecordReqAPI", urlPatterns = {"/read_record"})
 public class GetRecordReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,8 +30,10 @@ public class GetRecordReqAPI extends HttpServlet {
             if (cookies != null) {
                 for (Cookie value : cookies) {
                     cookie = value;
-                    if (cookie.getName().equals("loginStatus")) {
-                        hospitalUserName = cookie.getValue();
+                    if (cookie.getName().equals("loginHospitalStatus")) {
+                        String[] val = cookie.getValue().split("&");
+                        System.out.println("Val:"+val[0]+" val:"+val[1]);
+                        hospitalUserName = val[0];
                         break;
                     }
                 }
@@ -59,6 +60,10 @@ public class GetRecordReqAPI extends HttpServlet {
                 resAPI.readResponse(conn,response);
             } else {
                 System.out.println("something went wrong");
+                jsonObject = new JSONObject();
+                jsonObject.put("statusCode",400);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.println(jsonObject.toString());
             }
         }catch (Exception ex){
             JSONObject jsonObject = new JSONObject();

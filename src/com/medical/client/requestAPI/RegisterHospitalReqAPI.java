@@ -5,7 +5,6 @@ import com.medical.client.responseAPI.RegisterHospitalResApi;
 import com.medical.client.service.ExtraFunctions;
 import org.json.simple.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,14 +17,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register-hospital","/sign-up"})
+@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register_hospital"})
 public class RegisterHospitalReqAPI extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response){
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         RegisterHospitalResApi resApi = new RegisterHospitalResApi();
         HospitalDetails hospitalDetails = new HospitalDetails();
-        JSONObject object = new JSONObject();
+        JSONObject object;
         ExtraFunctions extraFunctions = new ExtraFunctions();
 
         try {
@@ -63,19 +62,19 @@ public class RegisterHospitalReqAPI extends HttpServlet {
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println("Server successfully hit .....");
-                /*PrintWriter writer = response.getWriter();
-                writer.print(response);*/
-                resApi.readResponse(conn, hospitalDetails.getUserName(),response,request);
+                resApi.readResponse(conn,response);
+            }else{
+                object = new JSONObject();
+                object.put("statusCode", 400);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.println(object);
             }
         } catch (Exception e) {
-            System.out.println("Something went wrong try again....");
-            e.printStackTrace();
+            System.out.println("Exception:"+e);
+            object = new JSONObject();
+            object.put("statusCode", 400);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(object);
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("/register.jsp").forward(request,response);
     }
 }

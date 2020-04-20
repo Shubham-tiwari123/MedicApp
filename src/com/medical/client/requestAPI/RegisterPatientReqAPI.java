@@ -20,7 +20,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 
-@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register-patient"})
+@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register_new_patient"})
 public class RegisterPatientReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -33,8 +33,10 @@ public class RegisterPatientReqAPI extends HttpServlet {
             if(cookies!=null){
                 for (Cookie value : cookies) {
                     cookie = value;
-                    if (cookie.getName().equals("loginStatus")) {
-                        hospitalUserName = cookie.getValue();
+                    if (cookie.getName().equals("loginHospitalStatus")) {
+                        String[] val = cookie.getValue().split("&");
+                        System.out.println("Val:"+val[0]+" val:"+val[1]);
+                        hospitalUserName = val[0];
                         break;
                     }
                 }
@@ -75,6 +77,10 @@ public class RegisterPatientReqAPI extends HttpServlet {
                 resAPI.readResponse(conn,response);
             }else{
                 System.out.println("Cannot connect to server...try after sometime....");
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("statusCode",400);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.println(jsonObject1.toString());
             }
 
         }catch (Exception e){
@@ -85,10 +91,5 @@ public class RegisterPatientReqAPI extends HttpServlet {
             printWriter.println(jsonObject.toString());
             e.printStackTrace();
         }
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        request.getRequestDispatcher("/register_patient.jsp").forward(request,response);
     }
 }

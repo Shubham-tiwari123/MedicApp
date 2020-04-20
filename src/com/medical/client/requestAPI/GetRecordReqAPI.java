@@ -1,6 +1,7 @@
 package com.medical.client.requestAPI;
 
 import com.medical.client.responseAPI.GetRecordResAPI;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,11 +17,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "GetRecordReqAPI", urlPatterns = {"/read_record"})
+@WebServlet(name = "GetRecordReqAPI")
 public class GetRecordReqAPI extends HttpServlet {
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
             GetRecordResAPI resAPI = new GetRecordResAPI();
             String hospitalUserName = null;
@@ -44,8 +45,9 @@ public class GetRecordReqAPI extends HttpServlet {
 
             jsonObject.put("patientId", Long.parseLong(patientId));
             jsonObject.put("hospitalUserName", hospitalUserName);
-            System.out.println("id:"+patientId+" `hos:"+hospitalUserName);
-            URL url = new URL("http://localhost:8082/getChain");
+            System.out.println("id:"+patientId+" hos:"+hospitalUserName);
+
+            URL url = new URL(ConstantClass.GET_USER_INFO);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

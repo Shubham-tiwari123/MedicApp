@@ -1,22 +1,17 @@
 package com.medical.client.requestAPI;
 
-import com.medical.client.dao.Database;
-import com.medical.client.entity.ClientKeys;
-import com.medical.client.entity.ServerKeys;
 import com.medical.client.service.ConnectToServer;
 import com.medical.client.utils.ConstantClass;
-import org.json.simple.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebServlet(name = "ConnectToServerReqAPI",urlPatterns = {"/connect_server"})
+@WebServlet(name = "ConnectToServerReqAPI")
 public class ServerReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
         ConnectToServer connect = new ConnectToServer();
@@ -25,7 +20,7 @@ public class ServerReqAPI extends HttpServlet {
         int statusCode = 200;
         try {
             System.out.println("client hit");
-            URL url = new URL("http://localhost:8082/connect-server");
+            URL url = new URL(ConstantClass.CONNECT_SERVER);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
 

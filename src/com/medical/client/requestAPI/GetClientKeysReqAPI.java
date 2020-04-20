@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "GetClientKeysReqAPI",urlPatterns = {"/get_keys"})
+@WebServlet(name = "GetClientKeysReqAPI")
 public class GetClientKeysReqAPI extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {

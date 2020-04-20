@@ -1,6 +1,7 @@
 package com.medical.client.requestAPI;
 
 import com.medical.client.responseAPI.LoginHospitalResAPI;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
@@ -17,7 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "LoginHospitalReqAPI",urlPatterns = {"/login","/check_login"})
+@WebServlet(name = "LoginHospitalReqAPI")
 public class LoginHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -32,7 +33,7 @@ public class LoginHospitalReqAPI extends HttpServlet {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("email", userName);
             jsonObject.put("pass", password);
-            URL url = new URL("http://localhost:8082/login_hospital");
+            URL url = new URL(ConstantClass.LOGIN_HOSPITAL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

@@ -3,6 +3,7 @@ package com.medical.client.requestAPI;
 import com.medical.client.entity.HospitalDetails;
 import com.medical.client.responseAPI.RegisterHospitalResApi;
 import com.medical.client.service.ExtraFunctions;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -17,7 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegisterHospitalReqAPI", urlPatterns = {"/register_hospital"})
+@WebServlet(name = "RegisterHospitalReqAPI")
 public class RegisterHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -50,7 +51,7 @@ public class RegisterHospitalReqAPI extends HttpServlet {
             String jsonString = extraFunctions.convertJavaToJson(hospitalDetails);
             System.out.println("Hospital details to send:\n" + jsonString);
 
-            URL url = new URL("http://localhost:8082/register-hospital");
+            URL url = new URL(ConstantClass.REGISTER_HOSPITAL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

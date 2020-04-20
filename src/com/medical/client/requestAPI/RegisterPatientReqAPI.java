@@ -3,9 +3,8 @@ package com.medical.client.requestAPI;
 import com.medical.client.entity.PatientRecord;
 import com.medical.client.responseAPI.RegisterPatientResAPI;
 import com.medical.client.service.ExtraFunctions;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-
-@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register_new_patient"})
+@WebServlet(name = "RegisterPatientReqAPI")
 public class RegisterPatientReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,7 +62,7 @@ public class RegisterPatientReqAPI extends HttpServlet {
             jsonObject.put("hospitalUserName",hospitalUserName);
             jsonObject.put("patientData",jsonString);
 
-            URL url = new URL("http://localhost:8082/register-patient");
+            URL url = new URL(ConstantClass.REGISTER_PATIENT);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

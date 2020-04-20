@@ -5,6 +5,7 @@ import com.medical.client.entity.SerializeRecord;
 import com.medical.client.responseAPI.SendRecordResAPI;
 import com.medical.client.service.ExtraFunctions;
 import com.medical.client.service.SendRecord;
+import com.medical.client.utils.ConstantClass;
 import org.json.simple.JSONObject;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -22,7 +23,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-@WebServlet(name = "SendRecordReqAPI",urlPatterns = {"/send_record"})
+@WebServlet(name = "SendRecordReqAPI")
 public class SendRecordReqAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -79,7 +80,7 @@ public class SendRecordReqAPI extends HttpServlet {
             object.put("patientId",Long.parseLong(patientID));
             System.out.println("data:::"+object);
 
-            URL url = new URL("http://localhost:8082/append-record");
+            URL url = new URL(ConstantClass.APPEND_RECORD);
             HttpURLConnection conn= (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

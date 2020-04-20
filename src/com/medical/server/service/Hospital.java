@@ -32,4 +32,9 @@ public class Hospital implements HospitalInterface {
         return database.getAllHospitals(VariableClass.REGISTER_HEALTH_CARE);
     }
 
+    @Override
+    public HospitalDetails getHospitalDetails(String email) throws Exception {
+        return database.getHospitalDetails(email,VariableClass.REGISTER_HEALTH_CARE);
+    }
+
 }

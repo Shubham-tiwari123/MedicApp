@@ -54,6 +54,7 @@ public class ExtraFunctions implements ExtraFunctionsInterface {
         return value;
     }
 
+    @Override
     public String convertEncryptedData(ArrayList<byte[]> data, ServerKeys serverKeys) throws Exception{
         StringBuilder builder = new StringBuilder();
         for (byte[] byteValue : data) {

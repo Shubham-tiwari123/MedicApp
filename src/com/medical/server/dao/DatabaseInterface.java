@@ -40,4 +40,6 @@ public interface DatabaseInterface {
     List<String> getAllHospitals(String collectionName) throws Exception;
 
     List<String> getAllPatients(String collectionName) throws Exception;
+
+    HospitalDetails getHospitalDetails(String email,String collectionName) throws Exception;
 }

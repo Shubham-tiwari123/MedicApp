@@ -14,4 +14,6 @@ public interface HospitalInterface {
 
     List<String> getAllHospitals() throws Exception;
 
+    HospitalDetails getHospitalDetails(String email) throws Exception;
+
 }

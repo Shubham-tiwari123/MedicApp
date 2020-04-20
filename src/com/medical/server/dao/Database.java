@@ -294,6 +294,30 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
+    public HospitalDetails getHospitalDetails(String email, String collectionName) throws Exception {
+        HospitalDetails hospitalDetails = null;
+        if(createDbConn()){
+            if(checkCollection(collectionName)){
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                System.out.println("getting client keys from db");
+                List<Document> list = collection.find(new Document("userName", email)).into(new ArrayList<Document>());
+                for(Document val: list){
+                    System.out.println("value:"+val);
+                    hospitalDetails = new HospitalDetails();
+                    hospitalDetails.setHospitalName(val.getString("hospitalName"));
+                    hospitalDetails.setCity(val.getString("city"));
+                    hospitalDetails.setState(val.getString("state"));
+                    hospitalDetails.setHospitalAddress("null");
+                    hospitalDetails.setPassword("null");
+                    hospitalDetails.setPhoneNumber("null");
+                    hospitalDetails.setUserName(val.getString("userName"));
+                }
+            }
+        }
+        return hospitalDetails;
+    }
+
+    @Override
     public ClientKeys getClientKeys(String hospital, String collectionName) throws Exception {
         ClientKeys keys = new ClientKeys();
         if (createDbConn()) {
@@ -365,4 +389,6 @@ public class Database implements DatabaseInterface {
         }
         return false;
     }
+
+
 }

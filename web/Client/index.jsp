@@ -250,7 +250,7 @@
 
             console.log("values:",email,pass);
 
-            let response = $.post('/login', {
+            let response = $.post('/login_hospital', {
                 email: email,
                 pass: pass
             });

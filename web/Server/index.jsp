@@ -218,7 +218,7 @@
 
             console.log("values:",email,pass);
 
-            let response = $.post('/adminlogin', {
+            let response = $.post('/admin_login', {
                 email: email,
                 pass: pass
             });

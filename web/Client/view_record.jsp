@@ -370,7 +370,7 @@
 
             console.log("values:",patientID);
 
-            let response = $.post('/read_record', {
+            let response = $.post('/get_user_info', {
                 patientID: patientID
             });
 

@@ -300,7 +300,7 @@
     conform_btn.style.visibility = "hidden";
     cancel_btn.style.visibility = "hidden";
 
-    let response = $.get('/patients');
+    let response = $.get('/get_patient');
 
     setTimeout(function () {
         response.success(function (result) {

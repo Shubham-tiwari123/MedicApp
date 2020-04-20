@@ -247,6 +247,7 @@
 
 
     function popup(patientID) {
+        console.log("Username:",patientID);
         let value = document.getElementById(patientID).checked;
         console.log("value",value);
         conform_btn.style.visibility = "visible";
@@ -269,7 +270,6 @@
             console.log("else value", value);
             modal.style.display = "block";
             document.getElementById("popup-text").innerText = "Activate Hospital";
-
             console.log("patientID", patientID, typeof patientID);
 
             cancel_btn.onclick = function () {
@@ -288,18 +288,18 @@
     document.getElementById("popup-text").innerText = "Getting hospitals..";
     conform_btn.style.visibility = "hidden";
     cancel_btn.style.visibility = "hidden";
-    let response = $.get('/get-hospitals');
+    let response = $.get('/get_hospitals');
 
     setTimeout(function () {
         response.success(function (result) {
             const resultObj = jQuery.parseJSON(result);
-
             if(resultObj.statusCode===200){
                 var record = resultObj.result;
                 // set the values
                 var html="";
                 for(var i=0;i<record.length;i++){
                     var json = jQuery.parseJSON(record[i]);
+                    console.log("JSON:",json.userName);
                     html +=("<div id=\"show-key\">\n" +
                         "            <div id=\"hospital-details\" style=\"border-radius: 30px 0 0 30px; margin-left: 10px; text-align: center;\n" +
                         "            border-right: 2px solid gray\">\n" +

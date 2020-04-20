@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet(name = "RegisterHospitalReqAPI",urlPatterns = {"/register-hospital","/get-hospitals"})
+@WebServlet(name = "RegisterHospitalReqAPI")
 public class RegisterHospitalReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

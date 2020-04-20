@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet(name = "RegisterPatientReqAPI", urlPatterns = {"/register-patient","/patients"})
+@WebServlet(name = "RegisterPatientReqAPI")
 
 public class RegisterPatientReqAPI extends HttpServlet {
 

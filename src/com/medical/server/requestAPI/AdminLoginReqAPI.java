@@ -11,10 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "AdminLoginRegAPI",urlPatterns = {"/adminlogin"})
+@WebServlet(name = "AdminLoginRegAPI")
 public class AdminLoginReqAPI extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         String userName = request.getParameter("email");
         String password = request.getParameter("pass");
         System.out.println("email:"+userName+",,"+password);

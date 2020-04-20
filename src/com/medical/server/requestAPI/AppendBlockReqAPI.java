@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet(name = "AppendBlockReqAPI", urlPatterns = {"/append-record"})
+@WebServlet(name = "AppendBlockReqAPI")
 public class AppendBlockReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

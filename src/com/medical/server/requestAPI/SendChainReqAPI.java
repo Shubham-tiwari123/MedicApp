@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "SendChainReqAPI", urlPatterns = {"/getChain"})
+@WebServlet(name = "SendChainReqAPI")
 public class SendChainReqAPI extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -44,8 +44,8 @@ public class RegisterPatient implements RegisterPatientInterface {
     }
 
     @Override
-    public boolean storePatient(PatientRecord patientRecord) throws Exception {
-        return database.registerPatient(VariableClass.REGISTER_PATIENT,patientRecord);
+    public boolean storePatient(PatientRecord patientRecord, String hospitalEmail) throws Exception {
+        return database.registerPatient(VariableClass.REGISTER_PATIENT,patientRecord,hospitalEmail);
     }
 
     @Override

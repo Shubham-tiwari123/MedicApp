@@ -11,6 +11,15 @@ public class HospitalDetails implements Serializable {
     private String userName;
     private String password;
     private String phoneNumber;
+    private boolean active=false;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getPhoneNumber() {
         return phoneNumber;

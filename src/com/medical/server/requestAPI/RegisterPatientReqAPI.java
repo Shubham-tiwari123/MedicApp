@@ -48,7 +48,7 @@ public class RegisterPatientReqAPI extends HttpServlet {
                 PatientRecord patientRecord = extraFunctions.convertJsonToJava(patientData,PatientRecord.class);
                 patientRecord.setPatientID(generatePatientID);
 
-                if(registerPatient.storePatient(patientRecord)){
+                if(registerPatient.storePatient(patientRecord,hospitalUserName)){
 
                     GenesisBlock genesisBlock = registerPatient.createGenesisBlock(generatePatientID);
                     if(registerPatient.storeBlock(genesisBlock,generatePatientID)){

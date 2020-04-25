@@ -16,4 +16,8 @@ public interface HospitalInterface {
 
     HospitalDetails getHospitalDetails(String email) throws Exception;
 
+    boolean activateHospital(String email) throws Exception;
+
+    boolean deactivateHospital(String email) throws Exception;
+
 }

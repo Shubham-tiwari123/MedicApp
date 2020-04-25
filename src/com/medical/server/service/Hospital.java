@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Hospital implements HospitalInterface {
 
-    private Database database = new Database();
+    private final Database database = new Database();
 
     @Override
     public boolean checkUserName(String userName) throws Exception{
@@ -35,6 +35,16 @@ public class Hospital implements HospitalInterface {
     @Override
     public HospitalDetails getHospitalDetails(String email) throws Exception {
         return database.getHospitalDetails(email,VariableClass.REGISTER_HEALTH_CARE);
+    }
+
+    @Override
+    public boolean activateHospital(String email) throws Exception {
+        return database.activateHospital(email,VariableClass.REGISTER_HEALTH_CARE);
+    }
+
+    @Override
+    public boolean deactivateHospital(String email) throws Exception {
+        return database.deactivateHospital(email,VariableClass.REGISTER_HEALTH_CARE);
     }
 
 }

@@ -54,14 +54,21 @@ public class Database implements DatabaseInterface {
 
     @Override
     public boolean verifyPatientIdDB(long patientId, String collectionName) throws Exception {
+        boolean status = false;
         if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 System.out.println("verifying id db...");
                 collection = database.getCollection(collectionName);
                 List<Document> user = (List<Document>) collection.find(new Document("patientID",
                         patientId)).into(new ArrayList<Document>());
-                return user.size() == 0;
+                if (!user.isEmpty()){
+                    for (Document doc:user){
+                        status = doc.getBoolean("active");
+                    }
+                }
+                return status && user.size() == 1;
             }
+            return false;
         }
         return false;
     }
@@ -190,7 +197,8 @@ public class Database implements DatabaseInterface {
                         .append("hospitalAddress", details.getHospitalAddress())
                         .append("state", details.getState())
                         .append("city", details.getCity())
-                        .append("phoneNumber",details.getPhoneNumber());
+                        .append("phoneNumber",details.getPhoneNumber())
+                        .append("active",true);
                 database.getCollection(collectionName).insertOne(document);
                 return true;
             }
@@ -200,7 +208,8 @@ public class Database implements DatabaseInterface {
     }
 
     @Override
-    public boolean registerPatient(String collectionName, PatientRecord record) throws Exception {
+    public boolean registerPatient(String collectionName, PatientRecord record,String hospitalEmail)
+            throws Exception {
         if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 System.out.println("registering hospital");
@@ -209,7 +218,9 @@ public class Database implements DatabaseInterface {
                         .append("age", record.getAge())
                         .append("address", record.getAddress())
                         .append("phoneNumber", record.getPhoneNumber())
-                        .append("gender", record.getGender());
+                        .append("gender", record.getGender())
+                        .append("hospitalEmail",hospitalEmail)
+                        .append("active",true);
                 database.getCollection(collectionName).insertOne(document);
                 return true;
             }
@@ -221,6 +232,7 @@ public class Database implements DatabaseInterface {
     @Override
     public boolean checkLoginCredentials(String userName, String password,String collectionName) throws Exception {
         String pass = null;
+        boolean activeStatus = false;
         if(createDbConn()){
             if(checkCollection(collectionName)){
                 MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -231,8 +243,9 @@ public class Database implements DatabaseInterface {
                 if (!list.isEmpty()) {
                     for (Document val : list) {
                         pass = val.getString("password");
+                        activeStatus = val.getBoolean("active");
                     }
-                    return password.equals(pass);
+                    return activeStatus && password.equals(pass);
                 }
                 return false;
             }
@@ -259,6 +272,7 @@ public class Database implements DatabaseInterface {
                     hospitalDetails.setPassword("null");
                     hospitalDetails.setPhoneNumber("null");
                     hospitalDetails.setUserName(val.getString("userName"));
+                    hospitalDetails.setActive(val.getBoolean("active"));
                     String jsonString = extraFunctions.convertJavaToJson(hospitalDetails);
                     result.add(jsonString);
                 }
@@ -375,7 +389,6 @@ public class Database implements DatabaseInterface {
     @Override
     public boolean storeClientKeys(ClientKeys keys, String collectionName, String signature)
             throws Exception {
-
         if (createDbConn()) {
             if (checkCollection(collectionName)) {
                 System.out.println("Storing keys");
@@ -390,5 +403,43 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
+    @Override
+    public boolean activateHospital(String email, String collectionName) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("Activating hospital db...");
+                collection = database.getCollection(collectionName);
+                Bson filter = Filters.eq("userName", email);
+                UpdateResult result = collection.updateOne(filter,
+                        Updates.set("active", true));
+                return result.getMatchedCount() == 1;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    public boolean deactivateHospital(String email, String collectionName) throws Exception {
+        if (createDbConn()) {
+            if (checkCollection(collectionName)) {
+                System.out.println("Deactivating hospital db...");
+                collection = database.getCollection(collectionName);
+                Bson filter = Filters.eq("userName", email);
+                UpdateResult result = collection.updateOne(filter,
+                        Updates.set("active", false));
+                return result.getMatchedCount() == 1;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean activatePatient(String email, String collectionName) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean deactivatePatient(String email, String collectionName) throws Exception {
+        return false;
+    }
 }

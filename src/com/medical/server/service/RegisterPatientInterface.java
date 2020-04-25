@@ -11,7 +11,7 @@ public interface RegisterPatientInterface {
 
     long generateNewID() throws Exception;
 
-    boolean storePatient(PatientRecord patientRecord) throws Exception;
+    boolean storePatient(PatientRecord patientRecord,String hospitalEmail) throws Exception;
 
     boolean checkIdDB(long generatedID) throws Exception;
 

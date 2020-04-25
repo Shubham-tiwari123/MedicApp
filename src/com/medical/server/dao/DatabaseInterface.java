@@ -33,7 +33,7 @@ public interface DatabaseInterface {
 
     boolean registerHospital(String collectionName, HospitalDetails details) throws Exception;
 
-    boolean registerPatient(String collectionName, PatientRecord record) throws Exception;
+    boolean registerPatient(String collectionName, PatientRecord record, String hospitalEmail) throws Exception;
 
     boolean checkLoginCredentials(String userName,String password,String collectionName) throws Exception;
 
@@ -42,4 +42,12 @@ public interface DatabaseInterface {
     List<String> getAllPatients(String collectionName) throws Exception;
 
     HospitalDetails getHospitalDetails(String email,String collectionName) throws Exception;
+
+    boolean activateHospital(String email, String collectionName) throws Exception;
+
+    boolean deactivateHospital(String email, String collectionName) throws Exception;
+
+    boolean activatePatient(String email, String collectionName) throws Exception;
+
+    boolean deactivatePatient(String email, String collectionName) throws Exception;
 }

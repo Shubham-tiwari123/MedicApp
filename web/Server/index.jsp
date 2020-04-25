@@ -81,6 +81,10 @@
             background-color: #E3E8FE;
         }
 
+        #form_fill input:focus{
+            outline: none;
+        }
+
         #submitBtn {
             width: 280px;
             height: 43px;
@@ -138,6 +142,17 @@
             box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);
         }
     </style>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js "></script>
+    <script>
+        let response = $.get('/check_login');
+        response.success(function (result) {
+            let obj = jQuery.parseJSON(result);
+            if(obj.statusCode===200){
+                window.location.replace("/admin_dashboard");
+            }
+        });
+    </script>
 </head>
 <body>
 <div id="popup-msg" class="modal">
@@ -167,9 +182,10 @@
                 <div id="form_fill">
                     <img src="static/person.png" style="float: left; height:30px; width: 35px;
                         margin-top: 6px; margin-left: 6px">
-                    <input type="text" id="userEmail" placeholder="Username" name="userEmail" style=" width: 225px;
+                    <input type="text" id="userEmail" placeholder="Email" name="userEmail" style=" width: 225px;
                         height: 100%;border: none; background-color: transparent;float: right;
-                        margin-right: 10px;color: #616265; font: bold 16px Arial, Helvetica, sans-serif;">
+                        margin-right: 10px;color: #616265; font: bold 16px Arial, Helvetica, sans-serif;"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder='Email'">
                 </div>
 
                 <div id="form_fill">
@@ -177,7 +193,8 @@
                         margin-top: 10px; margin-left: 6px">
                     <input type="password" id="userPass" placeholder="Password" style=" width: 225px; height: 100%;
                         border: none; background-color: transparent;float: right; margin-right: 10px;
-                        color: #616265; font: bold 16px Arial, Helvetica, sans-serif;" name="userPass">
+                        color: #616265; font: bold 16px Arial, Helvetica, sans-serif;" name="userPass"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder='Password'">
                 </div>
                 <div style=" height: fit-content; width: 100%; margin-top: 40px;">
                     <a href="#" style="color: inherit;text-decoration: none; margin-left: 5px">
@@ -188,7 +205,7 @@
         </div>
     </div>
 </div>
-<script src="http://code.jquery.com/jquery-latest.min.js "></script>
+
 <script>
     let modal = document.getElementById("popup-msg");
     let conform_btn = document.getElementById("confirm-btn");

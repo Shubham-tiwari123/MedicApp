@@ -244,7 +244,7 @@
     let modal = document.getElementById("popup-msg");
     let conform_btn = document.getElementById("confirm-btn");
     let cancel_btn = document.getElementById("cancel-btn");
-
+    let user_record;
 
     function popup(patientID) {
         console.log("Username:",patientID);
@@ -252,10 +252,14 @@
         console.log("value",value);
         conform_btn.style.visibility = "visible";
         cancel_btn.style.visibility = "visible";
+        let parse_record = jQuery.parseJSON(user_record[patientID]);
+        console.log("parse_record",parse_record);
+
         if(value){
             console.log("if value", value);
             modal.style.display = "block";
-            document.getElementById("popup-text").innerText = "Deativate Hospital";
+            document.getElementById("popup-text").innerText = "Deactivate Hospital";
+            document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
             console.log("patientID", patientID, typeof patientID);
             cancel_btn.onclick = function () {
                 modal.style.display = "none";
@@ -263,13 +267,50 @@
             };
 
             conform_btn.onclick = function () {
-                modal.style.display = "none";
-                document.getElementById(patientID).checked = false;
+                conform_btn.style.visibility = "hidden";
+                cancel_btn.style.visibility = "hidden";
+                document.getElementById("popup-text").innerText = "Deactivating Hospital..";
+                document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
+                let user_request = $.post('/deactivate_hospital',{
+                    hospitalEmail:parse_record.userName
+                })
+
+                setTimeout(function () {
+                    user_request.success(function (result) {
+                        const resultObj = jQuery.parseJSON(result);
+                        if(resultObj.statusCode===200){
+                            // forward to login page
+                            document.getElementById("popup-text").innerText = "Deactivated...";
+                            document.getElementById("popup-text").style.color = "#57B846";
+                            setTimeout(function () {
+                                modal.style.display = "none";
+                            },1000)
+                        }else{
+                            document.getElementById("popup-text").innerText = "Error cannot deactivate...";
+                            document.getElementById("popup-text").style.color = "#BA0606";
+                            document.getElementById(patientID).checked = true;
+                            setTimeout(function () {
+                                modal.style.display = "none";
+                            },1000)
+                        }
+                    })
+
+                    user_request.error(function (jqXHR, textStatus, errorThrown) {
+                        document.getElementById("popup-text").innerText = "Error cannot de activate...";
+                        document.getElementById("popup-text").style.color = "#BA0606";
+                        document.getElementById(patientID).checked = true;
+                        setTimeout(function () {
+                            modal.style.display = "none";
+                        },1000)
+                    })
+
+                },1000);
             };
         }else{
             console.log("else value", value);
             modal.style.display = "block";
             document.getElementById("popup-text").innerText = "Activate Hospital";
+            document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
             console.log("patientID", patientID, typeof patientID);
 
             cancel_btn.onclick = function () {
@@ -278,8 +319,46 @@
             };
 
             conform_btn.onclick = function () {
-                modal.style.display = "none";
-                document.getElementById(patientID).checked = true;
+                conform_btn.style.visibility = "hidden";
+                cancel_btn.style.visibility = "hidden";
+                document.getElementById("popup-text").innerText = "Activating Hospital..";
+                document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
+                let user_request = $.post('/activate_hospital',{
+                    hospitalEmail:parse_record.userName
+                })
+
+                setTimeout(function () {
+                    user_request.success(function (result) {
+                        const resultObj = jQuery.parseJSON(result);
+                        if(resultObj.statusCode===200){
+                            // forward to login page
+                            document.getElementById("popup-text").innerText = "Activated...";
+                            document.getElementById("popup-text").style.color = "#57B846";
+                            document.getElementById(patientID).checked = true;
+                            setTimeout(function () {
+                                modal.style.display = "none";
+                            },1000)
+                        }else{
+                            document.getElementById("popup-text").innerText = "Error cannot activate...";
+                            document.getElementById("popup-text").style.color = "#BA0606";
+                            document.getElementById(patientID).checked = false;
+                            setTimeout(function () {
+                                modal.style.display = "none";
+                            },1000)
+                        }
+                    })
+
+                    user_request.error(function (jqXHR, textStatus, errorThrown) {
+                        document.getElementById("popup-text").innerText = "Error cannot activate...";
+                        document.getElementById("popup-text").style.color = "#BA0606";
+                        document.getElementById(patientID).checked = false;
+                        setTimeout(function () {
+                            modal.style.display = "none";
+                        },1000)
+                    })
+
+                },1000);
+
             };
         }
     }
@@ -294,31 +373,56 @@
         response.success(function (result) {
             const resultObj = jQuery.parseJSON(result);
             if(resultObj.statusCode===200){
-                var record = resultObj.result;
+                let record = resultObj.result;
+                user_record = record;
                 // set the values
-                var html="";
-                for(var i=0;i<record.length;i++){
-                    var json = jQuery.parseJSON(record[i]);
-                    console.log("JSON:",json.userName);
-                    html +=("<div id=\"show-key\">\n" +
-                        "            <div id=\"hospital-details\" style=\"border-radius: 30px 0 0 30px; margin-left: 10px; text-align: center;\n" +
-                        "            border-right: 2px solid gray\">\n" +
-                        "                <p>"+json.hospitalName+"</p>\n" +
-                        "            </div>\n" +
-                        "            <div id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
-                        "                <p>"+json.state+"</p>\n" +
-                        "            </div>\n" +
-                        "            <div  id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
-                        "                <p>"+json.city+"</p>\n" +
-                        "            </div>\n" +
-                        "            <div id=\"hospital-details\" style=\"margin-left: 7px; border-radius: 0 30px 30px 0\">\n" +
-                        "                <label class=\"switch\">\n" +
-                        "                    <input type=\"checkbox\" id=\'"+i+"'\" checked>\n" +
-                        "                    <span class=\"slider round\" onclick=\"popup("+i+")\"></span>\n" +
-                        "                </label>\n" +
-                        "\n" +
-                        "            </div>\n" +
-                        "        </div>")
+                let html="";
+                for(let i=0;i<record.length;i++){
+                    let json = jQuery.parseJSON(record[i]);
+                    console.log("JSON:",json.active);
+                    if(json.active) {
+                        console.log("if");
+                        html += ("<div id=\"show-key\">\n" +
+                            "            <div id=\"hospital-details\" style=\"border-radius: 30px 0 0 30px; margin-left: 10px; text-align: center;\n" +
+                            "            border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.hospitalName + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.state + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div  id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.city + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div id=\"hospital-details\" style=\"margin-left: 7px; border-radius: 0 30px 30px 0\">\n" +
+                            "                <label class=\"switch\">\n" +
+                            "                    <input type=\"checkbox\" id=\'" + i + "'\" checked>\n" +
+                            "                    <span class=\"slider round\" onclick=\"popup(" + i + ")\"></span>\n" +
+                            "                </label>\n" +
+                            "\n" +
+                            "            </div>\n" +
+                            "        </div>")
+                    }else{
+                        console.log("else");
+                        html += ("<div id=\"show-key\">\n" +
+                            "            <div id=\"hospital-details\" style=\"border-radius: 30px 0 0 30px; margin-left: 10px; text-align: center;\n" +
+                            "            border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.hospitalName + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.state + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div  id=\"hospital-details\" style=\"margin-left: 7px; text-align: center; border-right: 2px solid gray\">\n" +
+                            "                <p>" + json.city + "</p>\n" +
+                            "            </div>\n" +
+                            "            <div id=\"hospital-details\" style=\"margin-left: 7px; border-radius: 0 30px 30px 0\">\n" +
+                            "                <label class=\"switch\">\n" +
+                            "                    <input type=\"checkbox\" id=\'" + i + "'\">\n" +
+                            "                    <span class=\"slider round\" onclick=\"popup(" + i + ")\"></span>\n" +
+                            "                </label>\n" +
+                            "\n" +
+                            "            </div>\n" +
+                            "        </div>")
+                    }
                 }
                 $("#form-area").append(html);
                 setTimeout(function () {

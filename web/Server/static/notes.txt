@@ -1,0 +1,19 @@
+Login page
+
+top nav bg color: #F8FAFB
+navbar height: 10vh
+Medic word color: #37A1F6 
+
+Sign In btn bg color code: #6332cc
+
+input box bg color: #E3E8FE
+input box border color: #6332cc
+
+side bar: bg image: navbar.jpg
+
+hospital page
+
+Text color(Hospital Name,State,City): color: #6A51C9;
+
+on Slider bg color: #6A51C9
+off slider bg color: #B5B5B5

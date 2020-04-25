@@ -89,7 +89,7 @@
         }
 
         #form_fill input{
-            width:-moz-available;
+            width: 94%;
             height: inherit;
             border: none;
             background-color: transparent;
@@ -97,6 +97,10 @@
             margin-left: 10px;
             color: #464646;
             font: bold 16px Arial, Helvetica, sans-serif;
+        }
+
+        #form_fill input:focus{
+            outline: none;
         }
 
         #submitBtn {
@@ -191,27 +195,34 @@
             </div>
             <div style="width: 100%;height: fit-content; margin-top: 10px">
                 <div id="form_fill" style="margin-top: 20px">
-                    <input type="text" id="hospitalName" placeholder="Hospital Name" name="hospitalName">
+                    <input type="text" id="hospitalName" placeholder="Hospital Name" onfocus="this.placeholder = ''"
+                           onblur="this.placeholder='Hospital Name'" name="hospitalName" >
                 </div>
                 <div id="form_fill">
-                    <input type="text" id="address" placeholder="Address" name="Address">
+                    <input type="text" id="address" placeholder="Address" onfocus="this.placeholder = ''"
+                           onblur="this.placeholder='Address'" name="Address">
                 </div>
                 <%--<div style="width: 100%; height: 35px; margin-top: 18px">--%>
                     <div id="form_fill">
-                        <input type="text" id="state" placeholder="State"  name="state">
+                        <input type="text" id="state" placeholder="State" onfocus="this.placeholder = ''"
+                               onblur="this.placeholder='State'" name="state">
                     </div>
                     <div id="form_fill">
-                        <input type="text" id="city" placeholder="City" name="city">
+                        <input type="text" id="city" placeholder="City" onfocus="this.placeholder = ''"
+                               onblur="this.placeholder='City'" name="city">
                     </div>
                 <%--</div>--%>
                 <div id="form_fill">
-                    <input type="text" id="phone" placeholder="Phone Number" name="Phone">
+                    <input type="text" id="phone" placeholder="Phone Number" onfocus="this.placeholder = ''"
+                           onblur="this.placeholder='Phone Number'" name="Phone">
                 </div>
                 <div id="form_fill">
-                    <input type="email" id="userEmail" placeholder="Email" name="userEmail" >
+                    <input type="email" id="userEmail" placeholder="Email" onfocus="this.placeholder = ''"
+                           onblur="this.placeholder='Email'" name="userEmail" >
                 </div>
                 <div id="form_fill">
-                    <input type="password" id="userPass" placeholder="Password" name="userPass">
+                    <input type="password" id="userPass" placeholder="Password" onfocus="this.placeholder = ''"
+                           onblur="this.placeholder='Password'" name="userPass">
                 </div>
                 <div style=" height: fit-content; width: 100%; margin-top: 20px;">
                     <a href="#" style="color: inherit;text-decoration: none; margin-left: 33%" >
@@ -234,9 +245,13 @@
 <script>
     let modal = document.getElementById("popup-msg");
     let conform_btn = document.getElementById("confirm-btn");
+    let status = false;
 
     conform_btn.onclick = function(){
         modal.style.display = "none";
+        if (status){
+            window.location.replace('/sign_in');
+        }
     };
 
     window.onload = function(){
@@ -290,7 +305,10 @@
                     const resultObj = jQuery.parseJSON(result);
                     if(resultObj.statusCode===200){
                         // forward to login page
-                        window.location.replace('/sign_in');
+                        status = true;
+                        document.getElementById("popup-text").innerText = "Registered...";
+                        document.getElementById("popup-text").style.color = "#44a706";
+                        document.getElementById("confirm-btn").style.visibility ="visible";
                     }else{
                         document.getElementById("popup-text").innerText = "Username already exists...";
                         document.getElementById("popup-text").style.color = "#BA0606";

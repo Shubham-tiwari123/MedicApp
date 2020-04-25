@@ -90,6 +90,10 @@
             /*box-shadow: 5px 5px 10px rgba(65, 65, 65, 0.69);*/
         }
 
+        #form_fill input:focus {
+            outline: none;
+        }
+
         #submitBtn {
             width: 100px;
             height: 30px;
@@ -192,7 +196,8 @@
                 <div id="form_fill">
                     <img src="static/icons8-email-52.png" style="float: left; height:18px; width: 18px;
                         margin-top: 12px; margin-left: 5px">
-                    <input type="text" id="userEmail" placeholder="Email" name="userEmail" style=" width: 200px;
+                    <input type="text" id="userEmail" placeholder="Email" name="userEmail"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder='Email'" style=" width: 200px;
                         height: 100%;border: none; background-color: transparent;float: right;
                         margin-right: 10px;color: #464646; font: bold 16px Arial, Helvetica, sans-serif;">
                 </div>
@@ -202,7 +207,8 @@
                         margin-top: 12px; margin-left: 5px">
                     <input type="password" id="userPass" placeholder="Password" style=" width: 200px; height: 100%;
                         border: none; background-color: transparent;float: right; margin-right: 10px;
-                        color: #464646; font: bold 16px Arial, Helvetica, sans-serif;" name="userPass">
+                        color: #464646; font: bold 16px Arial, Helvetica, sans-serif;" name="userPass"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder='Password'" >
                 </div>
                 <div style=" height: fit-content; width: 100%; margin-top: 20px;">
                     <a href="#" style="color: inherit;text-decoration: none; margin-left: 75px">
@@ -224,6 +230,7 @@
 <script>
     let modal = document.getElementById("popup-msg");
     let conform_btn = document.getElementById("confirm-btn");
+    let status = false;
 
     conform_btn.onclick = function(){
         document.getElementById("popup-text").style.color = "rgba(92, 93, 94, 0.78)";
@@ -247,9 +254,7 @@
             modal.style.display = "block";
             document.getElementById("popup-text").innerText = "Checking credentials...";
             document.getElementById("confirm-btn").style.visibility="hidden";
-
             console.log("values:",email,pass);
-
             let response = $.post('/login_hospital', {
                 email: email,
                 pass: pass

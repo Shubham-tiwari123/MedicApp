@@ -234,7 +234,7 @@
                     </td>
 
                     <td id="pc-key" style="width: 100px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
-                          color:#034377; padding-left: 45px; border:1px solid  lightgray">Enter Hospital Public key
+                          color:#034377; padding-left: 45px; border:1px solid  lightgray">Hospital Public key
                     </td>
                 </tr>
                 <tr>
@@ -245,7 +245,7 @@
 
                     <td id="server-key" style="width: 100px; height: 45px;font: bold 20px Arial, Helvetica, sans-serif;
                          color:#034377;background-color:lightgrey;padding-left: 45px; border-bottom-right-radius:20px;">
-                        Enter Server Public key
+                        Server Public key
                     </td>
                 </tr>
             </table>
@@ -295,16 +295,18 @@
         document.getElementById("popup-text").innerText = "Connecting to server";
         document.getElementById("confirm-btn").style.visibility="hidden";
         console.log("called");
-        let res = $.get('/connect_server');
+        let res = $.post('/connect_server');
 
         setTimeout(function () {
             res.success(function (result) {
+                console.log("parse",result);
                 var obj = jQuery.parseJSON(result);
+                console.log("obj",obj);
                 document.getElementById("popup-text").innerText = "Setting keys";
                 document.getElementById("pc-key").innerText = obj.PC;
                 document.getElementById("server-key").innerText = obj.Server;
-                document.getElementById("connectBtn").disabled = true;
-                document.getElementById("connectBtn").style.backgroundColor = "grey";
+                document.getElementById("submitBtn").disabled = true;
+                document.getElementById("submitBtn").style.backgroundColor = "grey";
                 setTimeout(function () {
                     modal.style.display = "none";
                 },1000);

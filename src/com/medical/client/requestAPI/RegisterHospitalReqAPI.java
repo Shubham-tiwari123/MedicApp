@@ -29,10 +29,10 @@ public class RegisterHospitalReqAPI extends HttpServlet {
         ExtraFunctions extraFunctions = new ExtraFunctions();
 
         try {
-            String userName = request.getParameter("userName");
-            String password = request.getParameter("password");
-            String hospitalName = request.getParameter("hospitalName");
-            String hospitalAddress = request.getParameter("hospitalAddress");
+            String userName = request.getParameter("email");
+            String password = request.getParameter("pass");
+            String hospitalName = request.getParameter("name");
+            String hospitalAddress = request.getParameter("address");
             String state = request.getParameter("state");
             String city = request.getParameter("city");
             String phoneNumber = request.getParameter("phoneNumber");

@@ -42,8 +42,10 @@ public class ServerReqAPI extends HttpServlet {
                                         if(cookies!=null){
                                             for (Cookie value : cookies) {
                                                 cookie = value;
-                                                if (cookie.getName().equals("loginStatus")) {
-                                                    hospitalSignature = cookie.getValue();
+                                                if (cookie.getName().equals("loginHospitalStatus")) {
+                                                    String[] val = cookie.getValue().split("&");
+                                                    System.out.println("Val0:" + val[0] + " val1:" + val[1]);
+                                                    hospitalSignature = val[0];
                                                     break;
                                                 }
                                             }
@@ -119,6 +121,8 @@ public class ServerReqAPI extends HttpServlet {
 
                 if (statusCode == 200) {
                     System.out.println("Keys exchanged and stored in db");
+                    GetClientKeysReqAPI reqAPI = new GetClientKeysReqAPI();
+                    reqAPI.doGet(request,response);
                 }
             }
             else{

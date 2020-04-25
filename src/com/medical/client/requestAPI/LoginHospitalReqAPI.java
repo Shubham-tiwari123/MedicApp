@@ -76,8 +76,8 @@ public class LoginHospitalReqAPI extends HttpServlet {
                     System.out.println("Login hit3");
                     if (cookie.getValue().contains("&")) {
                         String[] val = cookie.getValue().split("&");
-                        System.out.println("Val0:" + val[0] + " val1:" + val[1] + " val2:" + val[2]);
-                        if (val[2].equals("true")) {
+                        System.out.println("Val0:" + val[0] + " val1:" + val[1]);
+                        if (val[1].equals("true")) {
                             jsonObject.put("statusCode", 200);
                         } else {
                             jsonObject.put("statusCode", 400);

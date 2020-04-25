@@ -38,8 +38,7 @@ public class LoginHospitalResAPI extends HttpServlet {
                 HospitalDetails details = extraFunctions.convertJsonToJava(hospitalData, HospitalDetails.class);
                 System.out.println("forwarding");
                 StringBuilder builder = new StringBuilder();
-                builder.append(details.getUserName()).append("&")
-                        .append(details.getHospitalName()).append("&true");
+                builder.append(details.getUserName()).append("&").append("true");
                 System.out.println("Builder:"+builder.toString());
                 Cookie loginCookie = new Cookie("loginHospitalStatus", builder.toString());
                 response.addCookie(loginCookie);
